@@ -1,0 +1,517 @@
+{
+  "apiFileID": "8fc50550-740a-4310-85e7-4e4fa73e589d",
+  "apiType": "rest",
+  "routes": [
+    {
+      "apiRouteID": "106097b3-5f51-4c68-8056-50d9d40a7899",
+      "name": "TestGetProduct",
+      "enableCors": true,
+      "inputs": [
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "ProductId",
+          "example": "8523219796275"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "httpStatus": "200"
+        }
+      ],
+      "summary": "test get product routine",
+      "method": "get",
+      "path": "/testGetProduct",
+      "subcategory": "",
+      "steps": [
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('sssss');",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "Routines.module.json",
+            "routine-name": "GetProductInfo",
+            "module-input-parameters": {
+              "ProductId": "input[\"ProductId\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        }
+      ],
+      "httpStatuses": [
+        "200"
+      ]
+    },
+    {
+      "apiRouteID": "8dde8115-8075-4eb4-b75f-64b2eba6ed61",
+      "name": "TestPostProduct",
+      "enableCors": true,
+      "inputs": [
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "ProductId",
+          "example": "8523219796275"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "httpStatus": "200"
+        }
+      ],
+      "summary": "test post product routine",
+      "method": "get",
+      "path": "/testPostProduct",
+      "subcategory": "",
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "Routines.module.json",
+            "routine-name": "AddNewProduct",
+            "module-input-parameters": {
+              "title": "\"Garmin Nuvi 3790LMT\"",
+              "body_html": "\"<strong>Fancy New Warm Beanie<strong>\"",
+              "vendor": "\"Hat-r-Us\"",
+              "product_type": "\"Clothing\"",
+              "status": "\"active\"",
+              "tags": "\"\"",
+              "imageSrc": "\"https://s3.us-east-2.amazonaws.com/resources.profoundjs.com/demoimages/101.jpg\""
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('>>======>>>');",
+            "comment": ""
+          }
+        }
+      ],
+      "httpStatuses": [
+        "200"
+      ]
+    },
+    {
+      "apiRouteID": "d29d6430-f0c5-48ea-aa4a-7fc25ca4a74a",
+      "name": "TestGetInventory",
+      "enableCors": true,
+      "summary": "Test get inventory routine",
+      "method": "get",
+      "path": "/testgetinventory",
+      "inputs": [
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "InventoryItemId",
+          "example": "48353532412211"
+        }
+      ],
+      "subcategory": "",
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "httpStatus": "200"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "Routines.module.json",
+            "routine-name": "GetInventoryItem",
+            "module-input-parameters": {
+              "InventoryId": "input[\"InventoryItemId\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        }
+      ],
+      "httpStatuses": [
+        "200"
+      ]
+    },
+    {
+      "apiRouteID": "d5def67f-29ab-4fe0-a937-560b6f705cd8",
+      "name": "TestUpdateInventory",
+      "enableCors": true,
+      "summary": "Test get inventory routine",
+      "method": "get",
+      "path": "/testupdateinventory",
+      "inputs": [
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "InventoryItemId",
+          "example": "48353532412211"
+        },
+        {
+          "type": "string",
+          "from": "query",
+          "name": "sku",
+          "example": "ABX12432"
+        },
+        {
+          "type": "decimal",
+          "from": "query",
+          "name": "cost",
+          "example": "19.98"
+        },
+        {
+          "type": "boolean",
+          "from": "query",
+          "name": "tracked",
+          "example": "true"
+        }
+      ],
+      "subcategory": "",
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "object",
+              "name": "inventory_item",
+              "children": [
+                {
+                  "type": "bigint",
+                  "name": "id",
+                  "httpStatus": "200"
+                },
+                {
+                  "type": "string",
+                  "name": "updated_at",
+                  "httpStatus": "200"
+                }
+              ],
+              "httpStatus": "200"
+            }
+          ],
+          "httpStatus": "200"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "Routines.module.json",
+            "routine-name": "UpdateInventoryItem",
+            "module-input-parameters": {
+              "id": "input[\"InventoryItemId\"]",
+              "sku": "input[\"sku\"]",
+              "cost": "input[\"cost\"]",
+              "tracked": "input[\"tracked\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        }
+      ],
+      "httpStatuses": [
+        "200"
+      ]
+    },
+    {
+      "apiRouteID": "9c7e9ba7-ec0e-4102-a3a9-604ce0720972",
+      "name": "TestSetInventory",
+      "enableCors": true,
+      "inputs": [
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "location_id",
+          "example": "90033291571"
+        },
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "inventory_item_id",
+          "example": "48522310091059"
+        },
+        {
+          "type": "integer",
+          "from": "query",
+          "name": "available",
+          "example": "523"
+        }
+      ],
+      "summary": "Test Set Inventory",
+      "method": "get",
+      "path": "/TestSetInventory",
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "httpStatus": "200"
+        }
+      ],
+      "subcategory": "",
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "Routines.module.json",
+            "routine-name": "SetInventoryLevel",
+            "module-input-parameters": {
+              "locationId": "input[\"location_id\"]",
+              "inventoryItemId": "input[\"inventory_item_id\"]",
+              "available": "input[\"available\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        }
+      ],
+      "httpStatuses": [
+        "200"
+      ]
+    },
+    {
+      "apiRouteID": "8c4efa3b-bd72-40a1-aa69-b246908ea832",
+      "name": "TestGetVariants",
+      "enableCors": true,
+      "summary": "Test get varinats routine",
+      "method": "get",
+      "path": "/testgetvariants",
+      "inputs": [
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "ProductId",
+          "example": "8558573125939"
+        }
+      ],
+      "subcategory": "",
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "httpStatus": "200"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "Routines.module.json",
+            "routine-name": "Get Variants",
+            "module-input-parameters": {
+              "ProductId": "input[\"ProductId\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        }
+      ],
+      "httpStatuses": [
+        "200"
+      ]
+    },
+    {
+      "apiRouteID": "bb4fd34b-643c-4a92-9257-763ea64704e0",
+      "name": "TestUpdateVariant",
+      "enableCors": true,
+      "summary": "Test update variant parice",
+      "method": "put",
+      "path": "/testupdatevariant",
+      "inputs": [
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "variantId",
+          "example": "46750824726835"
+        },
+        {
+          "type": "string",
+          "from": "query",
+          "name": "sku",
+          "example": "ABX12432"
+        },
+        {
+          "type": "decimal",
+          "from": "query",
+          "name": "price",
+          "example": "19.98"
+        },
+        {
+          "type": "string",
+          "from": "query",
+          "name": "title",
+          "example": "true"
+        }
+      ],
+      "subcategory": "",
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "object",
+              "name": "inventory_item",
+              "children": [
+                {
+                  "type": "bigint",
+                  "name": "id",
+                  "httpStatus": "200"
+                },
+                {
+                  "type": "string",
+                  "name": "updated_at",
+                  "httpStatus": "200"
+                }
+              ],
+              "httpStatus": "200"
+            }
+          ],
+          "httpStatus": "200"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "Routines.module.json",
+            "routine-name": "UpdateVariant",
+            "module-input-parameters": {
+              "id": "input[\"variantId\"]",
+              "sku": "input[\"sku\"]",
+              "price": "input[\"price\"]",
+              "title": "input[\"title\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        }
+      ],
+      "httpStatuses": [
+        "200"
+      ]
+    },
+    {
+      "apiRouteID": "de10aaa6-bb7a-40e7-90c3-2c11a4ff52b6",
+      "name": "TestCreateNewProduct",
+      "enableCors": true,
+      "inputs": [
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "ProductId",
+          "example": "8523219796275"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "httpStatus": "200"
+        }
+      ],
+      "summary": "test create new product and update inventory and price",
+      "method": "get",
+      "path": "/testPCreatetProduct",
+      "subcategory": "",
+      "httpStatuses": [
+        "200"
+      ],
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "Routines.module.json",
+            "routine-name": "CreateNewProduct",
+            "module-input-parameters": {
+              "title": "\"Garmin Nuvi 3790LMT\"",
+              "body_html": "\"<strong>Fancy New Warm Beanie<strong>\"",
+              "vendor": "\"Hat-r-Us\"",
+              "product_type": "\"Clothing\"",
+              "status": "\"active\"",
+              "tags": "\"\"",
+              "imageSrc": "\"https://s3.us-east-2.amazonaws.com/resources.profoundjs.com/demoimages/101.jpg\"",
+              "cost": "2.38",
+              "available": "123",
+              "price": "24.97",
+              "sku": "\"ABC123\"",
+              "locationId": "90033291571"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('>>======>>>');",
+            "comment": ""
+          }
+        }
+      ]
+    }
+  ]
+}

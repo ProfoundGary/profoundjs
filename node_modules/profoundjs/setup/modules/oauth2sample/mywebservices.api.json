@@ -1,0 +1,47 @@
+{
+  "apiFileID": "c56222bf-43e7-4762-8722-e8b715126db4",
+  "routes": [
+    {
+      "apiRouteID": "21db819c-b91e-4540-8604-99d2e19bace9",
+      "name": "postTestService",
+      "enableCors": true,
+      "summary": "POST test service",
+      "method": "post",
+      "path": "/postTestService",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "string",
+          "name": "message"
+        },
+        {
+          "type": "string",
+          "name": "method"
+        },
+        {
+          "type": "string",
+          "name": "date_utc"
+        },
+        {
+          "type": "decimal",
+          "name": "random"
+        }
+      ],
+      "subcategory": "",
+      "steps": [
+        {
+          "text": "Set API output",
+          "answers": {
+            "plugin": "Program Data:set-api-output",
+            "api-output-values": {
+              "message": "\"Congratulations! You made it to your PAPI endpoint!\"",
+              "method": "\"post\"",
+              "date_utc": "(new Date()).toJSON()",
+              "random": "Math.random()"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

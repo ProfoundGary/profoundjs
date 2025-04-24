@@ -1,0 +1,14 @@
+{
+  "description": "Sample Sign on via OAuth2 and Call an API",
+  "routes": {
+    "useful-app.json": {
+      "method": "get",
+      "route": "useful-app",
+      "rdf": true
+    },
+    "authpage.js": {
+      "method": "get",
+      "route": "authpage"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "mssql": {
+    "user": "trainingadmin",
+    "password": "sfdbh23467#ysuf",
+    "server": "pjsdemo.database.windows.net"
+  },
+    "pjstraining": {
+    "user": "pjstraining",
+    "password": "SherbetLemon1881",
+    "server": "pjsdemo.database.windows.net"
+  },
+    "trainingUser": {
+    "user": "trainingUser",
+    "password": "SherbetLemon1881"
+  },
+    "mssql1": {
+    "user": "pjs",
+    "password": "r%du9mhADBCv",
+    "server": "pjsdemo.database.windows.net"
+  },
+  "mysql": {
+    "user": "admin",
+    "password": "crk4h56TCCgPqB2KLtYJHAZS",
+    "host": "demo-db-mysql.c4zcidhe0q79.us-east-2.rds.amazonaws.com"
+  },
+  "mariadb": {
+    "user": "admin",
+    "password": "crk4h56TCCgPqB2KLtYJHAZS",
+    "host": "demo-db-mariadb.c4zcidhe0q79.us-east-2.rds.amazonaws.com"
+  },
+  "aurora": {
+    "user": "profound",
+    "password": "crk4h56TCCgPqB2KLtYJHAZS",
+    "host": "aurora-demodb.cluster-c4zcidhe0q79.us-east-2.rds.amazonaws.com"
+  }
+}

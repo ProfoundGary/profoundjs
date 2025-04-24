@@ -1,0 +1,2562 @@
+{
+  "text": "Maintain Accidents/Claims (Green-Screen)",
+  "formats": [
+    {
+      "screen": {
+        "record format name": "claimctl",
+        "description": "View Claims",
+        "overlay": "true",
+        "overlay range": "1-20"
+      },
+      "items": [
+        {
+          "id": "CLAIM01D_CLAIMCTL_HeadingPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "0px",
+          "width": "940px",
+          "height": "44px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-heading2",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant1",
+          "field type": "output field",
+          "value": "Maintain Claims/Accidents",
+          "css class": "hybrid-constant",
+          "left": "414px",
+          "cursor column": "28",
+          "top": "5px",
+          "cursor row": "1",
+          "css class 2": "top-line",
+          "css class 3": "HI"
+        },
+        {
+          "id": "CLAIM01D_CLAIMCTL_ActionsPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "52px",
+          "height": "570px",
+          "width": "165px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-actions",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant7",
+          "field type": "output field",
+          "value": "Position by Claim #:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "65px",
+          "cursor row": "4"
+        },
+        {
+          "id": "C1NUMBER",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "c1number",
+            "dataLength": "9",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "true",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[c1number]"
+          },
+          "left": "414px",
+          "cursor column": "28",
+          "top": "65px",
+          "cursor row": "4",
+          "width": "76px"
+        },
+        {
+          "id": "constant8",
+          "field type": "output field",
+          "value": "Position by Description:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "105px",
+          "cursor row": "6"
+        },
+        {
+          "id": "C1DESC",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "c1desc",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[c1desc]"
+          },
+          "text transform": "uppercase",
+          "left": "414px",
+          "cursor column": "28",
+          "top": "105px",
+          "cursor row": "6",
+          "width": "204px"
+        },
+        {
+          "id": "CLAIMSFL",
+          "field type": "grid",
+          "number of columns": "5",
+          "record format name": "claimsfl",
+          "description": "Claims Subfile",
+          "display subfile": {
+            "fieldName": "N70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "display control record": {
+            "fieldName": "N70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "clear subfile": {
+            "fieldName": "70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "subfile size": "100",
+          "header height": "20",
+          "row height": "20",
+          "css class": "hybrid-grid",
+          "subfile end": {
+            "fieldName": "N70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "sortable columns": "true",
+          "find option": "true",
+          "filter option": "true",
+          "number of rows": "11",
+          "top": "185px",
+          "left": "206px",
+          "column widths": "27,88,216,80,192",
+          "column headings": "Opt,Claim,Description,Date,County"
+        },
+        {
+          "id": "linkSubmit",
+          "field type": "hyperlink",
+          "value": "Continue",
+          "shortcut key": "Enter",
+          "left": "25px",
+          "top": "70px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCA03",
+          "field type": "hyperlink",
+          "bypass validation": "true",
+          "value": "Exit",
+          "shortcut key": "F3",
+          "response": {
+            "fieldName": "*IN03",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "103px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCA05",
+          "field type": "hyperlink",
+          "bypass validation": "true",
+          "value": "Refresh",
+          "shortcut key": "F5",
+          "response": {
+            "fieldName": "*IN05",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "136px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF06",
+          "field type": "hyperlink",
+          "value": "Add",
+          "shortcut key": "F6",
+          "response": {
+            "fieldName": "*IN06",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "169px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "constant8_copy",
+          "field type": "output field",
+          "css class": "hybrid-constant",
+          "value": "2=Edit 4=Delete 5=View",
+          "cursor row": "6",
+          "cursor column": "3",
+          "left": "215px",
+          "top": "150px",
+          "width": "460px"
+        },
+        {
+          "id": "OPTION",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "option",
+            "dataLength": "1",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[option]"
+          },
+          "text transform": "uppercase",
+          "left": "8px",
+          "cursor column": "3",
+          "top": "1px",
+          "cursor row": "11",
+          "width": "12px",
+          "valid values": " ,2,4,5",
+          "grid": "CLAIMSFL",
+          "column": "0"
+        },
+        {
+          "id": "S1NUMBER",
+          "field type": "output field",
+          "value": {
+            "fieldName": "s1number",
+            "dataLength": "9",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "true",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[s1number]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "5px",
+          "cursor column": "6",
+          "top": "1px",
+          "cursor row": "11",
+          "width": "72px",
+          "text align": "right",
+          "grid": "CLAIMSFL",
+          "column": "1"
+        },
+        {
+          "id": "CMDESC",
+          "field type": "output field",
+          "value": {
+            "fieldName": "cmdesc",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "false",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[cmdesc]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "5px",
+          "cursor column": "17",
+          "top": "1px",
+          "cursor row": "11",
+          "grid": "CLAIMSFL",
+          "column": "2"
+        },
+        {
+          "id": "CMMDY",
+          "field type": "output field",
+          "value": {
+            "fieldName": "cmmdy",
+            "dataLength": "6",
+            "decPos": "0",
+            "dataType": "zoned",
+            "formatting": "Date",
+            "dateFormat": "m/d/y",
+            "locale": "en_US",
+            "designValue": "[cmmdy]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "5px",
+          "cursor column": "44",
+          "top": "1px",
+          "cursor row": "11",
+          "width": "64px",
+          "text align": "right",
+          "grid": "CLAIMSFL",
+          "column": "3"
+        },
+        {
+          "id": "CMCOUNTY",
+          "field type": "output field",
+          "value": {
+            "fieldName": "cmcounty",
+            "dataLength": "20",
+            "trimLeading": "false",
+            "trimTrailing": "false",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[cmcounty]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "5px",
+          "cursor column": "54",
+          "top": "1px",
+          "cursor row": "11",
+          "grid": "CLAIMSFL",
+          "column": "4"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "detail",
+        "description": "Claim Details",
+        "overlay range": "1-22"
+      },
+      "items": [
+        {
+          "id": "CLAIM01D_DETAIL_HeadingPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "0px",
+          "width": "940px",
+          "height": "44px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-heading2",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant9",
+          "field type": "output field",
+          "value": "Accident/Claim Detail",
+          "css class": "hybrid-constant",
+          "left": "446px",
+          "cursor column": "32",
+          "top": "5px",
+          "cursor row": "1",
+          "css class 2": "top-line",
+          "css class 3": "HI"
+        },
+        {
+          "id": "MESSAGE",
+          "field type": "output field",
+          "value": {
+            "fieldName": "MESSAGE",
+            "designValue": "[MESSAGE]",
+            "dataType": "char",
+            "formatting": "Text",
+            "trimLeading": "false",
+            "trimTrailing": "false",
+            "textTransform": "none",
+            "dataLength": "10"
+          },
+          "css class": "hybrid-output-field",
+          "left": "750px",
+          "cursor column": "70",
+          "top": "5px",
+          "cursor row": "1",
+          "css class 2": "top-line",
+          "css class 3": "HI"
+        },
+        {
+          "id": "CLAIM01D_DETAIL_ActionsPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "52px",
+          "height": "570px",
+          "width": "165px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-actions",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant10",
+          "field type": "output field",
+          "value": "Claim Number:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "65px",
+          "cursor row": "4",
+          "css class 2": "HI"
+        },
+        {
+          "id": "CMNUMBER",
+          "field type": "output field",
+          "value": {
+            "fieldName": "cmnumber",
+            "dataLength": "9",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "true",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[cmnumber]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "350px",
+          "cursor column": "20",
+          "top": "65px",
+          "cursor row": "4",
+          "width": "72px",
+          "text align": "right"
+        },
+        {
+          "id": "constant11",
+          "field type": "output field",
+          "value": "Description:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "85px",
+          "cursor row": "5"
+        },
+        {
+          "id": "DETAIL_CMDESC",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmdesc",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmdesc]"
+          },
+          "text transform": "uppercase",
+          "left": "350px",
+          "cursor column": "20",
+          "top": "85px",
+          "cursor row": "5",
+          "width": "204px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant24",
+          "field type": "output field",
+          "value": "Accident Location",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "85px",
+          "cursor row": "5",
+          "css class 2": "HI",
+          "css class 3": "UL"
+        },
+        {
+          "id": "constant12",
+          "field type": "output field",
+          "value": "Date:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "105px",
+          "cursor row": "6"
+        },
+        {
+          "id": "DETAIL_CMMDY",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmmdy",
+            "dataLength": "6",
+            "decPos": "0",
+            "dataType": "zoned",
+            "formatting": "Date",
+            "dateFormat": "m/d/y",
+            "locale": "en_US",
+            "designValue": "[cmmdy]"
+          },
+          "left": "350px",
+          "cursor column": "20",
+          "top": "105px",
+          "cursor row": "6",
+          "width": "68px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant25",
+          "field type": "output field",
+          "value": "County:",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "105px",
+          "cursor row": "6"
+        },
+        {
+          "id": "DETAIL_CMCOUNTY",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmcounty",
+            "dataLength": "20",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmcounty]"
+          },
+          "text transform": "uppercase",
+          "left": "638px",
+          "cursor column": "56",
+          "top": "105px",
+          "cursor row": "6",
+          "width": "164px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant13",
+          "field type": "output field",
+          "value": "Time:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "125px",
+          "cursor row": "7"
+        },
+        {
+          "id": "CMTIME",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmtime",
+            "dataLength": "6",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "true",
+            "edtWrd": "'  :  :  '",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[cmtime]"
+          },
+          "left": "350px",
+          "cursor column": "20",
+          "top": "125px",
+          "cursor row": "7",
+          "width": "68px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant26",
+          "field type": "output field",
+          "value": "Address:",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "125px",
+          "cursor row": "7"
+        },
+        {
+          "id": "CMADDR1",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmaddr1",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmaddr1]"
+          },
+          "text transform": "uppercase",
+          "left": "638px",
+          "cursor column": "56",
+          "top": "125px",
+          "cursor row": "7",
+          "width": "204px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant14",
+          "field type": "output field",
+          "value": "Units Involved:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "145px",
+          "cursor row": "8"
+        },
+        {
+          "id": "CMUNITS",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmunits",
+            "dataLength": "3",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[cmunits]"
+          },
+          "left": "350px",
+          "cursor column": "20",
+          "top": "145px",
+          "cursor row": "8",
+          "width": "28px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "CMADDR2",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmaddr2",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmaddr2]"
+          },
+          "text transform": "uppercase",
+          "left": "638px",
+          "cursor column": "56",
+          "top": "145px",
+          "cursor row": "8",
+          "width": "204px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant15",
+          "field type": "output field",
+          "value": "Injured:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "165px",
+          "cursor row": "9"
+        },
+        {
+          "id": "CMINJURED",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cminjured",
+            "dataLength": "3",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[cminjured]"
+          },
+          "left": "350px",
+          "cursor column": "20",
+          "top": "165px",
+          "cursor row": "9",
+          "width": "28px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant27",
+          "field type": "output field",
+          "value": "City:",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "165px",
+          "cursor row": "9"
+        },
+        {
+          "id": "CMCITY",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmcity",
+            "dataLength": "20",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmcity]"
+          },
+          "text transform": "uppercase",
+          "left": "638px",
+          "cursor column": "56",
+          "top": "165px",
+          "cursor row": "9",
+          "width": "164px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant16",
+          "field type": "output field",
+          "value": "Hit and run?",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "185px",
+          "cursor row": "10"
+        },
+        {
+          "id": "CMHITRUN",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmhitrun",
+            "dataLength": "1",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmhitrun]"
+          },
+          "text transform": "uppercase",
+          "left": "350px",
+          "cursor column": "20",
+          "top": "185px",
+          "cursor row": "10",
+          "width": "12px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant37",
+          "field type": "output field",
+          "value": "(Y/N)",
+          "css class": "hybrid-constant",
+          "left": "366px",
+          "cursor column": "22",
+          "top": "185px",
+          "cursor row": "10",
+          "visibility": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "hidden",
+            "customFalse": "visible"
+          }
+        },
+        {
+          "id": "constant28",
+          "field type": "output field",
+          "value": "State:",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "185px",
+          "cursor row": "10"
+        },
+        {
+          "id": "CMSTATE",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmstate",
+            "dataLength": "2",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmstate]"
+          },
+          "text transform": "uppercase",
+          "left": "638px",
+          "cursor column": "56",
+          "top": "185px",
+          "cursor row": "10",
+          "width": "20px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant40",
+          "field type": "output field",
+          "value": "(?=Prompt)",
+          "css class": "hybrid-constant",
+          "left": "662px",
+          "cursor column": "59",
+          "top": "185px",
+          "cursor row": "10",
+          "visibility": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "hidden",
+            "customFalse": "visible"
+          }
+        },
+        {
+          "id": "constant17",
+          "field type": "output field",
+          "value": "Completed?",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "205px",
+          "cursor row": "11"
+        },
+        {
+          "id": "CMCOMPLETE",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmcomplete",
+            "dataLength": "1",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmcomplete]"
+          },
+          "text transform": "uppercase",
+          "left": "350px",
+          "cursor column": "20",
+          "top": "205px",
+          "cursor row": "11",
+          "width": "12px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant38",
+          "field type": "output field",
+          "value": "(Y/N)",
+          "css class": "hybrid-constant",
+          "left": "366px",
+          "cursor column": "22",
+          "top": "205px",
+          "cursor row": "11",
+          "visibility": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "hidden",
+            "customFalse": "visible"
+          }
+        },
+        {
+          "id": "constant29",
+          "field type": "output field",
+          "value": "Zip:",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "205px",
+          "cursor row": "11"
+        },
+        {
+          "id": "CMZIP",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmzip",
+            "dataLength": "5",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "true",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[cmzip]"
+          },
+          "left": "638px",
+          "cursor column": "56",
+          "top": "205px",
+          "cursor row": "11",
+          "width": "44px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant30",
+          "field type": "output field",
+          "value": "Accident Type:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "225px",
+          "cursor row": "12"
+        },
+        {
+          "id": "CMACTYPE",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmactype",
+            "dataLength": "3",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmactype]"
+          },
+          "text transform": "uppercase",
+          "left": "350px",
+          "cursor column": "20",
+          "top": "225px",
+          "cursor row": "12",
+          "width": "28px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant39",
+          "field type": "output field",
+          "value": "(?=Prompt)",
+          "css class": "hybrid-constant",
+          "left": "382px",
+          "cursor column": "24",
+          "top": "225px",
+          "cursor row": "12",
+          "visibility": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "hidden",
+            "customFalse": "visible"
+          }
+        },
+        {
+          "id": "constant18",
+          "field type": "output field",
+          "value": "Estimates",
+          "css class": "hybrid-constant",
+          "left": "350px",
+          "cursor column": "20",
+          "top": "265px",
+          "cursor row": "14",
+          "css class 2": "HI",
+          "css class 3": "UL"
+        },
+        {
+          "id": "constant23",
+          "field type": "output field",
+          "value": "Costs",
+          "css class": "hybrid-constant",
+          "left": "454px",
+          "cursor column": "33",
+          "top": "265px",
+          "cursor row": "14",
+          "css class 2": "HI",
+          "css class 3": "UL"
+        },
+        {
+          "id": "constant31",
+          "field type": "output field",
+          "value": "Classification",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "265px",
+          "cursor row": "14",
+          "css class 2": "UL",
+          "css class 3": "HI"
+        },
+        {
+          "id": "constant19",
+          "field type": "output field",
+          "value": "Your Equipment:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "285px",
+          "cursor row": "15"
+        },
+        {
+          "id": "CMEQEST",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmeqest",
+            "dataLength": "7",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "true",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[cmeqest]"
+          },
+          "left": "350px",
+          "cursor column": "20",
+          "top": "285px",
+          "cursor row": "15",
+          "width": "68px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "CMEQCOST",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmeqcost",
+            "dataLength": "7",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "true",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[cmeqcost]"
+          },
+          "left": "454px",
+          "cursor column": "33",
+          "top": "285px",
+          "cursor row": "15",
+          "width": "68px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant32",
+          "field type": "output field",
+          "value": "Motorcycle involved?",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "285px",
+          "cursor row": "15"
+        },
+        {
+          "id": "CMMOTOR",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmmotor",
+            "dataLength": "1",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmmotor]"
+          },
+          "text transform": "uppercase",
+          "left": "721px",
+          "cursor column": "68",
+          "top": "285px",
+          "cursor row": "15",
+          "width": "25px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant42",
+          "field type": "output field",
+          "value": "(Y/N)",
+          "css class": "hybrid-constant",
+          "left": "750px",
+          "cursor column": "70",
+          "top": "285px",
+          "cursor row": "15",
+          "visibility": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "hidden",
+            "customFalse": "visible"
+          }
+        },
+        {
+          "id": "constant20",
+          "field type": "output field",
+          "value": "Other Equipment:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "305px",
+          "cursor row": "16"
+        },
+        {
+          "id": "CMOTHEST",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmothest",
+            "dataLength": "7",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "true",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[cmothest]"
+          },
+          "left": "350px",
+          "cursor column": "20",
+          "top": "305px",
+          "cursor row": "16",
+          "width": "68px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "CMOTHCOST",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmothcost",
+            "dataLength": "7",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "true",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[cmothcost]"
+          },
+          "left": "454px",
+          "cursor column": "33",
+          "top": "305px",
+          "cursor row": "16",
+          "width": "68px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant33",
+          "field type": "output field",
+          "value": "Flat tire?",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "305px",
+          "cursor row": "16"
+        },
+        {
+          "id": "CMFLATTIRE",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmflattire",
+            "dataLength": "1",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmflattire]"
+          },
+          "text transform": "uppercase",
+          "left": "734px",
+          "cursor column": "68",
+          "top": "305px",
+          "cursor row": "16",
+          "width": "12px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant41",
+          "field type": "output field",
+          "value": "(Y/N)",
+          "css class": "hybrid-constant",
+          "left": "750px",
+          "cursor column": "70",
+          "top": "305px",
+          "cursor row": "16",
+          "visibility": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "hidden",
+            "customFalse": "visible"
+          }
+        },
+        {
+          "id": "constant21",
+          "field type": "output field",
+          "value": "Property:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "325px",
+          "cursor row": "17"
+        },
+        {
+          "id": "CMPROPEST",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmpropest",
+            "dataLength": "7",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "true",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[cmpropest]"
+          },
+          "left": "350px",
+          "cursor column": "20",
+          "top": "325px",
+          "cursor row": "17",
+          "width": "68px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "CMPROPCOST",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmpropcost",
+            "dataLength": "7",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "true",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[cmpropcost]"
+          },
+          "left": "454px",
+          "cursor column": "33",
+          "top": "325px",
+          "cursor row": "17",
+          "width": "68px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant34",
+          "field type": "output field",
+          "value": "Broken windshield?",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "325px",
+          "cursor row": "17"
+        },
+        {
+          "id": "CMBROKENW",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmbrokenw",
+            "dataLength": "1",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmbrokenw]"
+          },
+          "text transform": "uppercase",
+          "left": "734px",
+          "cursor column": "68",
+          "top": "325px",
+          "cursor row": "17",
+          "width": "12px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant43",
+          "field type": "output field",
+          "value": "(Y/N)",
+          "css class": "hybrid-constant",
+          "left": "750px",
+          "cursor column": "70",
+          "top": "325px",
+          "cursor row": "17",
+          "visibility": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "hidden",
+            "customFalse": "visible"
+          }
+        },
+        {
+          "id": "constant22",
+          "field type": "output field",
+          "value": "Total:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "345px",
+          "cursor row": "18"
+        },
+        {
+          "id": "CMTOTEST",
+          "field type": "output field",
+          "value": {
+            "fieldName": "cmtotest",
+            "dataLength": "7",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "true",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[cmtotest]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "350px",
+          "cursor column": "20",
+          "top": "345px",
+          "cursor row": "18",
+          "width": "64px",
+          "text align": "right"
+        },
+        {
+          "id": "CMTOTCOST",
+          "field type": "output field",
+          "value": {
+            "fieldName": "cmtotcost",
+            "dataLength": "7",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "true",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[cmtotcost]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "454px",
+          "cursor column": "33",
+          "top": "345px",
+          "cursor row": "18",
+          "width": "64px",
+          "text align": "right"
+        },
+        {
+          "id": "constant35",
+          "field type": "output field",
+          "value": "Vandalism?",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "345px",
+          "cursor row": "18"
+        },
+        {
+          "id": "CMVANDAL",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmvandal",
+            "dataLength": "1",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmvandal]"
+          },
+          "text transform": "uppercase",
+          "left": "734px",
+          "cursor column": "68",
+          "top": "345px",
+          "cursor row": "18",
+          "width": "12px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant44",
+          "field type": "output field",
+          "value": "(Y/N)",
+          "css class": "hybrid-constant",
+          "left": "750px",
+          "cursor column": "70",
+          "top": "345px",
+          "cursor row": "18",
+          "visibility": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "hidden",
+            "customFalse": "visible"
+          }
+        },
+        {
+          "id": "constant36",
+          "field type": "output field",
+          "value": "Pedestrian involved?",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "365px",
+          "cursor row": "19"
+        },
+        {
+          "id": "CMPEDESTR",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "cmpedestr",
+            "dataLength": "1",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[cmpedestr]"
+          },
+          "text transform": "uppercase",
+          "left": "734px",
+          "cursor column": "68",
+          "top": "365px",
+          "cursor row": "19",
+          "width": "12px",
+          "read only": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "css class 2": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "PR",
+            "customFalse": ""
+          },
+          "css class 3": {
+            "fieldName": "N80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "UL",
+            "customFalse": ""
+          }
+        },
+        {
+          "id": "constant45",
+          "field type": "output field",
+          "value": "(Y/N)",
+          "css class": "hybrid-constant",
+          "left": "750px",
+          "cursor column": "70",
+          "top": "365px",
+          "cursor row": "19",
+          "visibility": {
+            "fieldName": "80",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "hidden",
+            "customFalse": "visible"
+          }
+        },
+        {
+          "id": "linkSubmit",
+          "field type": "hyperlink",
+          "value": "Continue",
+          "shortcut key": "Enter",
+          "left": "25px",
+          "top": "70px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCA03",
+          "field type": "hyperlink",
+          "bypass validation": "true",
+          "value": "Exit",
+          "shortcut key": "F3",
+          "response": {
+            "fieldName": "*IN03",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "103px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF06",
+          "field type": "hyperlink",
+          "value": "Damages",
+          "shortcut key": "F6",
+          "response": {
+            "fieldName": "*IN06",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "136px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF07",
+          "field type": "hyperlink",
+          "value": "Work Orders",
+          "shortcut key": "F7",
+          "response": {
+            "fieldName": "*IN07",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "169px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF08",
+          "field type": "hyperlink",
+          "value": "Injured",
+          "shortcut key": "F8",
+          "response": {
+            "fieldName": "*IN08",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "202px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF09",
+          "field type": "hyperlink",
+          "value": "Police",
+          "shortcut key": "F9",
+          "response": {
+            "fieldName": "*IN09",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "235px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF10",
+          "field type": "hyperlink",
+          "value": "Towing",
+          "shortcut key": "F10",
+          "response": {
+            "fieldName": "*IN10",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "268px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF11",
+          "field type": "hyperlink",
+          "value": "Notes",
+          "shortcut key": "F11",
+          "response": {
+            "fieldName": "*IN11",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "301px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCA12",
+          "field type": "hyperlink",
+          "bypass validation": "true",
+          "value": "Cancel",
+          "shortcut key": "F12",
+          "response": {
+            "fieldName": "*IN12",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "334px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF14",
+          "field type": "hyperlink",
+          "value": "Photos",
+          "shortcut key": "F14",
+          "response": {
+            "fieldName": "*IN14",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "367px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF15",
+          "field type": "hyperlink",
+          "value": "Documents",
+          "shortcut key": "F15",
+          "response": {
+            "fieldName": "*IN15",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "400px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "bottom",
+        "description": "Function Keys",
+        "overlay": "true",
+        "overlay range": "23-23"
+      },
+      "items": [
+        {
+          "id": "CLAIM01D_BOTTOM_HeadingPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "0px",
+          "width": "940px",
+          "height": "44px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-heading2",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "CLAIM01D_BOTTOM_ActionsPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "52px",
+          "height": "570px",
+          "width": "165px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-actions",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "linkSubmit",
+          "field type": "hyperlink",
+          "value": "Continue",
+          "shortcut key": "Enter",
+          "left": "25px",
+          "top": "70px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCA03",
+          "field type": "hyperlink",
+          "bypass validation": "true",
+          "value": "Exit",
+          "shortcut key": "F3",
+          "response": {
+            "fieldName": "*IN03",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "103px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCA05",
+          "field type": "hyperlink",
+          "bypass validation": "true",
+          "value": "Refresh",
+          "shortcut key": "F5",
+          "response": {
+            "fieldName": "*IN05",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "136px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF06",
+          "field type": "hyperlink",
+          "value": "Add",
+          "shortcut key": "F6",
+          "response": {
+            "fieldName": "*IN06",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "169px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "confirmdel",
+        "description": "Delete Claim Confirm Screen",
+        "overlay range": "1-9"
+      },
+      "items": [
+        {
+          "id": "CLAIM01D_CONFIRMDEL_HeadingPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "0px",
+          "width": "940px",
+          "height": "44px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-heading2",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant46",
+          "field type": "output field",
+          "value": "Delete Accident/Claim",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "5px",
+          "cursor row": "1",
+          "css class 2": "top-line",
+          "css class 3": "HI"
+        },
+        {
+          "id": "CLAIM01D_CONFIRMDEL_ActionsPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "52px",
+          "height": "570px",
+          "width": "165px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-actions",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant47",
+          "field type": "output field",
+          "value": "Claim Number:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "65px",
+          "cursor row": "4",
+          "css class 2": "HI"
+        },
+        {
+          "id": "CONFIRMDEL_CMNUMBER",
+          "field type": "output field",
+          "value": {
+            "fieldName": "CMNUMBER",
+            "designValue": "[CMNUMBER]",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "numSep": "false",
+            "zeroBalance": "true",
+            "zeroFill": "true",
+            "curSym": "",
+            "units": "",
+            "negNum": "-999.00",
+            "dataLength": "9",
+            "decPos": "0"
+          },
+          "css class": "hybrid-output-field",
+          "left": "326px",
+          "cursor column": "17",
+          "top": "65px",
+          "cursor row": "4",
+          "width": "72px",
+          "text align": "right"
+        },
+        {
+          "id": "constant48",
+          "field type": "output field",
+          "value": "Description:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "105px",
+          "cursor row": "6",
+          "css class 2": "HI"
+        },
+        {
+          "id": "CONFIRMDEL_CMDESC",
+          "field type": "output field",
+          "value": {
+            "fieldName": "cmdesc",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "false",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[cmdesc]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "326px",
+          "cursor column": "17",
+          "top": "105px",
+          "cursor row": "6"
+        },
+        {
+          "id": "constant49",
+          "field type": "output field",
+          "value": "Enter=Confirm",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "165px",
+          "cursor row": "9",
+          "css class 2": "BLU"
+        },
+        {
+          "id": "linkSubmit",
+          "field type": "hyperlink",
+          "value": "Continue",
+          "shortcut key": "Enter",
+          "left": "25px",
+          "top": "70px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCA12",
+          "field type": "hyperlink",
+          "bypass validation": "true",
+          "value": "Cancel",
+          "shortcut key": "F12",
+          "response": {
+            "fieldName": "*IN12",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "103px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        }
+      ]
+    }
+  ],
+  "keywords": [
+    "INDARA"
+  ],
+  "long name aliases": true
+}

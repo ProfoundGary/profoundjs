@@ -1,0 +1,34 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "APIs",
+    "version": "1.0.0"
+  },
+  "components": {
+    "schemas": {},
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      },
+      "User": {
+        "type": "http",
+        "scheme": "basic"
+      },
+      "IBMi": {
+        "type": "http",
+        "scheme": "basic",
+        "x-ibmi": true
+      }
+    }
+  },
+  "x-allowAnonymous": true,
+  "security": [
+    {
+      "ApiKeyAuth": []
+    },
+    { "User": [] },
+    { "IBMi": [] }
+  ]
+}

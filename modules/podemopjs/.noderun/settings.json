@@ -1,0 +1,20 @@
+{
+  "description": "",
+  "current git repository": "",
+  "git repositories": [
+    ""
+  ],
+  "app start": "podemo1r/index.js",
+  "routes": {
+    "podemohd1r/podemohd1d.json": {
+      "method": "get",
+      "route": "somepodemo",
+      "rdf": true
+    },
+    "podemohd1r/index.js": {
+      "method": "get",
+      "route": "podemo2",
+      "rdf": true
+    }
+  }
+}

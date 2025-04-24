@@ -1,0 +1,1009 @@
+{
+  "text": "",
+  "logic": {
+    "load records": {
+      "steps": [
+        {
+          "text": "Retrieve program parameters",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:retrieve program parameters",
+            "destination": "Into work variables",
+            "parameter": "selectedOfficeCode"
+          }
+        },
+        {
+          "text": "Search criteria entered?",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "mainScreen[\"searchValue\"]",
+            "type": "truthy",
+            "and-or": ""
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Search records",
+          "answers": {
+            "plugin": "Database:get-records",
+            "connection": "",
+            "tables": "DEMOLIB.EMPLOYEES",
+            "columns": "empnumber,lastname,firstname,extension",
+            "criteria": " (\nlastname LIKE CONCAT(CONCAT('%', ?), '%') OR firstname LIKE CONCAT(CONCAT('%', ?), '%') OR extension LIKE CONCAT(CONCAT('%', ?), '%') OR email LIKE CONCAT(CONCAT('%', ?), '%') OR officecode LIKE CONCAT(CONCAT('%', ?), '%') OR jobtitle LIKE CONCAT(CONCAT('%', ?), '%') )\nand officecode = ?",
+            "parameter": "mainScreen[\"searchValue\"]",
+            "parameter_2": "mainScreen[\"searchValue\"]",
+            "parameter_3": "mainScreen[\"searchValue\"]",
+            "parameter_4": "mainScreen[\"searchValue\"]",
+            "parameter_5": "mainScreen[\"searchValue\"]",
+            "parameter_6": "mainScreen[\"searchValue\"]",
+            "parameter_7": "selectedOfficeCode",
+            "add_order_by": false,
+            "limit": "5000",
+            "skip": "",
+            "destination": "Grid",
+            "grid": "grid"
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Load all records",
+          "answers": {
+            "plugin": "Database:get-records",
+            "connection": "",
+            "tables": "DEMOLIB.EMPLOYEES",
+            "columns": "empnumber,lastname,firstname,extension",
+            "criteria": "officecode = ?",
+            "parameter": "selectedOfficeCode",
+            "add_order_by": false,
+            "limit": "5000",
+            "skip": "",
+            "destination": "Grid",
+            "grid": "grid"
+          }
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    "add button click": {
+      "steps": [
+        {
+          "text": "Show detail screen for adding a record",
+          "answers": {
+            "plugin": "Navigation:show-screen",
+            "screen": "detailScreen",
+            "populate": true,
+            "source": "Specify each value individually",
+            "screen-values": {
+              "dialogTitle": "'Add Record'",
+              "editMode": "false",
+              "empnumberKey": "0",
+              "empnumber": "0",
+              "lastname": "''",
+              "firstname": "''",
+              "extension": "''",
+              "email": "''",
+              "officecode": "''",
+              "reportsto": "0",
+              "jobtitle": "''"
+            }
+          }
+        }
+      ]
+    },
+    "clear search": {
+      "steps": [
+        {
+          "text": "Clear search value",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "mainScreen",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "searchValue": "''"
+            }
+          }
+        }
+      ]
+    },
+    "edit icon click": {
+      "steps": [
+        {
+          "text": "Retrieve record",
+          "answers": {
+            "plugin": "Database:get-record",
+            "connection": "",
+            "tables": "DEMOLIB.EMPLOYEES",
+            "columns": "empnumber,lastname,firstname,extension,email,officecode,reportsto,jobtitle",
+            "criteria": "empnumber = ?",
+            "destination": "Screen",
+            "screen": "detailScreen",
+            "parameter": "activeGridRecord[\"empnumber\"]"
+          }
+        },
+        {
+          "text": "Show edit window",
+          "answers": {
+            "plugin": "Navigation:show-screen",
+            "screen": "detailScreen",
+            "populate": true,
+            "source": "Specify each value individually",
+            "screen-values": {
+              "dialogTitle": "'Edit Record'",
+              "editMode": "true",
+              "empnumberKey": "activeGridRecord[\"empnumber\"]"
+            }
+          }
+        }
+      ]
+    },
+    "delete icon click": {
+      "steps": [
+        {
+          "text": "Ask to confirm",
+          "answers": {
+            "plugin": "Navigation:show-message-box",
+            "title": "Delete Record",
+            "message": "Are you sure?",
+            "icon": "question",
+            "button1": "Yes",
+            "button2": "No",
+            "button3": "",
+            "button4": "",
+            "button5": "",
+            "capture_response": true,
+            "destination": "Work variable",
+            "work_variable": "sure"
+          }
+        },
+        {
+          "text": "If sure",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "sure",
+            "type": "==",
+            "value": "'Yes'",
+            "and-or": ""
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Delete record",
+          "answers": {
+            "plugin": "Database:delete-records",
+            "connection": "",
+            "table": "DEMOLIB.EMPLOYEES",
+            "criteria": "empnumber = ?",
+            "parameter": "activeGridRecord[\"empnumber\"]"
+          }
+        },
+        {
+          "text": "Any problems?",
+          "answers": {
+            "plugin": "Conditions:success",
+            "not": true
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Show message",
+          "answers": {
+            "plugin": "Navigation:show-message-box",
+            "title": "Error",
+            "message": "Record could not be deleted.\r\n<br/>\r\n<br/>\r\n${_error.message}",
+            "icon": "error",
+            "button1": "",
+            "button2": "",
+            "button3": "",
+            "button4": "",
+            "button5": "",
+            "capture_response": false
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    "save button click": {
+      "steps": [
+        {
+          "text": "Update/insert record",
+          "answers": {
+            "plugin": "Database:update-insert-record",
+            "connection": "",
+            "table": "DEMOLIB.EMPLOYEES",
+            "criteria": "empnumber = ?",
+            "record_source": "From a screen",
+            "screen": "detailScreen",
+            "parameter": "detailScreen[\"empnumberKey\"]"
+          }
+        },
+        {
+          "text": "Any problems?",
+          "answers": {
+            "plugin": "Conditions:success",
+            "not": true
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Show message",
+          "answers": {
+            "plugin": "Navigation:show-message-box",
+            "title": "Error",
+            "message": "Record could not be saved.\r\n<br/>\r\n<br/>\r\n${_error.message}",
+            "icon": "error",
+            "button1": "",
+            "button2": "",
+            "button3": "",
+            "button4": "",
+            "button5": "",
+            "capture_response": false
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Go back",
+          "answers": {
+            "plugin": "Navigation:show-screen",
+            "screen": "mainScreen",
+            "populate": false
+          }
+        }
+      ]
+    },
+    "cancel button click": {
+      "steps": [
+        {
+          "text": "Go back",
+          "answers": {
+            "plugin": "Navigation:show-screen",
+            "screen": "mainScreen",
+            "populate": false
+          }
+        }
+      ]
+    },
+    "routine 1": {
+      "steps": [
+        {
+          "text": "Exit",
+          "OP": true,
+          "answers": {
+            "plugin": "Navigation:exit-program"
+          }
+        }
+      ]
+    }
+  },
+  "formats": [
+    {
+      "screen": {
+        "record format name": "mainScreen",
+        "initial routine": {
+          "routine": "load records",
+          "designValue": "load records"
+        },
+        "description": "List or Search Records"
+      },
+      "items": [
+        {
+          "id": "CenteringLayout",
+          "field type": "layout",
+          "left": "calc(50% - 492px)",
+          "top": "20px",
+          "template": "simple container",
+          "height": "510px",
+          "width": "984px",
+          "center horizontally": "true"
+        },
+        {
+          "id": "SearchBox",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "left": "30px",
+          "top": "25px",
+          "width": "345px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "searchValue",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "string",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[searchValue]"
+          },
+          "layout": "CenteringLayout",
+          "container": "1"
+        },
+        {
+          "id": "SearchButton",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Search",
+          "top": "25px",
+          "width": "100px",
+          "icon position": "left",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "height": "25px",
+          "icon": "material:search",
+          "left": "390px",
+          "response": {
+            "fieldName": "searchButton",
+            "customTrue": "",
+            "customFalse": "",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "layout": "CenteringLayout",
+          "container": "1"
+        },
+        {
+          "id": "AddButton",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Add",
+          "left": "30px",
+          "top": "80px",
+          "width": "80px",
+          "icon position": "left",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "height": "25px",
+          "onclick": {
+            "routine": "add button click",
+            "designValue": "add button click"
+          },
+          "icon": "material:playlist_add",
+          "layout": "CenteringLayout",
+          "container": "1"
+        },
+        {
+          "id": "Grid",
+          "field type": "grid",
+          "css class": "blueprint-grid",
+          "left": "25px",
+          "top": "75px",
+          "number of rows": "10",
+          "number of columns": "5",
+          "column widths": "94,104,312,312,112",
+          "column headings": ",Empnumber,Lastname,Firstname,Extension",
+          "header height": "35",
+          "row height": "39",
+          "height": "386px",
+          "width": "934px",
+          "css class 2": "blueprint-defaults",
+          "visibility": "visible",
+          "border color": "transparent",
+          "record format name": "grid",
+          "xlsx export": "true",
+          "position at top": "true",
+          "filter option": "true",
+          "sortable columns": "true",
+          "hide columns option": "true",
+          "description": "Grid of Records",
+          "subfile record number": {
+            "fieldName": "topRecordNumber",
+            "dataLength": "5",
+            "decPos": "0",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": ""
+          },
+          "subfile return rrn": {
+            "fieldName": "topRecordNumber",
+            "dataLength": "5",
+            "decPos": "0",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": ""
+          },
+          "export with headings": "true",
+          "layout": "CenteringLayout",
+          "container": "1"
+        },
+        {
+          "id": "ClearIcon",
+          "field type": "icon",
+          "icon": "material:clear",
+          "left": "350px",
+          "top": "25px",
+          "z index": "22",
+          "cursor": "pointer",
+          "onclick": {
+            "routine": "clear search",
+            "designValue": "clear search"
+          },
+          "height": "25px",
+          "layout": "CenteringLayout",
+          "container": "1"
+        },
+        {
+          "id": "GraphicButton1",
+          "field type": "graphic button",
+          "css class": "pui-solid-button-no",
+          "left": "945px",
+          "top": "10px",
+          "width": "25px",
+          "icon position": "left",
+          "css class 2": "blueprint-defaults",
+          "icon": "material:clear",
+          "height": "25px",
+          "onclick": {
+            "routine": "routine 1",
+            "designValue": "routine 1"
+          },
+          "layout": "CenteringLayout",
+          "container": "1"
+        },
+        {
+          "id": "EditIcon",
+          "field type": "icon",
+          "left": "15px",
+          "top": "5px",
+          "icon": "fontAwesome-solid:edit",
+          "color": "#0099CC",
+          "cursor": "pointer",
+          "tool tip": "Edit record...",
+          "onclick": {
+            "routine": "edit icon click",
+            "designValue": "edit icon click"
+          },
+          "user defined data": {
+            "fieldName": "empnumber",
+            "refField": "empnumber EMPLOYEES",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "reference",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "grid": "Grid",
+          "column": "0"
+        },
+        {
+          "id": "DeleteIcon",
+          "field type": "icon",
+          "left": "50px",
+          "top": "5px",
+          "icon": "material:delete_forever",
+          "color": "#FF0000",
+          "cursor": "pointer",
+          "tool tip": "Delete record...",
+          "onclick": {
+            "routine": "delete icon click",
+            "designValue": "delete icon click"
+          },
+          "user defined data": {
+            "fieldName": "empnumber",
+            "refField": "empnumber EMPLOYEES",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "reference",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "grid": "Grid",
+          "column": "0"
+        },
+        {
+          "field type": "output field",
+          "css class": "outputField",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "value": {
+            "fieldName": "empnumber",
+            "designValue": "[empnumber]",
+            "refField": "empnumber EMPLOYEES",
+            "dataType": "reference",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": ""
+          },
+          "top": "10px",
+          "left": "10px",
+          "id": "empnumber",
+          "grid": "Grid",
+          "column": "1"
+        },
+        {
+          "field type": "output field",
+          "css class": "outputField",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "value": {
+            "fieldName": "lastname",
+            "designValue": "[lastname]",
+            "refField": "lastname EMPLOYEES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "10px",
+          "left": "10px",
+          "id": "lastname",
+          "grid": "Grid",
+          "column": "2"
+        },
+        {
+          "field type": "output field",
+          "css class": "outputField",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "value": {
+            "fieldName": "firstname",
+            "designValue": "[firstname]",
+            "refField": "firstname EMPLOYEES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "10px",
+          "left": "10px",
+          "id": "firstname",
+          "grid": "Grid",
+          "column": "3"
+        },
+        {
+          "field type": "output field",
+          "css class": "outputField",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "value": {
+            "fieldName": "extension",
+            "designValue": "[extension]",
+            "refField": "extension EMPLOYEES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "10px",
+          "left": "10px",
+          "id": "extension",
+          "grid": "Grid",
+          "column": "4"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "detailScreen",
+        "animated screen": "new",
+        "animation": "slide-down",
+        "overlay screens": "true",
+        "description": "Add / Edit Records",
+        "user defined data": {
+          "fieldName": "empnumberKey",
+          "refField": "empnumber EMPLOYEES",
+          "trimLeading": "false",
+          "trimTrailing": "true",
+          "blankFill": "false",
+          "rjZeroFill": "false",
+          "dataType": "reference",
+          "formatting": "Text",
+          "textTransform": "none"
+        },
+        "user defined data 2": {
+          "fieldName": "editMode",
+          "customTrue": "",
+          "customFalse": "",
+          "dataType": "indicator",
+          "formatting": "Indicator",
+          "indFormat": "true / false"
+        }
+      },
+      "items": [
+        {
+          "id": "DetailPanel",
+          "field type": "layout",
+          "css class": "blueprint-defaults",
+          "left": "10%",
+          "top": "40px",
+          "template": "css panel",
+          "header text": {
+            "fieldName": "dialogTitle",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "string",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dialogTitle]"
+          },
+          "header theme": "blueprint-light-blue-header",
+          "body theme": "blueprint-white-body",
+          "height": "375px",
+          "width": "80%",
+          "css class 2": "blueprint-panel",
+          "center horizontally": "true",
+          "max width": "800px"
+        },
+        {
+          "id": "empnumber_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Empnumber",
+          "left": "20px",
+          "top": "20px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "empnumber",
+            "designValue": "[empnumber]",
+            "refField": "empnumber EMPLOYEES",
+            "dataType": "reference",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": ""
+          },
+          "top": "15px",
+          "left": "35%",
+          "id": "empnumber",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "lastname_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Lastname",
+          "left": "20px",
+          "top": "50px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "lastname",
+            "designValue": "[lastname]",
+            "refField": "lastname EMPLOYEES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "45px",
+          "left": "35%",
+          "id": "lastname",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "firstname_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Firstname",
+          "left": "20px",
+          "top": "80px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "firstname",
+            "designValue": "[firstname]",
+            "refField": "firstname EMPLOYEES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "75px",
+          "left": "35%",
+          "id": "firstname",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "extension_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Extension",
+          "left": "20px",
+          "top": "110px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "extension",
+            "designValue": "[extension]",
+            "refField": "extension EMPLOYEES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "105px",
+          "left": "35%",
+          "id": "extension",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "email_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Email",
+          "left": "20px",
+          "top": "140px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "email",
+            "designValue": "[email]",
+            "refField": "email EMPLOYEES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "135px",
+          "left": "35%",
+          "id": "email",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "officecode_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Officecode",
+          "left": "20px",
+          "top": "170px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "officecode",
+            "designValue": "[officecode]",
+            "refField": "officecode EMPLOYEES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "165px",
+          "left": "35%",
+          "id": "officecode",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "reportsto_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Reportsto",
+          "left": "20px",
+          "top": "200px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "reportsto",
+            "designValue": "[reportsto]",
+            "refField": "reportsto EMPLOYEES",
+            "dataType": "reference",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": ""
+          },
+          "top": "195px",
+          "left": "35%",
+          "id": "reportsto",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "jobtitle_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Jobtitle",
+          "left": "20px",
+          "top": "230px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "jobtitle",
+            "designValue": "[jobtitle]",
+            "refField": "jobtitle EMPLOYEES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "225px",
+          "left": "35%",
+          "id": "jobtitle",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "SaveButton",
+          "field type": "graphic button",
+          "css class": "pui-solid-button-yes",
+          "value": "Save",
+          "left": "35%",
+          "top": "280px",
+          "width": "100px",
+          "icon position": "left",
+          "css class 2": "blueprint-defaults",
+          "icon": "material:check",
+          "height": "25px",
+          "onclick": {
+            "routine": "save button click",
+            "designValue": "save button click"
+          },
+          "shortcut key": "Enter",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "CancelButton",
+          "field type": "graphic button",
+          "css class": "pui-solid-button-no",
+          "value": "Cancel",
+          "left": "calc(35% + 120px)",
+          "top": "280px",
+          "width": "100px",
+          "icon position": "left",
+          "css class 2": "blueprint-defaults",
+          "icon": "material:clear",
+          "height": "25px",
+          "onclick": {
+            "routine": "cancel button click",
+            "designValue": "cancel button click"
+          },
+          "bypass validation": "true",
+          "layout": "DetailPanel",
+          "container": "1"
+        }
+      ]
+    }
+  ],
+  "keywords": [],
+  "long name aliases": true
+}

@@ -1,0 +1,188 @@
+
+svg.join {
+  width: 100%;
+  height: calc(100% - 3px);
+}
+
+.joininfobox {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  margin: 0px;
+  padding: 5px;
+  border: solid 1px black;
+  background-color: #ffffc6;
+  z-index: 100;
+  visibility: hidden;
+}
+
+.joinable {
+  position: absolute;
+  font-family: Sans-Serif;
+}
+
+.joinable * { box-sizing: border-box; }
+
+.joinable > .wrap > table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.joinable > .wrap {
+  max-height: 350px;
+  overflow: hidden auto;
+  border-bottom: 1px solid #ccc;
+}
+
+.joinable > .caption {
+  color: #666666;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: center;
+  background: beige;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 10px 10px 5px 10px;
+  border-style: solid solid none solid;
+  border-width: 1px;
+  border-color: #cccccc;
+  cursor: move;
+  user-select: none; /*prevent text selection while dragging.*/
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.joinable table td {
+  font-size: 11px;
+  border-width: 0px 1px 1px 1px;
+  border-style: none solid solid solid;
+  border-color: rgb(200, 200, 200);
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  cursor: pointer;
+  cursor: grab;
+  cursor: -moz-grab;    /*Old Mozilla*/
+  cursor: -webkit-grab; /*Chrome.*/
+  background-color: rgb(245, 245, 245);
+}
+
+.joinable table tr.joinParent td, .joinable table tr.joinChild td {
+  background-color: rgb(225, 225, 225);
+  font-weight: bold;
+}
+
+.joinable table tr:last-of-type td {
+  border-bottom-style: none;
+}
+
+.joinable > .col-headings {
+  color: #666666;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  border-style: none none solid solid;
+  border-width: 1px;
+  border-color: #ccc;
+  background-color: #d0dafd;
+}
+
+.joinable > .col-headings > div {
+  vertical-align: middle;
+  padding: 3px 6px 3px 6px;
+  border-right: solid 1px #ccc;
+}
+
+svg.join .joinlink {
+  cursor: pointer;
+}
+
+#joinEditor {
+  font-family: Arial;
+  width: 395px;
+  padding: 0px;
+  height: 222px;
+  overflow: hidden;
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  border: 2px solid #336699;
+  border-radius: 4px;
+  box-shadow: 3px 3px 6px rgba(50, 66, 64, 0.67);
+  white-space: normal;
+}
+
+#joinEditor .dialog-header {
+  font-size: 11px;
+  background-color: #6699cc;
+  padding: 4px 3px 3px 3px;
+  cursor: move;
+  font-weight: bold;
+  color: #ffffff;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  background-color: #dddddd;
+  color: #333333;
+  height: 25px;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+#joinEditor .dialog-header > .close-btn {
+  position: absolute;
+  top: 3px;
+  right: 10px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  background-image: url(/profoundui/proddata/images/buttons/close/x1.png);
+  background-repeat: no-repeat;
+  background-position-x: 1px;
+  background-color: inherit;
+  border: none;
+}
+#joinEditor .dialog-header > .close-btn:hover {
+  background-image: url(/profoundui/proddata/images/buttons/close/x1_hover.png);
+}
+
+#joinEditor .dialog-body {
+  overflow: auto;
+  height: 182px;
+  width: 375px;
+  padding: 10px;
+  background-color: #eeeeee;
+  position: absolute;
+  left: 0px;
+  top: 20px;
+  font-size: 12px;
+}
+
+#joinEditor .dialog-body p {
+  margin-bottom: 10px;
+}
+#joinEditor .dialog-body > .btnwrap {
+  position: absolute;
+  bottom: 10px;
+  width: calc(100% - 20px);
+  display: flex;
+  justify-content: flex-end;
+}
+#joinEditor .dialog-body input[type="button"] {
+  width: 75px;
+  margin-right: 2px;
+}
+
+tr.drag_origin {
+  border: dashed 2px gray;
+}
+
+tr.drop_valid {
+  border: dashed 2px green;
+}

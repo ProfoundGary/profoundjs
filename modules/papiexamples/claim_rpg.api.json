@@ -1,0 +1,120 @@
+{
+  "apiFileID": "17b4e225-c62d-43c6-8291-c61ec3f085d5",
+  "routes": [
+    {
+      "apiRouteID": "b827e835-397e-48ea-b283-c164d5b98c9e",
+      "name": "Get claim",
+      "enableCors": true,
+      "summary": "Get claim",
+      "method": "get",
+      "path": "/claims/:claimid",
+      "inputs": [
+        {
+          "name": "claimid",
+          "type": "string",
+          "from": "path",
+          "required": true,
+          "example": "1827"
+        }
+      ],
+      "description": "Get a single claim based on parameters",
+      "outputdescription": "Returns basic information for a specific claim",
+      "outputs": [
+        {
+          "type": "string",
+          "name": "id"
+        },
+        {
+          "type": "date",
+          "name": "date"
+        },
+        {
+          "type": "string",
+          "name": "county"
+        },
+        {
+          "type": "string",
+          "name": "description"
+        }
+      ],
+      "subcategory": "",
+      "tag": "Claims",
+      "steps": [
+        {
+          "text": "Call IBM i program",
+          "JF": true,
+          "answers": {
+            "plugin": "IBM i:call-ibmi-program",
+            "program-name": "demolib/RTNCLAIMR2",
+            "parameter": {
+              "data type": "packed decimal",
+              "length": "9",
+              "decimals": "0",
+              "argument value": "input[\"claimid\"]"
+            },
+            "parameter_2": {
+              "data type": "char",
+              "length": "25",
+              "capture output": "Into API output property",
+              "API output property": "output[\"description\"]"
+            },
+            "parameter_3": {
+              "data type": "char",
+              "length": "10",
+              "capture output": "Into API output property",
+              "API output property": "output[\"date\"]"
+            },
+            "parameter_4": {
+              "data type": "char",
+              "length": "20",
+              "capture output": "Into API output property",
+              "API output property": "output[\"county\"]"
+            },
+            "parameter_5": {}
+          }
+        },
+        {
+          "text": "Set API output",
+          "Cz": true,
+          "answers": {
+            "plugin": "Program Data:set-api-output",
+            "api-output-values": {
+              "id": "input[\"claimid\"]",
+              "status[\"success\"]": "true",
+              "bob": "'was here'"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "apiRouteID": "91c55294-4da9-46fa-9365-b994330704ae",
+      "name": "Get List",
+      "enableCors": true,
+      "summary": "Get Claims IDs",
+      "method": "get",
+      "path": "/claims",
+      "inputs": [],
+      "steps": [
+        {
+          "text": "Get records",
+          "JF": true,
+          "answers": {
+            "plugin": "Database:get-records",
+            "tables": "CLAIMSP",
+            "columns": "cmnumber,cmdesc,cmdate,cmtime,cmunits,cminjured,cmhitrun,cmcomplete,cmactype,cmcounty,cmaddr2,cmaddr1,cmcity,cmstate,cmzip,cmeqest,cmothest,cmpropest,cmeqcost,cmothcost,cmpropcost,cmmotor,cmflattire,cmbrokenw,cmvandal,cmpedestr",
+            "criteria": "",
+            "add_order_by": true,
+            "order_by": "cmnumber",
+            "limit": "",
+            "skip": "",
+            "destination": "API output",
+            "api_output": "output[\"data\"]"
+          }
+        }
+      ],
+      "subcategory": "",
+      "tag": "Claims"
+    }
+  ]
+}

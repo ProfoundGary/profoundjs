@@ -1,0 +1,1163 @@
+{
+  "routes": [
+    {
+      "name": "NestedJSON",
+      "enableCors": true,
+      "inputs": [
+        {
+          "type": "object",
+          "name": "Primary",
+          "multipleValues": true,
+          "children": [
+            {
+              "type": "string",
+              "name": "SSN",
+              "example": "555667777",
+              "required": true
+            },
+            {
+              "type": "string",
+              "name": "FirstName",
+              "example": "Ronnie"
+            },
+            {
+              "type": "string",
+              "name": "LastName",
+              "example": "Smith"
+            },
+            {
+              "type": "object",
+              "name": "DEPENDENT",
+              "multipleValues": true,
+              "children": [
+                {
+                  "type": "string",
+                  "name": "Prim_SSN",
+                  "example": "555667777",
+                  "required": true
+                },
+                {
+                  "type": "string",
+                  "name": "Dep_SSN",
+                  "example": "111222333",
+                  "required": true
+                },
+                {
+                  "type": "string",
+                  "name": "FirstName",
+                  "example": "Connie"
+                }
+              ]
+            },
+            {
+              "type": "object",
+              "name": "BENEFICIARY",
+              "multipleValues": true,
+              "children": [
+                {
+                  "type": "string",
+                  "name": "Prim_SSN",
+                  "example": "555667777",
+                  "required": true
+                },
+                {
+                  "type": "string",
+                  "name": "Ben_SSN",
+                  "example": "777779999",
+                  "required": true
+                },
+                {
+                  "type": "integer",
+                  "name": "Age",
+                  "example": "56"
+                },
+                {
+                  "type": "string",
+                  "name": "LastName",
+                  "example": "Smith"
+                },
+                {
+                  "type": "string",
+                  "name": "FirstName",
+                  "example": "Carl"
+                }
+              ]
+            },
+            {
+              "type": "object",
+              "name": "PRODUCT",
+              "multipleValues": true,
+              "children": [
+                {
+                  "type": "string",
+                  "name": "Prim_SSN",
+                  "example": "555667777",
+                  "required": true
+                },
+                {
+                  "type": "string",
+                  "name": "PlanCode",
+                  "example": "ACPLAN1"
+                },
+                {
+                  "type": "object",
+                  "name": "QUESTIONS",
+                  "multipleValues": true,
+                  "children": [
+                    {
+                      "type": "string",
+                      "name": "Prim_SSN",
+                      "example": "555667777",
+                      "required": true
+                    },
+                    {
+                      "type": "string",
+                      "name": "PlanCode",
+                      "example": "AC10002",
+                      "required": true
+                    },
+                    {
+                      "type": "string",
+                      "name": "QuestionID",
+                      "example": "ACQ1.1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "from": "body"
+        }
+      ],
+      "summary": "process nested JSON data from POST",
+      "method": "post",
+      "outputs": [
+        {
+          "type": "boolean",
+          "name": "success"
+        },
+        {
+          "type": "integer",
+          "name": "affectedPrimaryRows"
+        },
+        {
+          "type": "object",
+          "name": "primary",
+          "children": []
+        },
+        {
+          "type": "object",
+          "name": "input",
+          "children": []
+        }
+      ],
+      "path": "/nestedjson",
+      "subcategory": "",
+      "category": "example",
+      "steps": [
+        {
+          "text": "Call Delete Endpoint",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "http://localhost:8381/run/PAPIExamples/wsapi/nestedjson/deleteall",
+            "method": "GET",
+            "headers": "",
+            "body": "",
+            "json": true,
+            "auth": "",
+            "capture_response": false
+          }
+        },
+        {
+          "text": "Process Primary list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:process-list",
+            "list": "input[\"Primary\"]",
+            "work_variable": "primary"
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Insert Primary",
+          "OP": true,
+          "answers": {
+            "plugin": "Database:insert-record",
+            "connection": "IBMi",
+            "table": "PRIMARY",
+            "record_source": "From a work variable",
+            "work_variable": "primary",
+            "results": "primaryResults"
+          }
+        },
+        {
+          "text": "Save Dependent",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "let dependentResults = pjs.query(\"insert into demolib.dependent set ?\", primary.DEPENDENT)"
+          }
+        },
+        {
+          "text": "Save Beneficiary",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "  pjs.query(\"insert into demolib.benefciary set ?\", primary.BENEFICIARY)"
+          }
+        },
+        {
+          "text": "Process Product list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:process-list",
+            "list": "primary.PRODUCT",
+            "work_variable": "product"
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Insert Product",
+          "OP": true,
+          "answers": {
+            "plugin": "Database:insert-record",
+            "connection": "IBMi",
+            "table": "PRODUCT",
+            "record_source": "From a work variable",
+            "work_variable": "product",
+            "results": "productResults"
+          }
+        },
+        {
+          "text": "Save Questions",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "pjs.query('insert into demolib.questions set ?',product.QUESTIONS)"
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Set API output",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:set-api-output",
+            "api-output-values": {
+              "success": "primaryResults[\"success\"]"
+            }
+          }
+        }
+      ],
+      "description": "The example loops through Primary inserting into the primary table on each pass and saving the dependents and beneficiaries by inserting  all dependents and beneficiaries with bulk inserts for each Primary. Also for each primary a second loop is performed for Product and Questions. This example requires that the incoming data contains the Primary SSN on each node.                              ",
+      "apiRouteID": "fa309d48-9120-4c96-a66e-5b2af0ed6bfe"
+    },
+    {
+      "name": "Delete All",
+      "enableCors": true,
+      "summary": "Deletes all records",
+      "method": "get",
+      "path": "/nestedjson/deleteall",
+      "inputs": [],
+      "category": "Mahattan Life",
+      "outputs": [
+        {
+          "type": "string",
+          "name": "result"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Delete Primary",
+          "OP": true,
+          "answers": {
+            "plugin": "Database:delete-records",
+            "connection": "IBMi",
+            "table": "PRIMARY",
+            "criteria": "ssn IS NOT NULL",
+            "results": "primaryResult"
+          }
+        },
+        {
+          "text": "Delete Dependent",
+          "OP": true,
+          "answers": {
+            "plugin": "Database:delete-records",
+            "connection": "",
+            "table": "DEPENDENT",
+            "criteria": "prim_ssn IS NOT NULL",
+            "results": "dependentResult"
+          }
+        },
+        {
+          "text": "Delete Beneficiary",
+          "OP": true,
+          "answers": {
+            "plugin": "Database:delete-records",
+            "connection": "",
+            "table": "BENEFCIARY",
+            "criteria": "prim_ssn IS NOT NULL",
+            "results": "beneficiaryResult"
+          }
+        },
+        {
+          "text": "Delete Product",
+          "OP": true,
+          "answers": {
+            "plugin": "Database:delete-records",
+            "connection": "",
+            "table": "PRODUCT",
+            "criteria": "prim_ssn IS NOT NULL",
+            "results": "productResult"
+          }
+        },
+        {
+          "text": "Delete Questions",
+          "OP": true,
+          "answers": {
+            "plugin": "Database:delete-records",
+            "connection": "",
+            "table": "QUESTIONS",
+            "criteria": "prim_ssn IS NOT NULL",
+            "results": "questionResult"
+          }
+        },
+        {
+          "text": "console log",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('all records deleted')"
+          }
+        },
+        {
+          "text": "Set API output",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:set-api-output",
+            "api-output-values": {
+              "result": "\"Success\""
+            }
+          }
+        }
+      ],
+      "description": "Deletes all records to simplify testing with a test database.",
+      "apiRouteID": "93068b1c-bbf8-471c-8fcd-f72b111199ce"
+    },
+    {
+      "name": "No Primary In Children",
+      "enableCors": true,
+      "inputs": [
+        {
+          "type": "object",
+          "name": "Primary",
+          "multipleValues": true,
+          "children": [
+            {
+              "type": "string",
+              "name": "SSN",
+              "example": "555667777",
+              "required": true
+            },
+            {
+              "type": "string",
+              "name": "FirstName",
+              "example": "Ronnie"
+            },
+            {
+              "type": "string",
+              "name": "LastName",
+              "example": "Smith"
+            },
+            {
+              "type": "object",
+              "name": "DEPENDENT",
+              "multipleValues": true,
+              "children": [
+                {
+                  "type": "string",
+                  "name": "Dep_SSN",
+                  "example": "111222333",
+                  "required": true
+                },
+                {
+                  "type": "string",
+                  "name": "FirstName",
+                  "example": "Connie"
+                }
+              ]
+            },
+            {
+              "type": "object",
+              "name": "BENEFICIARY",
+              "multipleValues": true,
+              "children": [
+                {
+                  "type": "string",
+                  "name": "Ben_SSN",
+                  "example": "777779999",
+                  "required": true
+                },
+                {
+                  "type": "integer",
+                  "name": "Age",
+                  "example": "56"
+                },
+                {
+                  "type": "string",
+                  "name": "LastName",
+                  "example": "Smith"
+                },
+                {
+                  "type": "string",
+                  "name": "FirstName",
+                  "example": "Carl"
+                }
+              ]
+            },
+            {
+              "type": "object",
+              "name": "PRODUCT",
+              "multipleValues": true,
+              "children": [
+                {
+                  "type": "string",
+                  "name": "PlanCode",
+                  "example": "ACPLAN1"
+                },
+                {
+                  "type": "object",
+                  "name": "QUESTIONS",
+                  "multipleValues": true,
+                  "children": [
+                    {
+                      "type": "string",
+                      "name": "PlanCode",
+                      "example": "AC10002",
+                      "required": true
+                    },
+                    {
+                      "type": "string",
+                      "name": "QuestionID",
+                      "example": "ACQ1.1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "from": "body"
+        }
+      ],
+      "summary": "nested data without primary key in children nodes",
+      "method": "post",
+      "outputs": [
+        {
+          "type": "boolean",
+          "name": "success"
+        },
+        {
+          "type": "object",
+          "name": "input"
+        }
+      ],
+      "path": "/nestedjsonNoPrimSSN",
+      "subcategory": "",
+      "category": "example",
+      "description": "This is an example of processing complicated JSON data with nested detail arrays where the primary key is not provided in the detail nodes.\nThe Update List steps add the Prim_SSN to the data in the lists so that it can be inserted.",
+      "steps": [
+        {
+          "text": "Call Delete Endpoint",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "http://localhost:8381/run/PAPIExamples/wsapi/nestedjson/deleteall",
+            "method": "GET",
+            "headers": "",
+            "body": "",
+            "json": true,
+            "auth": "",
+            "capture_response": false
+          }
+        },
+        {
+          "text": "Process Primary list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:process-list",
+            "list": "input[\"Primary\"]",
+            "work_variable": "primary"
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Insert Primary",
+          "OP": true,
+          "answers": {
+            "plugin": "Database:insert-record",
+            "connection": "IBMi",
+            "table": "PRIMARY",
+            "record_source": "From a work variable",
+            "work_variable": "primary",
+            "results": "primaryResults"
+          }
+        },
+        {
+          "text": "Update Dependent List",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:update-list",
+            "list": "primary.DEPENDENT",
+            "property-values": {
+              "Prim_SSN": "primary.SSN"
+            },
+            "property": ""
+          }
+        },
+        {
+          "text": "Save Dependent",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "pjs.query(\"insert into demolib.dependent set ?\", primary.DEPENDENT)"
+          }
+        },
+        {
+          "text": "Update Beneficiary List",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:update-list",
+            "list": "primary.BENEFICIARY",
+            "property-values": {
+              "Prim_SSN": "primary.SSN"
+            },
+            "property": ""
+          }
+        },
+        {
+          "text": "Save Beneficiary",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "  pjs.query(\"insert into demolib.benefciary set ?\", primary.BENEFICIARY)"
+          }
+        },
+        {
+          "text": "Update records in a list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:update-list",
+            "list": "primary.PRODUCT",
+            "property-values": {
+              "Prim_SSN": "primary.SSN"
+            },
+            "property": ""
+          }
+        },
+        {
+          "text": "Process Product list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:process-list",
+            "list": "primary.PRODUCT",
+            "work_variable": "product"
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Insert Product",
+          "OP": true,
+          "answers": {
+            "plugin": "Database:insert-record",
+            "connection": "IBMi",
+            "table": "PRODUCT",
+            "record_source": "From a work variable",
+            "work_variable": "product",
+            "results": "productResults"
+          }
+        },
+        {
+          "text": "Update records in a list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:update-list",
+            "list": "product.QUESTIONS",
+            "property-values": {
+              "Prim_SSN": "primary.SSN",
+              "PlanCode": "product.PlanCode"
+            },
+            "property": ""
+          }
+        },
+        {
+          "text": "Save Questions",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "pjs.query('insert into demolib.questions set ?',product.QUESTIONS)"
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Set API output",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:set-api-output",
+            "api-output-values": {
+              "success": "primaryResults[\"success\"]",
+              "input": "input['Primary']"
+            }
+          }
+        }
+      ],
+      "apiRouteID": "f2fa0dbc-179c-41a9-8c87-7942637d89b4"
+    },
+    {
+      "name": "NestedJSON all mass inserts",
+      "enableCors": true,
+      "inputs": [
+        {
+          "type": "object",
+          "name": "Primary",
+          "multipleValues": true,
+          "children": [
+            {
+              "type": "string",
+              "name": "SSN",
+              "example": "555667777",
+              "required": true
+            },
+            {
+              "type": "string",
+              "name": "FirstName",
+              "example": "Ronnie"
+            },
+            {
+              "type": "string",
+              "name": "LastName",
+              "example": "Smith"
+            },
+            {
+              "type": "object",
+              "name": "DEPENDENT",
+              "multipleValues": true,
+              "children": [
+                {
+                  "type": "string",
+                  "name": "Prim_SSN",
+                  "example": "555667777",
+                  "required": true
+                },
+                {
+                  "type": "string",
+                  "name": "Dep_SSN",
+                  "example": "111222333",
+                  "required": true
+                },
+                {
+                  "type": "string",
+                  "name": "FirstName",
+                  "example": "Connie"
+                }
+              ]
+            },
+            {
+              "type": "object",
+              "name": "BENEFICIARY",
+              "multipleValues": true,
+              "children": [
+                {
+                  "type": "string",
+                  "name": "Prim_SSN",
+                  "example": "555667777",
+                  "required": true
+                },
+                {
+                  "type": "string",
+                  "name": "Ben_SSN",
+                  "example": "777779999",
+                  "required": true
+                },
+                {
+                  "type": "integer",
+                  "name": "Age",
+                  "example": "56"
+                },
+                {
+                  "type": "string",
+                  "name": "LastName",
+                  "example": "Smith"
+                },
+                {
+                  "type": "string",
+                  "name": "FirstName",
+                  "example": "Carl"
+                }
+              ]
+            },
+            {
+              "type": "object",
+              "name": "PRODUCT",
+              "multipleValues": true,
+              "children": [
+                {
+                  "type": "string",
+                  "name": "Prim_SSN",
+                  "example": "555667777",
+                  "required": true
+                },
+                {
+                  "type": "string",
+                  "name": "PlanCode",
+                  "example": "ACPLAN1"
+                },
+                {
+                  "type": "object",
+                  "name": "QUESTIONS",
+                  "multipleValues": true,
+                  "children": [
+                    {
+                      "type": "string",
+                      "name": "Prim_SSN",
+                      "example": "555667777",
+                      "required": true
+                    },
+                    {
+                      "type": "string",
+                      "name": "PlanCode",
+                      "example": "AC10002",
+                      "required": true
+                    },
+                    {
+                      "type": "string",
+                      "name": "QuestionID",
+                      "example": "ACQ1.1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "from": "body"
+        }
+      ],
+      "summary": "example of output ",
+      "method": "post",
+      "outputs": [
+        {
+          "type": "boolean",
+          "name": "success"
+        },
+        {
+          "type": "integer",
+          "name": "primaryCount"
+        },
+        {
+          "type": "integer",
+          "name": "dependentCount"
+        },
+        {
+          "type": "integer",
+          "name": "beneficiaryCount"
+        },
+        {
+          "type": "integer",
+          "name": "productCount"
+        },
+        {
+          "type": "integer",
+          "name": "questionCount"
+        }
+      ],
+      "path": "/nestedjsonmassinserts",
+      "subcategory": "",
+      "category": "example",
+      "steps": [
+        {
+          "text": "Call Delete Endpoint",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "http://localhost:8381/run/PAPIExamples/wsapi/nestedjson/deleteall",
+            "method": "GET",
+            "headers": "",
+            "body": "",
+            "json": true,
+            "auth": "",
+            "capture_response": false
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "let primaries = [];\r\nlet dependents = [];\r\nlet beneficiaries = [];\r\nlet products = [];\r\nlet questions = [];"
+          }
+        },
+        {
+          "text": "Process Primary list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:process-list",
+            "list": "input[\"Primary\"]",
+            "work_variable": "primary"
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Custom Node.js",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "primaries.push({SSN:primary.SSN,FirstName:primary.FirstName,LastName:primary.LastName});\r\ndependents.push(...primary.DEPENDENT);\r\nbeneficiaries.push(...primary.BENEFICIARY);\r\n"
+          }
+        },
+        {
+          "text": "Process Product list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:process-list",
+            "list": "primary.PRODUCT",
+            "work_variable": "product"
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Custom Node.js",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "products.push({Prim_SSN:product.Prim_SSN,PlanCode:product.PlanCode});\r\nquestions.push(...product.QUESTIONS);"
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Custom Node.js",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "pjs.query(\"insert into demolib.primary set ?\", primaries);\r\npjs.query(\"insert into demolib.dependent set ?\", dependents);\r\npjs.query(\"insert into demolib.benefciary set ?\", beneficiaries);\r\npjs.query(\"insert into demolib.product set ?\", products);\r\npjs.query(\"insert into demolib.questions set ?\", questions);"
+          }
+        },
+        {
+          "text": "Set API output",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:set-api-output",
+            "api-output-values": {
+              "success": "true",
+              "primaryCount": "primaries.length",
+              "dependentCount": "dependents.length",
+              "beneficiaryCount": "beneficiaries.length",
+              "productCount": "products.length",
+              "questionCount": "questions.length"
+            }
+          }
+        }
+      ],
+      "description": "This example builds arrays of all of the data to be inserted and then inserts all of the data with a few insert statements. Node is very efficient at working with lists in this manner but performing single SQL inserts in a loop can be inefficient. This approach avoids doing repeated inserts by getting all of the data together first.",
+      "apiRouteID": "d12653dc-6cd8-40ea-b633-ac51588d1e87"
+    },
+    {
+      "name": "NestedJSON no primary all mass inserts",
+      "enableCors": true,
+      "inputs": [
+        {
+          "type": "object",
+          "name": "Primary",
+          "multipleValues": true,
+          "children": [
+            {
+              "type": "string",
+              "name": "SSN",
+              "example": "555667777",
+              "required": true
+            },
+            {
+              "type": "string",
+              "name": "FirstName",
+              "example": "Ronnie"
+            },
+            {
+              "type": "string",
+              "name": "LastName",
+              "example": "Smith"
+            },
+            {
+              "type": "object",
+              "name": "DEPENDENT",
+              "multipleValues": true,
+              "children": [
+                {
+                  "type": "string",
+                  "name": "Dep_SSN",
+                  "example": "111222333",
+                  "required": true
+                },
+                {
+                  "type": "string",
+                  "name": "FirstName",
+                  "example": "Connie"
+                }
+              ]
+            },
+            {
+              "type": "object",
+              "name": "BENEFICIARY",
+              "multipleValues": true,
+              "children": [
+                {
+                  "type": "string",
+                  "name": "Ben_SSN",
+                  "example": "777779999",
+                  "required": true
+                },
+                {
+                  "type": "integer",
+                  "name": "Age",
+                  "example": "56"
+                },
+                {
+                  "type": "string",
+                  "name": "LastName",
+                  "example": "Smith"
+                },
+                {
+                  "type": "string",
+                  "name": "FirstName",
+                  "example": "Carl"
+                }
+              ]
+            },
+            {
+              "type": "object",
+              "name": "PRODUCT",
+              "multipleValues": true,
+              "children": [
+                {
+                  "type": "string",
+                  "name": "PlanCode",
+                  "example": "ACPLAN1"
+                },
+                {
+                  "type": "object",
+                  "name": "QUESTIONS",
+                  "multipleValues": true,
+                  "children": [
+                    {
+                      "type": "string",
+                      "name": "PlanCode",
+                      "example": "AC10002",
+                      "required": true
+                    },
+                    {
+                      "type": "string",
+                      "name": "QuestionID",
+                      "example": "ACQ1.1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "from": "body"
+        }
+      ],
+      "summary": "example of output ",
+      "method": "post",
+      "outputs": [
+        {
+          "type": "boolean",
+          "name": "success"
+        },
+        {
+          "type": "integer",
+          "name": "primaryCount"
+        },
+        {
+          "type": "integer",
+          "name": "dependentCount"
+        },
+        {
+          "type": "integer",
+          "name": "beneficiaryCount"
+        },
+        {
+          "type": "integer",
+          "name": "productCount"
+        },
+        {
+          "type": "integer",
+          "name": "questionCount"
+        }
+      ],
+      "path": "/nestedjsonnoprimarymassinserts",
+      "subcategory": "",
+      "category": "example",
+      "description": "Like \"NestedJSON all mass inserts\", this example builds arrays of the incoming data while looping and then performs a single insert for each table.\nThis example does not require the Prim_SSN be included in the child nodes and uses the Update List plugin to add the Prim_SSN to the children records in the other arrays. \nBecause we are using one array for each table it is necessary to add a condition to the Update List steps to only add the Prim_SSN if it doesn't exist in order to prevent overwriting the previous entries.",
+      "steps": [
+        {
+          "text": "Call Delete Endpoint",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "http://localhost:8381/run/PAPIExamples/wsapi/nestedjson/deleteall",
+            "method": "GET",
+            "headers": "",
+            "body": "",
+            "json": true,
+            "auth": "",
+            "capture_response": false
+          }
+        },
+        {
+          "text": "Custom Node.js - define arrays",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "let primaries = [];\r\nlet dependents = [];\r\nlet beneficiaries = [];\r\nlet products = [];\r\nlet questions = [];"
+          }
+        },
+        {
+          "text": "Process Primary list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:process-list",
+            "list": "input[\"Primary\"]",
+            "work_variable": "primary"
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Custom Node.js - load arrays",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "primaries.push({SSN:primary.SSN,FirstName:primary.FirstName,LastName:primary.LastName});\r\ndependents.push(...primary.DEPENDENT);\r\nbeneficiaries.push(...primary.BENEFICIARY);\r\n"
+          }
+        },
+        {
+          "text": "Update dependents list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:update-list",
+            "list": "dependents",
+            "property-values": {
+              "Prim_SSN": "primary.SSN"
+            },
+            "property": "Prim_SSN",
+            "type": "falsy",
+            "and-or": ""
+          }
+        },
+        {
+          "text": "Update beneficiaries list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:update-list",
+            "list": "beneficiaries",
+            "property-values": {
+              "Prim_SSN": "primary.SSN"
+            },
+            "property": "Prim_SSN",
+            "type": "falsy",
+            "and-or": ""
+          }
+        },
+        {
+          "text": "Process Product list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:process-list",
+            "list": "primary.PRODUCT",
+            "work_variable": "product"
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Custom Node.js - load arrays",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "products.push({Prim_SSN:product.Prim_SSN,PlanCode:product.PlanCode});\r\nquestions.push(...product.QUESTIONS);"
+          }
+        },
+        {
+          "text": "Update products list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:update-list",
+            "list": "products",
+            "property-values": {
+              "Prim_SSN": "primary.SSN"
+            },
+            "property": "Prim_SSN",
+            "type": "falsy",
+            "and-or": ""
+          }
+        },
+        {
+          "text": "Update questions list",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:update-list",
+            "list": "questions",
+            "property-values": {
+              "Prim_SSN": "primary.SSN"
+            },
+            "property": "Prim_SSN",
+            "type": "falsy",
+            "and-or": ""
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Custom Node.js - insert into db",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "pjs.query(\"insert into demolib.primary set ?\", primaries);\r\npjs.query(\"insert into demolib.dependent set ?\", dependents);\r\npjs.query(\"insert into demolib.benefciary set ?\", beneficiaries);\r\npjs.query(\"insert into demolib.product set ?\", products);\r\npjs.query(\"insert into demolib.questions set ?\", questions);"
+          }
+        },
+        {
+          "text": "Set API output",
+          "OP": true,
+          "answers": {
+            "plugin": "Program Data:set-api-output",
+            "api-output-values": {
+              "success": "true",
+              "primaryCount": "primaries.length",
+              "dependentCount": "dependents.length",
+              "beneficiaryCount": "beneficiaries.length",
+              "productCount": "products.length",
+              "questionCount": "questions.length"
+            }
+          }
+        }
+      ],
+      "apiRouteID": "594a8dab-c53f-49f2-a8fc-4465fca407a5"
+    }
+  ],
+  "apiFileID": "9c531e14-2101-43a5-94a3-fd711caeafef"
+}

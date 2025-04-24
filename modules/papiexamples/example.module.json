@@ -1,0 +1,136 @@
+{
+  "routines": [
+    {
+      "name": "GetCustomerInfo",
+      "summary": "Module to retrieve customer information",
+      "description": "Reusable module for accessing SQL Server",
+      "inputs": [
+        {
+          "type": "integer",
+          "ibmiLength": 10,
+          "name": "CustomerID",
+          "ibmiDecimals": 2
+        }
+      ],
+      "outputs": [
+        {
+          "type": "string",
+          "ibmiLength": 35,
+          "name": "name"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 45,
+          "name": "address"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 45,
+          "name": "city"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 2,
+          "name": "state"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 6,
+          "name": "zip"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Get customer data from MariaDB Server",
+          "answers": {
+            "plugin": "Database:get-record",
+            "connection": "aws_mariaDB",
+            "tables": "customer",
+            "columns": "name,addr1,city,state,zip",
+            "criteria": "id = ?",
+            "parameter": "input[\"CustomerID\"]",
+            "destination": "Work variable",
+            "work_variable": "CustomerData"
+          }
+        },
+        {
+          "text": "Return module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "name": "CustomerData[\"name\"]",
+              "address": "CustomerData[\"addr1\"]",
+              "city": "CustomerData[\"city\"]",
+              "state": "CustomerData[\"state\"]",
+              "zip": "CustomerData[\"zip\"]"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "GetCityInfo",
+      "inputs": [
+        {
+          "type": "string",
+          "ibmiLength": 10,
+          "name": "zip"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "string",
+          "ibmiLength": 25,
+          "name": "city"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 25,
+          "name": "state"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 25,
+          "name": "latitude"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 25,
+          "name": "longitude"
+        }
+      ],
+      "summary": "Module to retrieve location based on zip code",
+      "steps": [
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://api.zippopotam.us/us/${encodeURIComponent(input[\"zip\"])}",
+            "method": "GET",
+            "headers": "",
+            "body": "",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_as": "Value",
+            "specific_property": "",
+            "destination": "Work variable",
+            "work_variable": "ZipData"
+          }
+        },
+        {
+          "text": "Return module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "city": "ZipData.places[0][\"place name\"]",
+              "state": "ZipData.places[0].state",
+              "latitude": "ZipData.places[0].latitude",
+              "longitude": "ZipData.places[0].longitude"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

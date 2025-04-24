@@ -1,0 +1,4 @@
+{
+  "connectionName": "aws_mariaDB",
+  "schema": "apistats"
+}

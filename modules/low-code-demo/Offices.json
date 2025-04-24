@@ -1,0 +1,1110 @@
+{
+  "text": "",
+  "logic": {
+    "load records": {
+      "steps": [
+        {
+          "text": "Search criteria entered?",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "mainScreen[\"searchValue\"]",
+            "type": "truthy",
+            "and-or": ""
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Search records",
+          "answers": {
+            "plugin": "Database:get-records",
+            "connection": "",
+            "tables": "DEMOLIB.OFFICES",
+            "columns": "officecode,city,phone,address1",
+            "criteria": "officecode LIKE CONCAT(CONCAT('%', ?), '%') OR city LIKE CONCAT(CONCAT('%', ?), '%') OR phone LIKE CONCAT(CONCAT('%', ?), '%') OR address1 LIKE CONCAT(CONCAT('%', ?), '%') OR address2 LIKE CONCAT(CONCAT('%', ?), '%') OR state LIKE CONCAT(CONCAT('%', ?), '%') OR country LIKE CONCAT(CONCAT('%', ?), '%') OR postalcode LIKE CONCAT(CONCAT('%', ?), '%') OR territory LIKE CONCAT(CONCAT('%', ?), '%')",
+            "add_order_by": false,
+            "limit": "5000",
+            "destination": "Grid",
+            "grid": "grid",
+            "parameter": "mainScreen[\"searchValue\"]",
+            "parameter_2": "mainScreen[\"searchValue\"]",
+            "parameter_3": "mainScreen[\"searchValue\"]",
+            "parameter_4": "mainScreen[\"searchValue\"]",
+            "parameter_5": "mainScreen[\"searchValue\"]",
+            "parameter_6": "mainScreen[\"searchValue\"]",
+            "parameter_7": "mainScreen[\"searchValue\"]",
+            "parameter_8": "mainScreen[\"searchValue\"]",
+            "parameter_9": "mainScreen[\"searchValue\"]"
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Load all records",
+          "answers": {
+            "plugin": "Database:get-records",
+            "connection": "",
+            "tables": "DEMOLIB.OFFICES",
+            "columns": "officecode,city,phone,address1",
+            "criteria": "",
+            "add_order_by": false,
+            "limit": "5000",
+            "destination": "Grid",
+            "grid": "grid"
+          }
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    "add button click": {
+      "steps": [
+        {
+          "text": "Show detail screen for adding a record",
+          "answers": {
+            "plugin": "Navigation:show-screen",
+            "screen": "detailScreen",
+            "populate": true,
+            "source": "Specify each value individually",
+            "screen-values": {
+              "dialogTitle": "'Add Record'",
+              "editMode": "false",
+              "officecodeKey": "''",
+              "officecode": "''",
+              "city": "''",
+              "phone": "''",
+              "address1": "''",
+              "address2": "''",
+              "state": "''",
+              "country": "''",
+              "postalcode": "''",
+              "territory": "''"
+            }
+          }
+        }
+      ]
+    },
+    "clear search": {
+      "steps": [
+        {
+          "text": "Clear search value",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "mainScreen",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "searchValue": "''"
+            }
+          }
+        }
+      ]
+    },
+    "edit icon click": {
+      "steps": [
+        {
+          "text": "Retrieve record",
+          "answers": {
+            "plugin": "Database:get-record",
+            "connection": "",
+            "tables": "DEMOLIB.OFFICES",
+            "columns": "officecode,city,phone,address1,address2,state,country,postalcode,territory",
+            "criteria": "officecode = ?",
+            "destination": "Screen",
+            "screen": "detailScreen",
+            "parameter": "activeGridRecord[\"officecode\"]"
+          }
+        },
+        {
+          "text": "Show edit window",
+          "answers": {
+            "plugin": "Navigation:show-screen",
+            "screen": "detailScreen",
+            "populate": true,
+            "source": "Specify each value individually",
+            "screen-values": {
+              "dialogTitle": "'Edit Record'",
+              "editMode": "true",
+              "officecodeKey": "activeGridRecord[\"officecode\"]"
+            }
+          }
+        }
+      ]
+    },
+    "delete icon click": {
+      "steps": [
+        {
+          "text": "Ask to confirm",
+          "answers": {
+            "plugin": "Navigation:show-message-box",
+            "title": "Delete Record",
+            "message": "Are you sure?",
+            "icon": "question",
+            "button1": "Yes",
+            "button2": "No",
+            "button3": "",
+            "button4": "",
+            "button5": "",
+            "capture_response": true,
+            "destination": "Work variable",
+            "work_variable": "sure"
+          }
+        },
+        {
+          "text": "If sure",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "sure",
+            "type": "==",
+            "value": "'Yes'",
+            "and-or": ""
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Delete record",
+          "answers": {
+            "plugin": "Database:delete-records",
+            "connection": "",
+            "table": "DEMOLIB.OFFICES",
+            "criteria": "officecode = ?",
+            "parameter": "activeGridRecord[\"officecode\"]"
+          }
+        },
+        {
+          "text": "Any problems?",
+          "answers": {
+            "plugin": "Conditions:success",
+            "not": true
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Show message",
+          "answers": {
+            "plugin": "Navigation:show-message-box",
+            "title": "Error",
+            "message": "Record could not be deleted.\r\n<br/>\r\n<br/>\r\n${_error.message}",
+            "icon": "error",
+            "button1": "",
+            "button2": "",
+            "button3": "",
+            "button4": "",
+            "button5": "",
+            "capture_response": false
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    "save button click": {
+      "steps": [
+        {
+          "text": "Update/insert record",
+          "answers": {
+            "plugin": "Database:update-insert-record",
+            "connection": "",
+            "table": "DEMOLIB.OFFICES",
+            "criteria": "officecode = ?",
+            "record_source": "From a screen",
+            "screen": "detailScreen",
+            "parameter": "detailScreen[\"officecodeKey\"]"
+          }
+        },
+        {
+          "text": "Any problems?",
+          "answers": {
+            "plugin": "Conditions:success",
+            "not": true
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Show message",
+          "answers": {
+            "plugin": "Navigation:show-message-box",
+            "title": "Error",
+            "message": "Record could not be saved.\r\n<br/>\r\n<br/>\r\n${_error.message}",
+            "icon": "error",
+            "button1": "",
+            "button2": "",
+            "button3": "",
+            "button4": "",
+            "button5": "",
+            "capture_response": false
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Go back",
+          "answers": {
+            "plugin": "Navigation:show-screen",
+            "screen": "mainScreen",
+            "populate": false
+          }
+        }
+      ]
+    },
+    "cancel button click": {
+      "steps": [
+        {
+          "text": "Go back",
+          "answers": {
+            "plugin": "Navigation:show-screen",
+            "screen": "mainScreen",
+            "populate": false
+          }
+        }
+      ]
+    },
+    "routine 1": {
+      "steps": [
+        {
+          "text": "Call another Rich Display",
+          "OP": true,
+          "answers": {
+            "plugin": "Navigation:call-rich-display",
+            "rich-display-name": "Employees.json",
+            "transfer-control": false,
+            "argument": "activeGridRecord[\"officecode\"]"
+          }
+        }
+      ]
+    },
+    "routine 2": {
+      "steps": [
+        {
+          "text": "Consume REST service",
+          "OP": true,
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://api.openweathermap.org/data/2.5/weather?units=imperial&appid=5a91aab869e6a728330050260c99e999&q=${encodeURIComponent(activeGridRecord[\"city\"])}",
+            "method": "GET",
+            "headers": "",
+            "body": "",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_as": "Value",
+            "specific_property": "main",
+            "destination": "Work variable",
+            "work_variable": "weatherResult"
+          }
+        },
+        {
+          "text": "Show message box",
+          "OP": true,
+          "answers": {
+            "plugin": "Navigation:show-message-box",
+            "title": "Weather for ${activeGridRecord[\"city\"]}",
+            "message": "<b>Temperature</b> ${weatherResult.temp}<br/>\r\n<b>Feels Like</b> ${weatherResult.feels_like}\r\n",
+            "icon": "",
+            "button1": "",
+            "button2": "",
+            "button3": "",
+            "button4": "",
+            "button5": "",
+            "capture_response": false
+          }
+        }
+      ]
+    },
+    "routine 3": {
+      "steps": [
+        {
+          "text": "Exit",
+          "OP": true,
+          "answers": {
+            "plugin": "Navigation:exit-program"
+          }
+        }
+      ]
+    }
+  },
+  "formats": [
+    {
+      "screen": {
+        "record format name": "mainScreen",
+        "initial routine": {
+          "routine": "load records",
+          "designValue": "load records"
+        },
+        "description": "List or Search Records"
+      },
+      "items": [
+        {
+          "id": "CenteringLayout",
+          "field type": "layout",
+          "left": "calc(50% - 596px)",
+          "top": "20px",
+          "template": "simple container",
+          "height": "510px",
+          "width": "1192px",
+          "center horizontally": "true"
+        },
+        {
+          "id": "GraphicButton1",
+          "field type": "graphic button",
+          "css class": "pui-solid-button-no",
+          "left": "1140px",
+          "top": "20px",
+          "width": "30px",
+          "icon position": "left",
+          "css class 2": "blueprint-defaults",
+          "icon": "material:clear",
+          "height": "25px",
+          "onclick": {
+            "routine": "routine 3",
+            "designValue": "routine 3"
+          }
+        },
+        {
+          "id": "Icon3",
+          "field type": "icon",
+          "left": "-125px",
+          "top": "660px",
+          "icon": "fontAwesome-solid:cloud-sun"
+        },
+        {
+          "id": "SearchBox",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "left": "30px",
+          "top": "25px",
+          "width": "345px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "searchValue",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "string",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[searchValue]"
+          },
+          "layout": "CenteringLayout",
+          "container": "1"
+        },
+        {
+          "id": "SearchButton",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Search",
+          "top": "25px",
+          "width": "100px",
+          "icon position": "left",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "height": "25px",
+          "icon": "material:search",
+          "left": "390px",
+          "response": {
+            "fieldName": "searchButton",
+            "customTrue": "",
+            "customFalse": "",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "layout": "CenteringLayout",
+          "container": "1"
+        },
+        {
+          "id": "AddButton",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Add",
+          "left": "30px",
+          "top": "80px",
+          "width": "80px",
+          "icon position": "left",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "height": "25px",
+          "onclick": {
+            "routine": "add button click",
+            "designValue": "add button click"
+          },
+          "icon": "material:playlist_add",
+          "layout": "CenteringLayout",
+          "container": "1"
+        },
+        {
+          "id": "Grid",
+          "field type": "grid",
+          "css class": "blueprint-grid",
+          "left": "25px",
+          "top": "75px",
+          "number of rows": "10",
+          "number of columns": "5",
+          "column widths": "121,112,312,312,312",
+          "column headings": ",Officecode,City,Phone,Address1",
+          "header height": "35",
+          "row height": "39",
+          "height": "386px",
+          "width": "1170px",
+          "css class 2": "blueprint-defaults",
+          "visibility": "visible",
+          "border color": "transparent",
+          "record format name": "grid",
+          "xlsx export": "true",
+          "position at top": "true",
+          "filter option": "true",
+          "sortable columns": "true",
+          "hide columns option": "true",
+          "description": "Grid of Records",
+          "subfile record number": {
+            "fieldName": "topRecordNumber",
+            "dataLength": "5",
+            "decPos": "0",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": ""
+          },
+          "subfile return rrn": {
+            "fieldName": "topRecordNumber",
+            "dataLength": "5",
+            "decPos": "0",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": ""
+          },
+          "export with headings": "true",
+          "layout": "CenteringLayout",
+          "container": "1"
+        },
+        {
+          "id": "ClearIcon",
+          "field type": "icon",
+          "icon": "material:clear",
+          "left": "350px",
+          "top": "25px",
+          "z index": "22",
+          "cursor": "pointer",
+          "onclick": {
+            "routine": "clear search",
+            "designValue": "clear search"
+          },
+          "height": "25px",
+          "layout": "CenteringLayout",
+          "container": "1"
+        },
+        {
+          "id": "EditIcon",
+          "field type": "icon",
+          "left": "15px",
+          "top": "5px",
+          "icon": "fontAwesome-solid:edit",
+          "color": "#0099CC",
+          "cursor": "pointer",
+          "tool tip": "Edit record...",
+          "onclick": {
+            "routine": "edit icon click",
+            "designValue": "edit icon click"
+          },
+          "user defined data": {
+            "fieldName": "officecode",
+            "refField": "officecode OFFICES",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "reference",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "grid": "Grid",
+          "column": "0"
+        },
+        {
+          "id": "DeleteIcon",
+          "field type": "icon",
+          "left": "50px",
+          "top": "5px",
+          "icon": "material:delete_forever",
+          "color": "#FF0000",
+          "cursor": "pointer",
+          "tool tip": "Delete record...",
+          "onclick": {
+            "routine": "delete icon click",
+            "designValue": "delete icon click"
+          },
+          "user defined data": {
+            "fieldName": "officecode",
+            "refField": "officecode OFFICES",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "reference",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "grid": "Grid",
+          "column": "0"
+        },
+        {
+          "field type": "output field",
+          "css class": "outputField",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "value": {
+            "fieldName": "officecode",
+            "designValue": "[officecode]",
+            "refField": "officecode OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "10px",
+          "left": "10px",
+          "id": "officecode",
+          "grid": "Grid",
+          "column": "1"
+        },
+        {
+          "field type": "output field",
+          "css class": "outputField",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "value": {
+            "fieldName": "city",
+            "designValue": "[city]",
+            "refField": "city OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "10px",
+          "left": "10px",
+          "id": "city",
+          "grid": "Grid",
+          "column": "2"
+        },
+        {
+          "field type": "output field",
+          "css class": "outputField",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "value": {
+            "fieldName": "phone",
+            "designValue": "[phone]",
+            "refField": "phone OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "10px",
+          "left": "10px",
+          "id": "phone",
+          "grid": "Grid",
+          "column": "3"
+        },
+        {
+          "field type": "output field",
+          "css class": "outputField",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "value": {
+            "fieldName": "address1",
+            "designValue": "[address1]",
+            "refField": "address1 OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "10px",
+          "left": "10px",
+          "id": "address1",
+          "grid": "Grid",
+          "column": "4"
+        },
+        {
+          "id": "Icon1",
+          "field type": "icon",
+          "left": "85px",
+          "top": "5px",
+          "icon": "material:face",
+          "onclick": {
+            "routine": "routine 1",
+            "designValue": "routine 1"
+          },
+          "grid": "Grid",
+          "column": "0"
+        },
+        {
+          "id": "Icon2",
+          "field type": "icon",
+          "left": "275px",
+          "top": "5px",
+          "icon": "fontAwesome-solid:cloud-sun",
+          "onclick": {
+            "routine": "routine 2",
+            "designValue": "routine 2"
+          },
+          "grid": "Grid",
+          "column": "2"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "detailScreen",
+        "animated screen": "new",
+        "animation": "slide-down",
+        "overlay screens": "true",
+        "description": "Add / Edit Records",
+        "user defined data": {
+          "fieldName": "officecodeKey",
+          "refField": "officecode OFFICES",
+          "trimLeading": "false",
+          "trimTrailing": "true",
+          "blankFill": "false",
+          "rjZeroFill": "false",
+          "dataType": "reference",
+          "formatting": "Text",
+          "textTransform": "none"
+        },
+        "user defined data 2": {
+          "fieldName": "editMode",
+          "customTrue": "",
+          "customFalse": "",
+          "dataType": "indicator",
+          "formatting": "Indicator",
+          "indFormat": "true / false"
+        }
+      },
+      "items": [
+        {
+          "id": "DetailPanel",
+          "field type": "layout",
+          "css class": "blueprint-defaults",
+          "left": "10%",
+          "top": "40px",
+          "template": "css panel",
+          "header text": {
+            "fieldName": "dialogTitle",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "string",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dialogTitle]"
+          },
+          "header theme": "blueprint-light-blue-header",
+          "body theme": "blueprint-white-body",
+          "height": "405px",
+          "width": "80%",
+          "css class 2": "blueprint-panel",
+          "center horizontally": "true",
+          "max width": "800px"
+        },
+        {
+          "id": "officecode_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Officecode",
+          "left": "20px",
+          "top": "20px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "officecode",
+            "designValue": "[officecode]",
+            "refField": "officecode OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "15px",
+          "left": "35%",
+          "id": "officecode",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "city_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "City",
+          "left": "20px",
+          "top": "50px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "city",
+            "designValue": "[city]",
+            "refField": "city OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "45px",
+          "left": "35%",
+          "id": "city",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "phone_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Phone",
+          "left": "20px",
+          "top": "80px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "phone",
+            "designValue": "[phone]",
+            "refField": "phone OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "75px",
+          "left": "35%",
+          "id": "phone",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "address1_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Address1",
+          "left": "20px",
+          "top": "110px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "address1",
+            "designValue": "[address1]",
+            "refField": "address1 OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "105px",
+          "left": "35%",
+          "id": "address1",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "address2_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Address2",
+          "left": "20px",
+          "top": "140px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "address2",
+            "designValue": "[address2]",
+            "refField": "address2 OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "135px",
+          "left": "35%",
+          "id": "address2",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "state_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "State",
+          "left": "20px",
+          "top": "170px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "state",
+            "designValue": "[state]",
+            "refField": "state OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "165px",
+          "left": "35%",
+          "id": "state",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "country_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Country",
+          "left": "20px",
+          "top": "200px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "country",
+            "designValue": "[country]",
+            "refField": "country OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "195px",
+          "left": "35%",
+          "id": "country",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "postalcode_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Postalcode",
+          "left": "20px",
+          "top": "230px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "postalcode",
+            "designValue": "[postalcode]",
+            "refField": "postalcode OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "225px",
+          "left": "35%",
+          "id": "postalcode",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "territory_label",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Territory",
+          "left": "20px",
+          "top": "260px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "field type": "textbox",
+          "height": "25px",
+          "width": "60%",
+          "css class": "blueprint-defaults",
+          "css class 2": "blueprint-textbox",
+          "value": {
+            "fieldName": "territory",
+            "designValue": "[territory]",
+            "refField": "territory OFFICES",
+            "dataType": "reference",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "formatting": "Text",
+            "textTransform": "none"
+          },
+          "top": "255px",
+          "left": "35%",
+          "id": "territory",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "SaveButton",
+          "field type": "graphic button",
+          "css class": "pui-solid-button-yes",
+          "value": "Save",
+          "left": "35%",
+          "top": "310px",
+          "width": "100px",
+          "icon position": "left",
+          "css class 2": "blueprint-defaults",
+          "icon": "material:check",
+          "height": "25px",
+          "onclick": {
+            "routine": "save button click",
+            "designValue": "save button click"
+          },
+          "shortcut key": "Enter",
+          "layout": "DetailPanel",
+          "container": "1"
+        },
+        {
+          "id": "CancelButton",
+          "field type": "graphic button",
+          "css class": "pui-solid-button-no",
+          "value": "Cancel",
+          "left": "calc(35% + 120px)",
+          "top": "310px",
+          "width": "100px",
+          "icon position": "left",
+          "css class 2": "blueprint-defaults",
+          "icon": "material:clear",
+          "height": "25px",
+          "onclick": {
+            "routine": "cancel button click",
+            "designValue": "cancel button click"
+          },
+          "bypass validation": "true",
+          "layout": "DetailPanel",
+          "container": "1"
+        }
+      ]
+    }
+  ],
+  "keywords": [],
+  "long name aliases": true
+}

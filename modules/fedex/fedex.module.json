@@ -1,0 +1,2187 @@
+{
+  "routines": [
+    {
+      "name": "getToken",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "string",
+          "name": "token"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Get record",
+          "answers": {
+            "plugin": "Database:get-record",
+            "connection": "aws_mariaDB",
+            "tables": "apicredentials",
+            "columns": "clientId,secretKey",
+            "criteria": "api = ?",
+            "parameter": "'fedex'",
+            "destination": "Work variable",
+            "work_variable": "apiCredentials"
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://apis-sandbox.fedex.com/oauth/token",
+            "method": "POST",
+            "headers": "{\"Content-Type\":\"application/x-www-form-urlencoded\"}",
+            "body": "\"grant_type=client_credentials&client_id=\"+apiCredentials[\"clientId\"]+\"&client_secret=\"+apiCredentials[\"secretKey\"]",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": false,
+            "capture_as": "Value",
+            "specific_property": "access_token",
+            "destination": "Module output",
+            "module_output": "output[\"token\"]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "track",
+      "summary": "track by tracking numbers",
+      "inputs": [
+        {
+          "type": "bigint",
+          "name": "trackingNumber",
+          "multipleValues": false,
+          "ibmiDim": 5,
+          "example": ""
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 100,
+              "name": "error"
+            },
+            {
+              "type": "object",
+              "ibmiLength": 10,
+              "name": "latestStatusDetail",
+              "children": [
+                {
+                  "type": "string",
+                  "ibmiLength": 4,
+                  "name": "code"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 20,
+                  "name": "description"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 50,
+                  "name": "city"
+                }
+              ]
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "lastActivity"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 25,
+              "name": "lastActivityTimestamp"
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null"
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "getToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            }
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://apis-sandbox.fedex.com/track/v1/trackingnumbers",
+            "method": "POST",
+            "headers": "{\"Authorization\":\"Bearer \" + token }",
+            "body": "{\n  \"includeDetailedScans\": true,\n  \"trackingInfo\": [\n    {\n      \"shipDateBegin\": \"2023-01-01\",\n      \"shipDateEnd\": \"2024-04-01\",\n      \"trackingNumberInfo\": {\n        \"trackingNumber\": input[\"trackingNumber\"]\n      }\n    }\n  ]\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Work variable",
+            "work_variable": "results"
+          }
+        },
+        {
+          "text": "Comparison",
+          "answers": {
+            "plugin": "Conditions:condition",
+            "condition": "results && results.output && results.output.completeTrackResults[0]"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "trackData",
+            "value": "results.output.completeTrackResults[0].trackResults[0]"
+          }
+        },
+        {
+          "text": "Comparison",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "trackData.error",
+            "type": "falsy",
+            "and-or": ""
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"latestStatusDetail\"][\"code\"]": "trackData.latestStatusDetail.code",
+              "data[\"latestStatusDetail\"][\"description\"]": "trackData.latestStatusDetail.description",
+              "data[\"latestStatusDetail\"][\"city\"]": "trackData.latestStatusDetail.scanLocation.city",
+              "data[\"lastActivity\"]": "trackData.dateAndTimes[0].type",
+              "data[\"lastActivityTimestamp\"]": "trackData.dateAndTimes[0].dateTime"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"error\"]": "trackData.error.message"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"error\"]": "'No data available at this time'"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    {
+      "name": "addressValidation",
+      "summary": "Address Validation routine",
+      "inputs": [
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "address",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine1",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine2",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "city",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "state",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "postalCode"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "countryCode"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "resolvedAddress",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "street1"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "street2"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "city"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "state"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "country"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "postalCode"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "classification"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 200,
+              "name": "alert"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 100,
+              "name": "alertMessage"
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null"
+          }
+        },
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "results",
+            "value": "null",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "getToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            }
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://apis-sandbox.fedex.com/address/v1/addresses/resolve",
+            "method": "POST",
+            "headers": "{\"Authorization\":\"Bearer \" + token}\n",
+            "body": "{\n  \"inEffectAsOfTimestamp\": \"2019-09-06\",\n  \"validateAddressControlParameters\": {\n    \"includeResolutionTokens\": true\n  },\n  \"addressesToValidate\": [\n    {\n      \"address\": {\n        \"streetLines\": [\n         (input[\"address\"][\"streetLine1\"]??'').trim(),\n         (input[\"address\"][\"streetLine2\"]??'').trim()\n        ],\n        \"citytoken\":(input[\"address\"][\"city\"]??'').trim(),\n        \"stateOrProvinceCode\": (input[\"address\"][\"state\"]??'').trim(),\n        \"postalCode\":(input[\"address\"][\"postalCode\"]??'').trim(),\n        \"countryCode\": (input[\"address\"][\"countryCode\"]??'').trim()\n      }\n    }\n  ]\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Work variable",
+            "work_variable": "results",
+            "capture_status": false,
+            "capture_response_header": false,
+            "comment": ""
+          }
+        },
+        {
+          "text": "Are there results?",
+          "answers": {
+            "plugin": "Conditions:condition",
+            "condition": "results && results.output && results.output.resolvedAddresses && results.output.resolvedAddresses[0]"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Is there Error Message?",
+          "answers": {
+            "plugin": "Conditions:condition",
+            "condition": "results.output.resolvedAddresses[0].customerMessages[0] && results.output.resolvedAddresses[0].customerMessages[0].code",
+            "comment": ""
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "resolvedAddress[\"street1\"]": "results.output.resolvedAddresses[0].streetLinesToken[0]",
+              "resolvedAddress[\"city\"]": "results.output.resolvedAddresses[0].cityToken ? results.output.resolvedAddresses[0].cityToken[0].value : null",
+              "resolvedAddress[\"state\"]": "results.output.resolvedAddresses[0].stateOrProvinceCode",
+              "resolvedAddress[\"country\"]": "results.output.resolvedAddresses[0].countryCode",
+              "resolvedAddress[\"postalCode\"]": "results.output.resolvedAddresses[0].postalCodeToken.value",
+              "resolvedAddress[\"classification\"]": "results.output.resolvedAddresses[0].classification",
+              "resolvedAddress[\"alert\"]": "results.output.resolvedAddresses[0].customerMessages[0].code",
+              "resolvedAddress[\"alertMessage\"]": "results.output.resolvedAddresses[0].customerMessages[0].message"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "resolvedAddress[\"street1\"]": "results.output.resolvedAddresses[0].streetLinesToken[0]",
+              "resolvedAddress[\"city\"]": "results.output.resolvedAddresses[0].cityToken[0].value",
+              "resolvedAddress[\"state\"]": "results.output.resolvedAddresses[0].stateOrProvinceCode",
+              "resolvedAddress[\"country\"]": "results.output.resolvedAddresses[0].countryCode",
+              "resolvedAddress[\"postalCode\"]": "results.output.resolvedAddresses[0].postalCodeToken.value",
+              "resolvedAddress[\"classification\"]": "results.output.resolvedAddresses[0].classification"
+            },
+            "comment": ""
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "resolvedAddress[\"alert\"]": "\"No data available at this time.\""
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    {
+      "name": "rateAndTimes",
+      "summary": "Rate and Transit Times",
+      "inputs": [
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "originAddress",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine1",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine2",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "city",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "state",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "postalCode"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "countryCode"
+            }
+          ],
+          "example": ""
+        },
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "destinAddress",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine1"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine2"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "city"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "state"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "postalCode"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "countryCode"
+            }
+          ]
+        },
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "packageDetail",
+          "children": [
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "weightPounds",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "lengthInches",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "widthInches",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "heightInches",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "declaredValueUSD",
+              "ibmiDecimals": 2
+            }
+          ]
+        },
+        {
+          "type": "string",
+          "ibmiLength": 30,
+          "name": "packagingType"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 30,
+          "name": "pickupType"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 10,
+          "name": "shipDate"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "data",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 40,
+              "name": "transactionId",
+              "example": "b324f091-093f-48f2-4394-39d2134430f2"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "quoteDate",
+              "example": "2023-04-12"
+            },
+            {
+              "type": "object",
+              "ibmiLength": 10,
+              "name": "rateReplyDetails",
+              "multipleValues": true,
+              "ibmiDim": 10,
+              "children": [
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "serviceType",
+                  "example": "PRIORITY_OVERNIGHT"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "serviceName",
+                  "example": "FedEx Priority Overnight"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 20,
+                  "name": "packagingType",
+                  "example": "YOUR_PACKAGING"
+                },
+                {
+                  "type": "object",
+                  "ibmiLength": 10,
+                  "name": "ratedShipmentDetails",
+                  "multipleValues": false,
+                  "children": [
+                    {
+                      "type": "string",
+                      "ibmiLength": 10,
+                      "name": "rateType",
+                      "example": "ACCOUNT"
+                    },
+                    {
+                      "type": "string",
+                      "ibmiLength": 10,
+                      "name": "ratedWeightMethod",
+                      "example": "ACTUAL"
+                    },
+                    {
+                      "type": "decimal",
+                      "ibmiLength": 10,
+                      "name": "totalDiscounts",
+                      "ibmiDecimals": 2
+                    },
+                    {
+                      "type": "decimal",
+                      "ibmiLength": 10,
+                      "name": "totalBaseCharge",
+                      "ibmiDecimals": 2,
+                      "example": "130.59"
+                    },
+                    {
+                      "type": "decimal",
+                      "ibmiLength": 10,
+                      "name": "totalNetCharge",
+                      "ibmiDecimals": 2
+                    },
+                    {
+                      "type": "decimal",
+                      "ibmiLength": 10,
+                      "name": "totalSurcharge",
+                      "ibmiDecimals": 2,
+                      "example": "152.51"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "integer",
+              "ibmiLength": 10,
+              "name": "detailsCount"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 200,
+              "name": "error"
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null"
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "getToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            }
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://apis-sandbox.fedex.com/rate/v1/rates/quotes",
+            "method": "POST",
+            "headers": "{\"Authorization\":\"Bearer \" + token }",
+            "body": "{\n  \"accountNumber\": {\n    \"value\": \"740561073\"\n  },\n\"rateRequestControlParameters\": {\n\"returnTransitTimes\": true,\n\"servicesNeededOnRateFailure\": false,\n\"variableOptions\": \"FREIGHT_GUARANTEE\",\n\"rateSortOrder\": \"SERVICENAMETRADITIONAL\"\n},\n  \"requestedShipment\": {\n    \"shipper\": {\n      \"address\": {\n\"streetLines\":[\ninput[\"originAddress\"][\"streetLine1\"],\ninput[\"originAddress\"][\"streetLine2\"]\n],\n\"stateOrProvinceCode\":input[\"originAddress\"][\"state\"],\n        \"postalCode\": input[\"originAddress\"][\"postalCode\"],\n        \"countryCode\": input[\"originAddress\"][\"countryCode\"]\n      }\n    },\n    \"recipient\": {\n       \"address\": {\n\"streetLines\":[\ninput[\"destinAddress\"][\"streetLine1\"],\ninput[\"destinAddress\"][\"streetLine2\"]\n],\n\"stateOrProvinceCode\":input[\"destinAddress\"][\"state\"],\n        \"postalCode\": input[\"destinAddress\"][\"postalCode\"],\n        \"countryCode\": input[\"destinAddress\"][\"countryCode\"]\n      }\n    },\n    \"pickupType\": \"DROPOFF_AT_FEDEX_LOCATION\",\n    \"rateRequestType\": [\n      \"LIST\"\n    ],\n    \"requestedPackageLineItems\": [\n{\n\"declaredValue\":{\n\"amount\":input[\"packageDetail\"][\"declaredValueUSD\"],\n\"currency\":\"USD\"\n},\n        \"weight\": {\n          \"units\": \"LB\",\n          \"value\": input[\"packageDetail\"][\"weightPounds\"]\n        },\n\"dimension\":{\n\"length\": input[\"packageDetail\"][\"lengthInches\"],\n\"width\": input[\"packageDetail\"][\"widthInches\"],\n\"height\": input[\"packageDetail\"][\"heightInches\"],\n\"units\": \"IN\"\n}\n      }\n    ]\n  }\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Work variable",
+            "work_variable": "results"
+          }
+        },
+        {
+          "text": "Data Returned?",
+          "answers": {
+            "plugin": "Conditions:condition",
+            "condition": "results && results.output && results.output.rateReplyDetails"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Build List",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "var rateReplyDetails = [];\r\nresults.output.rateReplyDetails.forEach(detail => {\r\n  let newDetails = {\r\n    serviceType: detail.serviceType,\r\n    serviceName: detail.serviceName,\r\n    packagingType: detail.packagingType\r\n  };\r\n  if(detail.commit){\r\n    newDetails.commit = \r\n    {\r\n      saturdayDelivery: detail.commit.saturdayDelivery,\r\n      dateDetail: {\r\n        dayFormat: detail.commit.dateDetail.dayFormat,\r\n        dayOfWeek: detail.commit.dateDetail.dayOfWeek,\r\n    }\r\n    }\r\n  }\r\n  if (detail.ratedShipmentDetails[0]) {\r\n    newDetails.ratedShipmentDetails =\r\n      {\r\n        rateType: detail.ratedShipmentDetails[0].rateType,\r\n        ratedWeightMethod: detail.ratedShipmentDetails[0].ratedWeightMethod,\r\n        totalDiscounts: detail.ratedShipmentDetails[0].totalDiscounts,\r\n        totalBaseCharge: detail.ratedShipmentDetails[0].totalBaseCharge,\r\n        totalNetCharge: detail.ratedShipmentDetails[0].totalNetCharge,\r\n        shipmentRateDetail: {\r\n          fuelSurchargePercent: detail.ratedShipmentDetails[0].shipmentRateDetail.fuelSurchargePercent,\r\n          totalSurcharge: detail.ratedShipmentDetails[0].shipmentRateDetail.totalSurcharges,\r\n          totalFreightDiscount: detail.ratedShipmentDetails[0].shipmentRateDetail.totalFreightDiscount\r\n        }\r\n      };\r\n  }\r\n  rateReplyDetails.push(newDetails);\r\n});\r\n\r\nvar detailsCount = rateReplyDetails.length;\r\n"
+          }
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"transactionId\"]": "results.transactionId",
+              "data[\"quoteDate\"]": "results.output.quoteDate",
+              "data[\"rateReplyDetails\"]": "rateReplyDetails",
+              "data[\"detailsCount\"]": "detailsCount",
+              "data[\"error\"]": "''"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"error\"]": "'No results returned'"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    {
+      "name": "rateAndTimesAllData",
+      "summary": "Rate and Transit Times",
+      "inputs": [
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "originAddress",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine1",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine2",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "city",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "state",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "postalCode"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "countryCode"
+            }
+          ],
+          "example": ""
+        },
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "destinAddress",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine1"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine2"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "city"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "state"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "postalCode"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "countryCode"
+            }
+          ]
+        },
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "packageDetail",
+          "children": [
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "weightPounds",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "lengthInches",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "widthInches",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "heightInches",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "declaredValueUSD",
+              "ibmiDecimals": 2
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "data"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null"
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "getToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            }
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://apis-sandbox.fedex.com/rate/v1/rates/quotes",
+            "method": "POST",
+            "headers": "{\"Authorization\":\"Bearer \" + token }",
+            "body": "{\n  \"accountNumber\": {\n    \"value\": \"740561073\"\n  },\n\"rateRequestControlParameters\": {\n\"returnTransitTimes\": true,\n\"servicesNeededOnRateFailure\": true,\n\"variableOptions\": \"FREIGHT_GUARANTEE\",\n\"rateSortOrder\": \"SERVICENAMETRADITIONAL\"\n},\n  \"requestedShipment\": {\n    \"shipper\": {\n      \"address\": {\n\"streetLines\":[\ninput[\"originAddress\"][\"streetLine1\"],\ninput[\"originAddress\"][\"streetLine2\"]\n],\n\"stateOrProvinceCode\":input[\"originAddress\"][\"state\"],\n        \"postalCode\": input[\"originAddress\"][\"postalCode\"],\n        \"countryCode\": input[\"originAddress\"][\"countryCode\"]\n      }\n    },\n    \"recipient\": {\n       \"address\": {\n\"streetLines\":[\ninput[\"destinAddress\"][\"streetLine1\"],\ninput[\"destinAddress\"][\"streetLine2\"]\n],\n\"stateOrProvinceCode\":input[\"destinAddress\"][\"state\"],\n        \"postalCode\": input[\"destinAddress\"][\"postalCode\"],\n        \"countryCode\": input[\"destinAddress\"][\"countryCode\"]\n      }\n    },\n    \"pickupType\": \"DROPOFF_AT_FEDEX_LOCATION\",\n    \"rateRequestType\": [\n      \"LIST\"\n    ],\n    \"requestedPackageLineItems\": [\n{\n\"declaredValue\":{\n\"amount\":input[\"packageDetail\"][\"declaredValueUSD\"],\n\"currency\":\"USD\"\n},\n        \"weight\": {\n          \"units\": \"LB\",\n          \"value\": input[\"packageDetail\"][\"weightPounds\"]\n        },\n\"dimension\":{\n\"length\": input[\"packageDetail\"][\"lengthInches\"],\n\"width\": input[\"packageDetail\"][\"widthInches\"],\n\"height\": input[\"packageDetail\"][\"heightInches\"],\n\"units\": \"IN\"\n}\n      }\n    ]\n  }\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Module output",
+            "module_output": "output[\"data\"]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "trackAllData",
+      "summary": "track by tracking numbers",
+      "inputs": [
+        {
+          "type": "bigint",
+          "name": "trackingNumber",
+          "multipleValues": false,
+          "ibmiDim": 5,
+          "example": ""
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "object",
+              "ibmiLength": 10,
+              "name": "latestStatusDetail",
+              "children": [
+                {
+                  "type": "string",
+                  "ibmiLength": 4,
+                  "name": "code"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 20,
+                  "name": "description"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 50,
+                  "name": "city"
+                }
+              ]
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "lastActivity"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 25,
+              "name": "lastActivityTimestamp"
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null"
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "getToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            }
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://apis-sandbox.fedex.com/track/v1/trackingnumbers",
+            "method": "POST",
+            "headers": "{\"Authorization\":\"Bearer \" + token }",
+            "body": "{\n  \"includeDetailedScans\": true,\n  \"trackingInfo\": [\n    {\n      \"shipDateBegin\": \"2023-01-01\",\n      \"shipDateEnd\": \"2024-04-01\",\n      \"trackingNumberInfo\": {\n        \"trackingNumber\": input[\"trackingNumber\"]\n      }\n    }\n  ]\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Module output",
+            "module_output": "output[\"data\"]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "addressValidationAllData",
+      "summary": "Address Validation routine",
+      "inputs": [
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "address",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine1",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine2",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "city",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "state",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "postalCode"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "countryCode"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "resolvedAddress",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "street1"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "street2"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "city"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "state"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "country"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "postalCode"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "classification"
+            }
+          ]
+        },
+        {
+          "type": "string",
+          "ibmiLength": 200,
+          "name": "alert"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null"
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "getToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            }
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://apis-sandbox.fedex.com/address/v1/addresses/resolve",
+            "method": "POST",
+            "headers": "{\"Authorization\":\"Bearer \" + token }",
+            "body": "{\n  \"inEffectAsOfTimestamp\": \"2019-09-06\",\n  \"validateAddressControlParameters\": {\n    \"includeResolutionTokens\": true\n  },\n  \"addressesToValidate\": [\n    {\n      \"address\": {\n        \"streetLines\": [\n         input[\"address\"][\"streetLine1\"],\n         input[\"address\"][\"streetLine2\"]\n        ],\n        \"city\":input[\"address\"][\"city\"],\n        \"stateOrProvinceCode\": input[\"address\"][\"state\"],\n        \"postalCode\":input[\"address\"][\"postalCode\"],\n        \"countryCode\": input[\"address\"][\"countryCode\"]\n      }\n    }\n  ]\n}",
+            "json": false,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Module output",
+            "module_output": "output[\"resolvedAddress\"]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "trackScanHistory",
+      "summary": "get complete scan history by tracking number",
+      "inputs": [
+        {
+          "type": "bigint",
+          "name": "trackingNumber",
+          "multipleValues": false,
+          "ibmiDim": 5,
+          "example": ""
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 100,
+              "name": "error"
+            },
+            {
+              "type": "object",
+              "ibmiLength": 10,
+              "name": "latestStatusDetail",
+              "children": [
+                {
+                  "type": "string",
+                  "ibmiLength": 4,
+                  "name": "code"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 20,
+                  "name": "description"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 50,
+                  "name": "city"
+                }
+              ]
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "lastActivity"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 25,
+              "name": "lastActivityTimestamp"
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null"
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "getToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            }
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://apis-sandbox.fedex.com/track/v1/trackingnumbers",
+            "method": "POST",
+            "headers": "{\"Authorization\":\"Bearer \" + token }",
+            "body": "{\n  \"includeDetailedScans\": true,\n  \"trackingInfo\": [\n    {\n      \"shipDateBegin\": \"2023-01-01\",\n      \"shipDateEnd\": \"2023-04-01\",\n      \"trackingNumberInfo\": {\n        \"trackingNumber\": input[\"trackingNumber\"]\n      }\n    }\n  ]\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "output.completeTrackResults[0]",
+            "destination": "Work variable",
+            "work_variable": "results"
+          }
+        },
+        {
+          "text": "Comparison",
+          "answers": {
+            "plugin": "Conditions:condition",
+            "condition": "results && results.output && results.output.completeTrackResults[0]"
+          },
+          "isStructureStart": true,
+          "collapsed": false,
+          "disabled": true
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "//console.log(JSON.stringify(results.output.completeTrackResults[0].trackResults[0]));\r\nconsole.log(JSON.stringify(results));"
+          },
+          "disabled": true
+        },
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "trackData",
+            "value": "results.output.completeTrackResults[0].trackResults[0]"
+          },
+          "disabled": true
+        },
+        {
+          "text": "Comparison",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "trackData.error",
+            "type": "falsy",
+            "and-or": ""
+          },
+          "isStructureStart": true,
+          "collapsed": false,
+          "disabled": true
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"latestStatusDetail\"][\"code\"]": "trackData.latestStatusDetail.code",
+              "data[\"latestStatusDetail\"][\"description\"]": "trackData.latestStatusDetail.description",
+              "data[\"latestStatusDetail\"][\"city\"]": "trackData.latestStatusDetail.scanLocation.city",
+              "data[\"lastActivity\"]": "trackData.dateAndTimes[0].type",
+              "data[\"lastActivityTimestamp\"]": "trackData.dateAndTimes[0].dateTime"
+            }
+          },
+          "disabled": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false,
+          "disabled": true
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"error\"]": "trackData.error.message"
+            }
+          },
+          "disabled": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false,
+          "disabled": true
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"error\"]": "'No data available at this time'"
+            }
+          },
+          "disabled": true
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    {
+      "name": "rateAndTimes - more data",
+      "summary": "Rate and Transit Times",
+      "inputs": [
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "originAddress",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine1",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine2",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "city",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "state",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "postalCode"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "countryCode"
+            }
+          ],
+          "example": ""
+        },
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "destinAddress",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine1"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine2"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "city"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "state"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "postalCode"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "countryCode"
+            }
+          ]
+        },
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "packageDetail",
+          "children": [
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "weightPounds",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "lengthInches",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "widthInches",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "heightInches",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "declaredValueUSD",
+              "ibmiDecimals": 2
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "data",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 40,
+              "name": "transactionId",
+              "example": "b324f091-093f-48f2-4394-39d2134430f2"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "quoteDate",
+              "example": "2023-04-12"
+            },
+            {
+              "type": "object",
+              "ibmiLength": 10,
+              "name": "rateReplyDetails",
+              "multipleValues": true,
+              "ibmiDim": 10,
+              "children": [
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "serviceType",
+                  "example": "PRIORITY_OVERNIGHT"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "serviceName",
+                  "example": "FedEx Priority Overnight"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 20,
+                  "name": "packagingType",
+                  "example": "YOUR_PACKAGING"
+                },
+                {
+                  "type": "object",
+                  "ibmiLength": 10,
+                  "name": "commit",
+                  "children": [
+                    {
+                      "type": "string",
+                      "ibmiLength": 10,
+                      "name": "saturdayDelivery"
+                    },
+                    {
+                      "type": "object",
+                      "ibmiLength": 10,
+                      "name": "dateDetail",
+                      "children": [
+                        {
+                          "type": "string",
+                          "ibmiLength": 20,
+                          "name": "dayFormat"
+                        },
+                        {
+                          "type": "string",
+                          "ibmiLength": 4,
+                          "name": "dayOfWeek"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "object",
+                  "ibmiLength": 10,
+                  "name": "ratedShipmentDetails",
+                  "multipleValues": false,
+                  "children": [
+                    {
+                      "type": "string",
+                      "ibmiLength": 10,
+                      "name": "rateType",
+                      "example": "ACCOUNT"
+                    },
+                    {
+                      "type": "string",
+                      "ibmiLength": 10,
+                      "name": "ratedWeightMethod",
+                      "example": "ACTUAL"
+                    },
+                    {
+                      "type": "decimal",
+                      "ibmiLength": 10,
+                      "name": "totalDiscounts",
+                      "ibmiDecimals": 2
+                    },
+                    {
+                      "type": "decimal",
+                      "ibmiLength": 10,
+                      "name": "totalBaseCharge",
+                      "ibmiDecimals": 2,
+                      "example": "130.59"
+                    },
+                    {
+                      "type": "decimal",
+                      "ibmiLength": 10,
+                      "name": "totalNetCharge",
+                      "ibmiDecimals": 2,
+                      "example": "152.51"
+                    },
+                    {
+                      "type": "object",
+                      "ibmiLength": 10,
+                      "name": "shipmentRateDetail",
+                      "children": [
+                        {
+                          "type": "decimal",
+                          "ibmiLength": 10,
+                          "name": "fuelSurchargePercent",
+                          "ibmiDecimals": 2,
+                          "example": "5"
+                        },
+                        {
+                          "type": "decimal",
+                          "ibmiLength": 10,
+                          "name": "totalSurcharge",
+                          "ibmiDecimals": 2,
+                          "example": "22.12"
+                        },
+                        {
+                          "type": "decimal",
+                          "ibmiLength": 10,
+                          "name": "totalFreightDiscount",
+                          "ibmiDecimals": 2,
+                          "example": "0"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "integer",
+              "ibmiLength": 10,
+              "name": "detailsCount"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 200,
+              "name": "error"
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log(\">>>>------------>>\")"
+          }
+        },
+        {
+          "text": "string function",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "// var trimIfNotNull = function(myStr){\r\n//   if (myStr === null || myStr.trim() === \"\") {\r\n//   return myStr;\r\n// } else {\r\n//   return myStr.trim();\r\n// }\r\n// }\r\n\r\nconst trimmedOrNull = (myStr) => {\r\n  if (myStr === null || myStr.trim() === \"\") {\r\n  return myStr;\r\n} else {\r\n  return myStr.trim();\r\n}\r\n};"
+          }
+        },
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null"
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "getToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            }
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://apis-sandbox.fedex.com/rate/v1/rates/quotes",
+            "method": "POST",
+            "headers": "{\"Authorization\":\"Bearer \" + token }",
+            "body": "{\n  \"accountNumber\": {\n    \"value\": \"740561073\"\n  },\n\"rateRequestControlParameters\": {\n\"returnTransitTimes\": true,\n\"servicesNeededOnRateFailure\": false,\n\"variableOptions\": \"FREIGHT_GUARANTEE\",\n\"rateSortOrder\": \"SERVICENAMETRADITIONAL\"\n},\n  \"requestedShipment\": {\n    \"shipper\": {\n      \"address\": {\n\"streetLines\":[\ntrimmedOrNull(input[\"originAddress\"][\"streetLine1\"]),\ntrimmedOrNull(input[\"originAddress\"][\"streetLine2\"])\n],\n\"stateOrProvinceCode\":trimmedOrNull(input[\"originAddress\"][\"state\"]),\n        \"postalCode\": trimmedOrNull(input[\"originAddress\"][\"postalCode\"]),\n        \"countryCode\": trimmedOrNull(input[\"originAddress\"][\"countryCode\"])\n      }\n    },\n    \"recipient\": {\n       \"address\": {\n\"streetLines\":[\ntrimmedOrNull(input[\"destinAddress\"][\"streetLine1\"]),\ntrimmedOrNull(input[\"destinAddress\"][\"streetLine2\"])\n],\n\"stateOrProvinceCode\":trimmedOrNull(input[\"destinAddress\"][\"state\"]),\n        \"postalCode\": trimmedOrNull(input[\"destinAddress\"][\"postalCode\"]),\n        \"countryCode\": trimmedOrNull(input[\"destinAddress\"][\"countryCode\"])\n      }\n    },\n    \"pickupType\": \"DROPOFF_AT_FEDEX_LOCATION\",\n    \"rateRequestType\": [\n      \"LIST\"\n    ],\n    \"requestedPackageLineItems\": [\n{\n\"declaredValue\":{\n\"amount\":input[\"packageDetail\"][\"declaredValueUSD\"],\n\"currency\":\"USD\"\n},\n        \"weight\": {\n          \"units\": \"LB\",\n          \"value\": input[\"packageDetail\"][\"weightPounds\"]\n        },\n\"dimension\":{\n\"length\": input[\"packageDetail\"][\"lengthInches\"],\n\"width\": input[\"packageDetail\"][\"widthInches\"],\n\"height\": input[\"packageDetail\"][\"heightInches\"],\n\"units\": \"IN\"\n}\n      }\n    ]\n  }\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Work variable",
+            "work_variable": "results"
+          }
+        },
+        {
+          "text": "Data Returned?",
+          "answers": {
+            "plugin": "Conditions:condition",
+            "condition": "results && results.output && results.output.rateReplyDetails"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Build List",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "var rateReplyDetails = [];\r\nresults.output.rateReplyDetails.forEach(detail => {\r\n  let newDetails = {\r\n    serviceType: detail.serviceType,\r\n    serviceName: detail.serviceName,\r\n    packagingType: detail.packagingType\r\n  };\r\n  if(detail.commit){\r\n    newDetails.commit = \r\n    {\r\n      saturdayDelivery: detail.commit.saturdayDelivery,\r\n      dateDetail: {\r\n        dayFormat: detail.commit.dateDetail.dayFormat,\r\n        dayOfWeek: detail.commit.dateDetail.dayOfWeek,\r\n    }\r\n    }\r\n  }\r\n  if (detail.ratedShipmentDetails[0] && detail.ratedShipmentDetails[0].totalNetCharge && detail.ratedShipmentDetails[0].totalNetCharge > 0) {\r\n    newDetails.ratedShipmentDetails =\r\n      {\r\n        rateType: detail.ratedShipmentDetails[0].rateType,\r\n        ratedWeightMethod: detail.ratedShipmentDetails[0].ratedWeightMethod,\r\n        totalDiscounts: detail.ratedShipmentDetails[0].totalDiscounts,\r\n        totalBaseCharge: detail.ratedShipmentDetails[0].totalBaseCharge,\r\n        totalNetCharge: detail.ratedShipmentDetails[0].totalNetCharge,\r\n        shipmentRateDetail: {\r\n          fuelSurchargePercent: detail.ratedShipmentDetails[0].shipmentRateDetail.fuelSurchargePercent,\r\n          totalSurcharge: detail.ratedShipmentDetails[0].shipmentRateDetail.totalSurcharges,\r\n          totalFreightDiscount: detail.ratedShipmentDetails[0].shipmentRateDetail.totalFreightDiscount\r\n        }\r\n      };\r\n  }\r\n  rateReplyDetails.push(newDetails);\r\n});\r\n\r\nvar detailsCount = rateReplyDetails.length;\r\n\r\nconsole.log(JSON.stringify(rateReplyDetails));\r\n\r\n"
+          }
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"transactionId\"]": "results.transactionId",
+              "data[\"quoteDate\"]": "results.output.quoteDate",
+              "data[\"rateReplyDetails\"]": "rateReplyDetails",
+              "data[\"detailsCount\"]": "detailsCount",
+              "data[\"error\"]": "''"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"error\"]": "'No results returned'"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    {
+      "name": "ship",
+      "summary": "ship",
+      "inputs": [
+        {
+          "type": "string",
+          "ibmiLength": 30,
+          "name": "shipperName",
+          "example": ""
+        },
+        {
+          "type": "decimal",
+          "ibmiLength": 10,
+          "name": "shipperPhone",
+          "ibmiDecimals": 0
+        },
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "originAddress",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine1",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine2",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "city",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "state",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "postalCode"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "countryCode"
+            }
+          ],
+          "example": ""
+        },
+        {
+          "type": "string",
+          "ibmiLength": 30,
+          "name": "recipientName"
+        },
+        {
+          "type": "decimal",
+          "ibmiLength": 10,
+          "name": "recipientPhone",
+          "ibmiDecimals": 0,
+          "example": ""
+        },
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "destinAddress",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine1"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "streetLine2"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "city"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 50,
+              "name": "state"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "postalCode"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "countryCode"
+            }
+          ]
+        },
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "packageDetail",
+          "children": [
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "weightPounds",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "lengthInches",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "widthInches",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "heightInches",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "declaredValueUSD",
+              "ibmiDecimals": 2
+            }
+          ]
+        },
+        {
+          "type": "string",
+          "ibmiLength": 10,
+          "name": "shipDate"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 20,
+          "name": "serviceType"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 20,
+          "name": "packagingType"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 20,
+          "name": "pickupType"
+        },
+        {
+          "type": "string",
+          "ibmiLength": 20,
+          "name": "paymentType"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "data",
+          "children": [
+            {
+              "type": "string",
+              "ibmiLength": 40,
+              "name": "transactionId",
+              "example": "b324f091-093f-48f2-4394-39d2134430f2"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "shipDatestamp",
+              "example": "2023-04-12"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 10,
+              "name": "deliveryDatestamp"
+            },
+            {
+              "type": "string",
+              "ibmiLength": 20,
+              "name": "trackingNumber"
+            },
+            {
+              "type": "decimal",
+              "ibmiLength": 10,
+              "name": "baseRateAmount",
+              "ibmiDecimals": 2
+            },
+            {
+              "type": "string",
+              "ibmiLength": 200,
+              "name": "error"
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log(\">>>>------------>>\")"
+          }
+        },
+        {
+          "text": "string function",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "// var trimIfNotNull = function(myStr){\r\n//   if (myStr === null || myStr.trim() === \"\") {\r\n//   return myStr;\r\n// } else {\r\n//   return myStr.trim();\r\n// }\r\n// }\r\n\r\nconst trimmedOrNull = (myStr) => {\r\n  if (myStr === null || myStr.trim() === \"\") {\r\n  return myStr;\r\n} else {\r\n  return myStr.trim();\r\n}\r\n};"
+          }
+        },
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null"
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "getToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            }
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log(JSON.stringify(\r\n{\r\n    \"labelResponseOptions\": \"URL_ONLY\",\r\n  \"accountNumber\": {\r\n    \"value\": \"740561073\"\r\n  },\r\n  \"requestedShipment\": {\r\n    \"shipper\": {\r\n\"contact\":{\"phoneNumber\":input[\"shipperPhone\"],\r\n\"companyName\":trimmedOrNull(input[\"shipperName\"])\r\n},\r\n      \"address\": {\r\n\"streetLines\":[\r\ntrimmedOrNull(input[\"originAddress\"][\"streetLine1\"]),\r\ntrimmedOrNull(input[\"originAddress\"][\"streetLine2\"])\r\n],\r\n\"city\":trimmedOrNull(input[\"originAddress\"][\"city\"]),\r\n\"stateOrProvinceCode\":trimmedOrNull(input[\"originAddress\"][\"state\"]),\r\n        \"postalCode\": trimmedOrNull(input[\"originAddress\"][\"postalCode\"]),\r\n        \"countryCode\": trimmedOrNull(input[\"originAddress\"][\"countryCode\"])\r\n      }\r\n    },\r\n    \"recipients\": [{\r\n\"contact\":{\"phoneNumber\":input[\"recipientPhone\"],\r\n\"companyName\":trimmedOrNull(input[\"recipientName\"])\r\n},\r\n       \"address\": {\r\n\"streetLines\":[\r\ntrimmedOrNull(input[\"destinAddress\"][\"streetLine1\"]),\r\ntrimmedOrNull(input[\"destinAddress\"][\"streetLine2\"])\r\n],\r\n\"city\":trimmedOrNull(input[\"originAddress\"][\"city\"]),\r\n\"stateOrProvinceCode\":trimmedOrNull(input[\"destinAddress\"][\"state\"]),\r\n        \"postalCode\": trimmedOrNull(input[\"destinAddress\"][\"postalCode\"]),\r\n        \"countryCode\": trimmedOrNull(input[\"destinAddress\"][\"countryCode\"])\r\n      }\r\n    }],\r\n    \"pickupType\": \"DROPOFF_AT_FEDEX_LOCATION\",\r\n    \"rateRequestType\": [\r\n      \"LIST\"\r\n    ],\r\n    \"shipDatestamp\": trimmedOrNull(input[\"shipDate\"]),\r\n    \"serviceType\": trimmedOrNull(input[\"serviceType\"]),\r\n    \"packagingType\":  trimmedOrNull(input[\"packagingType\"]),\r\n    \"pickupType\":  trimmedOrNull(input[\"pickupType\"]),\r\n    \"shippingChargesPayment\": {\r\n      \"paymentType\":  trimmedOrNull(input[\"paymentType\"])\r\n    },\r\n    \"shipmentSpecialServices\": {\r\n      \"specialServiceTypes\": [\r\n        \"FEDEX_ONE_RATE\"\r\n      ]\r\n    },\r\n    \"labelSpecification\": {\r\n      \"imageType\": \"PDF\",\r\n      \"labelStockType\": \"PAPER_85X11_TOP_HALF_LABEL\"\r\n    },\r\n    \"requestedPackageLineItems\": [\r\n{\r\n\"declaredValue\":{\r\n\"amount\":input[\"packageDetail\"][\"declaredValueUSD\"],\r\n\"currency\":\"USD\"\r\n},\r\n        \"weight\": {\r\n          \"units\": \"LB\",\r\n          \"value\": input[\"packageDetail\"][\"weightPounds\"]\r\n        },\r\n\"dimension\":{\r\n\"length\": input[\"packageDetail\"][\"lengthInches\"],\r\n\"width\": input[\"packageDetail\"][\"widthInches\"],\r\n\"height\": input[\"packageDetail\"][\"heightInches\"],\r\n\"units\": \"IN\"\r\n}\r\n      }\r\n    ]\r\n  }\r\n}\r\n));"
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://apis-sandbox.fedex.com/ship/v1/shipments",
+            "method": "POST",
+            "headers": "{\"Authorization\":\"Bearer \" + token }",
+            "body": "{\n    \"labelResponseOptions\": \"URL_ONLY\",\n  \"accountNumber\": {\n    \"value\": \"740561073\"\n  },\n  \"requestedShipment\": {\n    \"shipper\": {\n\"contact\":{\"phoneNumber\":input[\"shipperPhone\"],\n\"companyName\":trimmedOrNull(input[\"shipperName\"])\n},\n      \"address\": {\n\"streetLines\":[\ntrimmedOrNull(input[\"originAddress\"][\"streetLine1\"]),\ntrimmedOrNull(input[\"originAddress\"][\"streetLine2\"])\n],\n\"city\":trimmedOrNull(input[\"originAddress\"][\"city\"]),\n\"stateOrProvinceCode\":trimmedOrNull(input[\"originAddress\"][\"state\"]),\n        \"postalCode\": trimmedOrNull(input[\"originAddress\"][\"postalCode\"]),\n        \"countryCode\": trimmedOrNull(input[\"originAddress\"][\"countryCode\"])\n      }\n    },\n    \"recipients\": [{\n\"contact\":{\"phoneNumber\":input[\"recipientPhone\"],\n\"companyName\":trimmedOrNull(input[\"recipientName\"])\n},\n       \"address\": {\n\"streetLines\":[\ntrimmedOrNull(input[\"destinAddress\"][\"streetLine1\"]),\ntrimmedOrNull(input[\"destinAddress\"][\"streetLine2\"])\n],\n\"city\":trimmedOrNull(input[\"originAddress\"][\"city\"]),\n\"stateOrProvinceCode\":trimmedOrNull(input[\"destinAddress\"][\"state\"]),\n        \"postalCode\": trimmedOrNull(input[\"destinAddress\"][\"postalCode\"]),\n        \"countryCode\": trimmedOrNull(input[\"destinAddress\"][\"countryCode\"])\n      }\n    }],\n    \"pickupType\": \"DROPOFF_AT_FEDEX_LOCATION\",\n    \"rateRequestType\": [\n      \"LIST\"\n    ],\n    \"shipDatestamp\": trimmedOrNull(input[\"shipDate\"]),\n    \"serviceType\": trimmedOrNull(input[\"serviceType\"]),\n    \"packagingType\":  trimmedOrNull(input[\"packagingType\"]),\n    \"pickupType\":  trimmedOrNull(input[\"pickupType\"]),\n    \"shippingChargesPayment\": {\n      \"paymentType\":  trimmedOrNull(input[\"paymentType\"])\n    },\n    \"labelSpecification\": {\n      \"imageType\": \"PDF\",\n      \"labelStockType\": \"PAPER_85X11_TOP_HALF_LABEL\"\n    },\n    \"requestedPackageLineItems\": [\n{\n\"declaredValue\":{\n\"amount\":input[\"packageDetail\"][\"declaredValueUSD\"],\n\"currency\":\"USD\"\n},\n        \"weight\": {\n          \"units\": \"LB\",\n          \"value\": input[\"packageDetail\"][\"weightPounds\"]\n        },\n\"dimension\":{\n\"length\": input[\"packageDetail\"][\"lengthInches\"],\n\"width\": input[\"packageDetail\"][\"widthInches\"],\n\"height\": input[\"packageDetail\"][\"heightInches\"],\n\"units\": \"IN\"\n}\n      }\n    ]\n  }\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Value",
+            "specific_property": "",
+            "destination": "Work variable",
+            "work_variable": "results"
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('>>> RESULTS >>>\\r\\n' + JSON.stringify(results)\r\n+'\\r\\n<<<<<<');"
+          }
+        },
+        {
+          "text": "Data Returned?",
+          "answers": {
+            "plugin": "Conditions:condition",
+            "condition": "results && results.output && results.output.transactionShipments"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('>> - data returned - >>');\r\nvar alerts = '';\r\nif(results.output.transactionShipments[0].alerts){\r\n  alerts = JSON.stringify(results.output.transactionShipments[0].alerts);\r\n}\r\nconsole.log(JSON.stringify(alerts));"
+          }
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"transactionId\"]": "results.transactionId",
+              "data[\"shipDatestamp\"]": "results.output.transactionShipments[0].shipDatestamp",
+              "data[\"deliveryDatestamp\"]": "results.output.transactionShipments[0].pieceResponses[0].deliveryDatestamp",
+              "data[\"trackingNumber\"]": "results.output.transactionShipments[0].masterTrackingNumber",
+              "data[\"baseRateAmount\"]": "results.output.transactionShipments[0].pieceResponses[0].baseRateAmount",
+              "data[\"error\"]": "alerts"
+            }
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('OUT>> ' + JSON.stringify(output));"
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Comparison",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "results.errors[0]",
+            "type": "truthy",
+            "and-or": ""
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log(JSON.Stringify(results));"
+          }
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"error\"]": "JSON.stringify(results.errors)"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "data[\"error\"]": "'No results returned'"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    }
+  ]
+}

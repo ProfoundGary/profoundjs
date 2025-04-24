@@ -1,0 +1,146 @@
+{
+  "routes": [
+    {
+      "name": "Multisystem Claim API",
+      "enableCors": true,
+      "summary": "Example API to retrieve Claim data from multiple sources",
+      "method": "get",
+      "path": "/claimcost/:id",
+      "inputs": [
+        {
+          "name": "id",
+          "type": "integer",
+          "from": "path",
+          "required": true,
+          "example": "1234",
+          "description": "Claim number to retrieve"
+        }
+      ],
+      "category": "Bobs you uncle",
+      "subcategory": "Claim",
+      "tag": "Claim Example MultiDB",
+      "description": "This example retrieves data from the local DB2 database on IBM i, a MySQL database running in AWS, and calls an RPG Program.  This is all done in a single API to demonstrate the flexibility of the Profound API solution.",
+      "outputdescription": "Claim information from multiple sources",
+      "outputs": [
+        {
+          "type": "boolean",
+          "name": "success",
+          "example": "true",
+          "description": "Success flag"
+        },
+        {
+          "type": "object",
+          "name": "ClaimData",
+          "description": "Claim information",
+          "children": [
+            {
+              "type": "integer",
+              "name": "id",
+              "example": "1234",
+              "description": "Claim ID retrieved"
+            },
+            {
+              "type": "string",
+              "name": "desc",
+              "example": "Auto accident",
+              "description": "Claim description"
+            },
+            {
+              "type": "string",
+              "name": "complete",
+              "example": "1",
+              "description": "Claim complete?"
+            },
+            {
+              "type": "string",
+              "name": "classification",
+              "example": "hit and run",
+              "description": "Claim classification",
+              "multipleValues": true
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Call IBM i Program",
+          "PF": true,
+          "answers": {
+            "plugin": "IBM i:call-ibmi-program",
+            "program-name": "demolib/RTNCLAIMR2",
+            "parameter": {
+              "data type": "packed decimal",
+              "length": "9",
+              "decimals": "0",
+              "argument value": "input[\"id\"]",
+              "API output property": "output[\"ClaimData\"][\"id\"]"
+            },
+            "parameter_2": {
+              "data type": "char",
+              "length": "25",
+              "capture output": "Into work variable",
+              "work variable": "desc"
+            },
+            "parameter_3": {
+              "data type": "char",
+              "length": "10"
+            },
+            "parameter_4": {
+              "data type": "char",
+              "length": "20"
+            },
+            "parameter_5": {}
+          }
+        },
+        {
+          "text": "Retrieve Claim Class from MySQL",
+          "PF": true,
+          "answers": {
+            "plugin": "Database:get-records",
+            "connection": "aws_mariaDB",
+            "tables": "pjsdemo.claimclass",
+            "columns": "classification",
+            "criteria": "cmnumber = ? AND count > ?",
+            "parameter": "input[\"id\"]",
+            "parameter_2": "0",
+            "add_order_by": false,
+            "limit": "",
+            "skip": "",
+            "destination": "Work variable",
+            "work_variable": "classification"
+          }
+        },
+        {
+          "text": "Retrieve Status from DB2",
+          "PF": true,
+          "answers": {
+            "plugin": "Database:get-record",
+            "connection": "",
+            "tables": "CLAIMSP",
+            "columns": "cmcomplete",
+            "criteria": "CMNUMBER = ?",
+            "parameter": "input[\"id\"]",
+            "destination": "Work variable",
+            "work_variable": "complete"
+          }
+        },
+        {
+          "text": "Set API output",
+          "PF": true,
+          "answers": {
+            "plugin": "Program Data:set-api-output",
+            "api-output-values": {
+              "success": "true",
+              "ClaimData[\"id\"]": "input[\"id\"]",
+              "ClaimData[\"desc\"]": "desc",
+              "ClaimData[\"complete\"]": "complete[\"cmcomplete\"]",
+              "ClaimData[\"classification\"]": "classification"
+            }
+          }
+        }
+      ],
+      "apiRouteID": "7e1bc467-0973-433c-9775-e035d2edaaa2"
+    }
+  ],
+  "apiFileID": "ee54dc27-ee4a-42aa-85ff-39b734e738ef"
+}

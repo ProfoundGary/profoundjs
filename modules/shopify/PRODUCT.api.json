@@ -1,0 +1,402 @@
+{
+  "apiFileID": "2babb00d-e57b-47b7-82a1-104fbf7da85b",
+  "apiType": "rest",
+  "routes": [
+    {
+      "apiRouteID": "f0bd25db-014b-4c72-87e3-268eb05dc743",
+      "name": "Get List",
+      "enableCors": true,
+      "summary": "Get list of products",
+      "description": "Get a list of products based on criteria",
+      "method": "get",
+      "tag": "products",
+      "path": "/products",
+      "outputdescription": "Returns an array of products along with total count if requested.",
+      "inputs": [
+        {
+          "type": "boolean",
+          "from": "query",
+          "name": "countOnly",
+          "description": "Send true to only return the total count of the matching records"
+        },
+        {
+          "type": "string",
+          "from": "query",
+          "name": "select",
+          "multipleValues": true,
+          "description": "Array of all the fields to be returned."
+        },
+        {
+          "type": "string",
+          "from": "query",
+          "name": "filter",
+          "description": "Enter the query filter."
+        },
+        {
+          "type": "string",
+          "from": "query",
+          "name": "orderby",
+          "multipleValues": true,
+          "description": "Array of all the fields to be sorted by."
+        },
+        {
+          "type": "boolean",
+          "from": "query",
+          "name": "count",
+          "description": "Send true if you want the total count of the matching records"
+        },
+        {
+          "type": "integer",
+          "from": "query",
+          "name": "limit",
+          "description": "Enter the number of records to return"
+        },
+        {
+          "type": "integer",
+          "from": "query",
+          "name": "skip",
+          "description": "Enter the number of records to skip. This is useful when loading a page of records at a time."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "totalCount",
+          "type": "integer"
+        },
+        {
+          "name": "data",
+          "type": "object",
+          "children": [
+            {
+              "name": "prim_ssn",
+              "type": "string",
+              "description": "PRIM SSN"
+            },
+            {
+              "name": "plancode",
+              "type": "string"
+            }
+          ],
+          "multipleValues": true
+        }
+      ],
+      "steps": [
+        {
+          "text": "Count requested?",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "input[\"count\"]",
+            "type": "truthy",
+            "and-or": "or",
+            "variable2": "input[\"countOnly\"]",
+            "type2": "truthy",
+            "and-or2": ""
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Get record count",
+          "answers": {
+            "plugin": "Database:get-record-count",
+            "connection": "",
+            "tables": "PRODUCT",
+            "criteria": "${input[\"filter\"]}",
+            "destination": "API output",
+            "api_output": "output[\"totalCount\"]"
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Records requested?",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "input[\"countOnly\"]",
+            "type": "falsy",
+            "and-or": ""
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Get records",
+          "answers": {
+            "plugin": "Database:get-records",
+            "connection": "",
+            "tables": "PRODUCT",
+            "columns": "${input[\"select\"]}",
+            "criteria": "${input[\"filter\"]}",
+            "add_order_by": true,
+            "order_by": "${input[\"orderby\"]}",
+            "limit": "${input[\"limit\"]}",
+            "skip": "${input[\"skip\"]}",
+            "destination": "API output",
+            "api_output": "output[\"data\"]"
+          }
+        },
+        {
+          "isStructureEnd": true
+        }
+      ],
+      "subcategory": ""
+    },
+    {
+      "apiRouteID": "24b9fdd6-fd55-46a6-a778-602dd7b59ce3",
+      "name": "Get One",
+      "enableCors": true,
+      "summary": "Get one product",
+      "description": "Get one product",
+      "method": "get",
+      "tag": "products",
+      "path": "/products/:prim_ssn/:plancode",
+      "outputdescription": "Returns one product.",
+      "inputs": [
+        {
+          "name": "prim_ssn",
+          "type": "string",
+          "description": "PRIM SSN",
+          "from": "path",
+          "required": true
+        },
+        {
+          "name": "plancode",
+          "type": "string",
+          "from": "path",
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "data",
+          "type": "object",
+          "children": [
+            {
+              "name": "prim_ssn",
+              "type": "string",
+              "description": "PRIM SSN"
+            },
+            {
+              "name": "plancode",
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Get record",
+          "answers": {
+            "plugin": "Database:get-record",
+            "connection": "",
+            "tables": "PRODUCT",
+            "columns": "prim_ssn,plancode",
+            "criteria": "prim_ssn = ? AND plancode = ?",
+            "destination": "API output",
+            "api_output": "output[\"data\"]",
+            "parameter": "input[\"prim_ssn\"]",
+            "parameter_2": "input[\"plancode\"]"
+          }
+        }
+      ],
+      "subcategory": ""
+    },
+    {
+      "apiRouteID": "6fc2298e-c29c-4964-840b-c8d159fef525",
+      "name": "Add One",
+      "enableCors": true,
+      "summary": "Add one product",
+      "description": "Add one product",
+      "method": "put",
+      "tag": "products",
+      "path": "/products",
+      "outputdescription": "Returns the status of the request.",
+      "inputs": [
+        {
+          "name": "data",
+          "type": "object",
+          "from": "body",
+          "required": true,
+          "children": [
+            {
+              "name": "prim_ssn",
+              "type": "string",
+              "required": true,
+              "description": "PRIM SSN"
+            },
+            {
+              "name": "plancode",
+              "type": "string",
+              "required": false
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "status",
+          "children": [
+            {
+              "type": "boolean",
+              "name": "success"
+            },
+            {
+              "type": "integer",
+              "name": "affectedRows",
+              "example": 1
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Insert",
+          "answers": {
+            "plugin": "Database:insert-record",
+            "connection": "",
+            "table": "PRODUCT",
+            "record_source": "From API input",
+            "api_input": "input[\"data\"]",
+            "results": "output[\"status\"]"
+          }
+        }
+      ],
+      "subcategory": ""
+    },
+    {
+      "apiRouteID": "93715eab-1164-40c7-8981-af4d20410bf3",
+      "name": "Update One",
+      "enableCors": true,
+      "summary": "Update one product",
+      "description": "Update one product",
+      "tag": "products",
+      "method": "post",
+      "path": "/products/:prim_ssn/:plancode",
+      "outputdescription": "Returns the status of the request.",
+      "inputs": [
+        {
+          "name": "prim_ssn",
+          "type": "string",
+          "description": "PRIM SSN",
+          "from": "path",
+          "required": true
+        },
+        {
+          "name": "plancode",
+          "type": "string",
+          "from": "path",
+          "required": true
+        },
+        {
+          "name": "data",
+          "type": "object",
+          "from": "body",
+          "required": true,
+          "children": [
+            {
+              "name": "prim_ssn",
+              "type": "string",
+              "description": "PRIM SSN"
+            },
+            {
+              "name": "plancode",
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "status",
+          "children": [
+            {
+              "type": "boolean",
+              "name": "success"
+            },
+            {
+              "type": "integer",
+              "name": "affectedRows",
+              "example": 1
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Update",
+          "answers": {
+            "plugin": "Database:update-records",
+            "connection": "",
+            "table": "PRODUCT",
+            "criteria": "prim_ssn = ? AND plancode = ?",
+            "record_source": "From API input",
+            "api_input": "input[\"data\"]",
+            "results": "output[\"status\"]",
+            "parameter": "input[\"prim_ssn\"]",
+            "parameter_2": "input[\"plancode\"]"
+          }
+        }
+      ],
+      "subcategory": ""
+    },
+    {
+      "apiRouteID": "d9107556-78f7-4160-bd6e-4a5ae8230a06",
+      "name": "Delete One",
+      "enableCors": true,
+      "summary": "Delete one product",
+      "description": "Delete one product",
+      "method": "delete",
+      "tag": "products",
+      "path": "/products/:prim_ssn/:plancode",
+      "outputdescription": "Returns the status of the request.",
+      "inputs": [
+        {
+          "name": "prim_ssn",
+          "type": "string",
+          "description": "PRIM SSN",
+          "from": "path",
+          "required": true
+        },
+        {
+          "name": "plancode",
+          "type": "string",
+          "from": "path",
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "status",
+          "children": [
+            {
+              "type": "boolean",
+              "name": "success"
+            },
+            {
+              "type": "integer",
+              "name": "affectedRows",
+              "example": 1
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Delete",
+          "answers": {
+            "plugin": "Database:delete-records",
+            "connection": "",
+            "table": "PRODUCT",
+            "criteria": "prim_ssn = ? AND plancode = ?",
+            "results": "output[\"status\"]",
+            "parameter": "input[\"prim_ssn\"]",
+            "parameter_2": "input[\"plancode\"]"
+          }
+        }
+      ],
+      "subcategory": ""
+    }
+  ]
+}

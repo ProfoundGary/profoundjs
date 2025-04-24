@@ -1,0 +1,1192 @@
+{
+  "text": "Maintain Accidents/Claims (Green-Screen)",
+  "formats": [
+    {
+      "screen": {
+        "record format name": "confirmdel",
+        "description": "Delete Claim Confirm Screen",
+        "overlay range": "6-9"
+      },
+      "items": [
+        {
+          "id": "PODEMODT1D_CONFIRMDEL_HeadingPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "0px",
+          "width": "1290px",
+          "height": "44px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-heading2",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "PODEMODT1D_CONFIRMDEL_ActionsPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "52px",
+          "height": "720px",
+          "width": "165px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-actions",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant1",
+          "field type": "output field",
+          "value": "Delete detail line?",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "105px",
+          "cursor row": "6",
+          "css class 2": "HI"
+        },
+        {
+          "id": "constant2",
+          "field type": "output field",
+          "value": "Enter=Confirm",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "165px",
+          "cursor row": "9",
+          "css class 2": "BLU"
+        },
+        {
+          "id": "linkSubmit",
+          "field type": "hyperlink",
+          "value": "Continue",
+          "shortcut key": "Enter",
+          "left": "25px",
+          "top": "70px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF12",
+          "field type": "hyperlink",
+          "value": "Cancel",
+          "shortcut key": "F12",
+          "response": {
+            "fieldName": "*IN12",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "103px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "record1",
+        "assume": "true",
+        "overlay range": "2-2"
+      },
+      "items": [
+        {
+          "id": "PODEMODT1D_RECORD1_HeadingPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "0px",
+          "width": "1290px",
+          "height": "44px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-heading2",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant3",
+          "field type": "output field",
+          "value": " ",
+          "css class": "hybrid-constant",
+          "left": "198px",
+          "cursor column": "1",
+          "top": "25px",
+          "cursor row": "2"
+        },
+        {
+          "id": "PODEMODT1D_RECORD1_ActionsPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "52px",
+          "height": "720px",
+          "width": "165px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-actions",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "linkSubmit",
+          "field type": "hyperlink",
+          "value": "Continue",
+          "shortcut key": "Enter",
+          "left": "25px",
+          "top": "70px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "detailsctl",
+        "description": "Details",
+        "overlay": "true",
+        "overlay range": "1-20"
+      },
+      "items": [
+        {
+          "id": "PODEMODT1D_DETAILSCTL_HeadingPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "0px",
+          "width": "1290px",
+          "height": "44px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-heading2",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant4",
+          "field type": "output field",
+          "value": "PO Details",
+          "css class": "hybrid-constant",
+          "left": "566px",
+          "cursor column": "47",
+          "top": "5px",
+          "cursor row": "1",
+          "css class 2": "top-line",
+          "css class 3": "HI"
+        },
+        {
+          "id": "PODEMODT1D_DETAILSCTL_ActionsPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "52px",
+          "height": "720px",
+          "width": "165px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-actions",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant11",
+          "field type": "output field",
+          "value": "PO",
+          "css class": "hybrid-constant",
+          "left": "230px",
+          "cursor column": "5",
+          "top": "65px",
+          "cursor row": "4",
+          "css class 2": "WHT"
+        },
+        {
+          "id": "RECORDID",
+          "field type": "output field",
+          "value": {
+            "fieldName": "recordid",
+            "dataLength": "11",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[recordid]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "262px",
+          "cursor column": "9",
+          "top": "65px",
+          "cursor row": "4",
+          "width": "88px",
+          "text align": "right"
+        },
+        {
+          "id": "constant16",
+          "field type": "output field",
+          "value": "Options:",
+          "css class": "hybrid-constant",
+          "left": "214px",
+          "cursor column": "3",
+          "top": "145px",
+          "cursor row": "8",
+          "css class 2": "HI"
+        },
+        {
+          "id": "constant13",
+          "field type": "output field",
+          "value": "Inventory",
+          "css class": "hybrid-constant",
+          "left": "766px",
+          "cursor column": "72",
+          "top": "165px",
+          "cursor row": "9",
+          "css class 2": "HI",
+          "css class 3": "hybrid-subfile-heading"
+        },
+        {
+          "id": "constant14",
+          "field type": "output field",
+          "value": "Inventory",
+          "css class": "hybrid-constant",
+          "left": "910px",
+          "cursor column": "90",
+          "top": "165px",
+          "cursor row": "9",
+          "css class 2": "HI",
+          "css class 3": "hybrid-subfile-heading"
+        },
+        {
+          "id": "constant9",
+          "field type": "output field",
+          "value": "Date",
+          "css class": "hybrid-constant",
+          "left": "1078px",
+          "cursor column": "111",
+          "top": "165px",
+          "cursor row": "9",
+          "css class 2": "HI",
+          "css class 3": "hybrid-subfile-heading"
+        },
+        {
+          "id": "constant8",
+          "field type": "output field",
+          "value": "Status",
+          "css class": "hybrid-constant",
+          "left": "766px",
+          "cursor column": "72",
+          "top": "185px",
+          "cursor row": "10",
+          "css class 2": "HI",
+          "css class 3": "hybrid-subfile-heading"
+        },
+        {
+          "id": "constant10",
+          "field type": "output field",
+          "value": "Id",
+          "css class": "hybrid-constant",
+          "left": "910px",
+          "cursor column": "90",
+          "top": "185px",
+          "cursor row": "10",
+          "css class 2": "HI",
+          "css class 3": "hybrid-subfile-heading"
+        },
+        {
+          "id": "constant15",
+          "field type": "output field",
+          "value": "Received",
+          "css class": "hybrid-constant",
+          "left": "1078px",
+          "cursor column": "111",
+          "top": "185px",
+          "cursor row": "10",
+          "css class 2": "HI",
+          "css class 3": "hybrid-subfile-heading"
+        },
+        {
+          "id": "DETAILSSFL",
+          "field type": "grid",
+          "number of columns": "8",
+          "record format name": "detailssfl",
+          "description": "Detail Subfile",
+          "display subfile": {
+            "fieldName": "N70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "display control record": {
+            "fieldName": "N70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "clear subfile": {
+            "fieldName": "70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "subfile size": "100",
+          "header height": "40",
+          "row height": "20",
+          "css class": "hybrid-grid",
+          "subfile end": {
+            "fieldName": "N70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "sortable columns": "true",
+          "find option": "true",
+          "filter option": "true",
+          "number of rows": "11",
+          "top": "165px",
+          "left": "201px",
+          "column widths": "16,112,112,136,184,104,208,69",
+          "column headings": ",ID,PID,Quantity,Unit Cost,,,"
+        },
+        {
+          "id": "linkSubmit",
+          "field type": "hyperlink",
+          "value": "Continue",
+          "shortcut key": "Enter",
+          "left": "25px",
+          "top": "70px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCA03",
+          "field type": "hyperlink",
+          "bypass validation": "true",
+          "value": "Exit",
+          "shortcut key": "F3",
+          "left": "25px",
+          "top": "103px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF05",
+          "field type": "hyperlink",
+          "value": "Refresh",
+          "shortcut key": "F5",
+          "left": "25px",
+          "top": "136px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF06",
+          "field type": "hyperlink",
+          "value": "Add New",
+          "shortcut key": "F6",
+          "left": "25px",
+          "top": "169px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF12",
+          "field type": "hyperlink",
+          "value": "Cancel",
+          "shortcut key": "F12",
+          "left": "25px",
+          "top": "202px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "OPTION",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "OPTION",
+            "designValue": "[OPTION]",
+            "dataType": "char",
+            "formatting": "Text",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "textTransform": "uppercase",
+            "dataLength": "1"
+          },
+          "text transform": "uppercase",
+          "left": "1px",
+          "cursor column": "2",
+          "top": "1px",
+          "cursor row": "11",
+          "width": "12px",
+          "valid values": " ,2,4",
+          "visibility": {
+            "fieldName": "90",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "hidden",
+            "customFalse": "visible"
+          },
+          "grid": "DETAILSSFL",
+          "column": "0"
+        },
+        {
+          "id": "RRN",
+          "field type": "output field",
+          "value": {
+            "fieldName": "rrn",
+            "dataLength": "11",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[rrn]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "5px",
+          "cursor column": "4",
+          "top": "1px",
+          "cursor row": "11",
+          "width": "88px",
+          "text align": "right",
+          "grid": "DETAILSSFL",
+          "column": "1"
+        },
+        {
+          "id": "PRODID",
+          "field type": "output field",
+          "value": {
+            "fieldName": "prodid",
+            "dataLength": "11",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[prodid]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "5px",
+          "cursor column": "18",
+          "top": "1px",
+          "cursor row": "11",
+          "width": "88px",
+          "text align": "right",
+          "grid": "DETAILSSFL",
+          "column": "2"
+        },
+        {
+          "id": "QUANTITY",
+          "field type": "output field",
+          "value": {
+            "fieldName": "quantity",
+            "dataLength": "11",
+            "decPos": "0",
+            "numSep": "true",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[quantity]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "5px",
+          "cursor column": "32",
+          "top": "1px",
+          "cursor row": "11",
+          "width": "112px",
+          "text align": "right",
+          "visibility": {
+            "fieldName": "90",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "hidden",
+            "customFalse": "visible"
+          },
+          "grid": "DETAILSSFL",
+          "column": "3"
+        },
+        {
+          "id": "UNIT_COST",
+          "field type": "output field",
+          "value": {
+            "fieldName": "unit_cost",
+            "dataLength": "18",
+            "trimLeading": "false",
+            "trimTrailing": "false",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[unit_cost]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "5px",
+          "cursor column": "49",
+          "top": "1px",
+          "cursor row": "11",
+          "grid": "DETAILSSFL",
+          "column": "4"
+        },
+        {
+          "id": "POSTEDTXT",
+          "field type": "output field",
+          "value": {
+            "fieldName": "postedtxt",
+            "dataLength": "10",
+            "trimLeading": "false",
+            "trimTrailing": "false",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[postedtxt]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "5px",
+          "cursor column": "72",
+          "top": "1px",
+          "cursor row": "11",
+          "grid": "DETAILSSFL",
+          "column": "5"
+        },
+        {
+          "id": "INVID",
+          "field type": "output field",
+          "value": {
+            "fieldName": "invid",
+            "dataLength": "11",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[invid]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "5px",
+          "cursor column": "85",
+          "top": "1px",
+          "cursor row": "11",
+          "width": "88px",
+          "text align": "right",
+          "grid": "DETAILSSFL",
+          "column": "6"
+        },
+        {
+          "id": "RECEIVEDDT",
+          "field type": "output field",
+          "value": {
+            "fieldName": "receiveddt",
+            "dataType": "date",
+            "formatting": "Date",
+            "dateFormat": "",
+            "locale": "en_US",
+            "designValue": "[receiveddt]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "5px",
+          "cursor column": "111",
+          "top": "1px",
+          "cursor row": "11",
+          "visibility": {
+            "fieldName": "90",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "Custom Values",
+            "customTrue": "hidden",
+            "customFalse": "visible"
+          },
+          "grid": "DETAILSSFL",
+          "column": "7"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "detbottom",
+        "description": "Function Keys",
+        "overlay range": "24-24"
+      },
+      "items": [
+        {
+          "id": "PODEMODT1D_DETBOTTOM_HeadingPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "0px",
+          "width": "1290px",
+          "height": "44px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-heading2",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "PODEMODT1D_DETBOTTOM_ActionsPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "52px",
+          "height": "720px",
+          "width": "165px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-actions",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "linkSubmit",
+          "field type": "hyperlink",
+          "value": "Continue",
+          "shortcut key": "Enter",
+          "left": "25px",
+          "top": "70px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCA03",
+          "field type": "hyperlink",
+          "bypass validation": "true",
+          "value": "Exit",
+          "shortcut key": "F3",
+          "response": {
+            "fieldName": "*IN03",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "103px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF05",
+          "field type": "hyperlink",
+          "value": "Refresh",
+          "shortcut key": "F5",
+          "response": {
+            "fieldName": "*IN05",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "136px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF06",
+          "field type": "hyperlink",
+          "value": "Create New",
+          "shortcut key": "F6",
+          "response": {
+            "fieldName": "*IN06",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "169px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF07",
+          "field type": "hyperlink",
+          "value": "F7",
+          "shortcut key": "F7",
+          "response": {
+            "fieldName": "*IN07",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "202px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF12",
+          "field type": "hyperlink",
+          "value": "Cancel",
+          "shortcut key": "F12",
+          "response": {
+            "fieldName": "*IN12",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "235px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "detailedit",
+        "overlay range": "1-24"
+      },
+      "items": [
+        {
+          "id": "PODEMODT1D_DETAILEDIT_HeadingPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "0px",
+          "width": "1290px",
+          "height": "44px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-heading2",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant24",
+          "field type": "output field",
+          "value": "Purchase Order Detail",
+          "css class": "hybrid-constant",
+          "left": "582px",
+          "cursor column": "49",
+          "top": "5px",
+          "cursor row": "1",
+          "css class 2": "top-line"
+        },
+        {
+          "id": "PODEMODT1D_DETAILEDIT_ActionsPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "52px",
+          "height": "720px",
+          "width": "165px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-actions",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant22",
+          "field type": "output field",
+          "value": "PO",
+          "css class": "hybrid-constant",
+          "left": "230px",
+          "cursor column": "5",
+          "top": "65px",
+          "cursor row": "4",
+          "css class 2": "WHT"
+        },
+        {
+          "id": "ID",
+          "field type": "output field",
+          "value": {
+            "fieldName": "id",
+            "dataLength": "11",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "true",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[id]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "262px",
+          "cursor column": "9",
+          "top": "65px",
+          "cursor row": "4",
+          "width": "88px",
+          "text align": "right"
+        },
+        {
+          "id": "constant26",
+          "field type": "output field",
+          "value": "ID",
+          "css class": "hybrid-constant",
+          "left": "230px",
+          "cursor column": "5",
+          "top": "105px",
+          "cursor row": "6",
+          "css class 2": "WHT"
+        },
+        {
+          "id": "DETAILEDIT_RRN",
+          "field type": "output field",
+          "value": {
+            "fieldName": "rrn",
+            "dataLength": "11",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[rrn]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "262px",
+          "cursor column": "9",
+          "top": "105px",
+          "cursor row": "6",
+          "width": "88px",
+          "text align": "right"
+        },
+        {
+          "id": "constant17",
+          "field type": "output field",
+          "value": "Product Id",
+          "css class": "hybrid-constant",
+          "left": "230px",
+          "cursor column": "5",
+          "top": "145px",
+          "cursor row": "8",
+          "css class 2": "WHT"
+        },
+        {
+          "id": "DETAILEDIT_PRODID",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "prodid",
+            "dataLength": "11",
+            "decPos": "0",
+            "numSep": "true",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[prodid]"
+          },
+          "left": "326px",
+          "cursor column": "17",
+          "top": "145px",
+          "cursor row": "8",
+          "width": "116px"
+        },
+        {
+          "id": "constant18",
+          "field type": "output field",
+          "value": "Quantity",
+          "css class": "hybrid-constant",
+          "left": "230px",
+          "cursor column": "5",
+          "top": "185px",
+          "cursor row": "10",
+          "css class 2": "WHT"
+        },
+        {
+          "id": "DETAILEDIT_QUANTITY",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "quantity",
+            "dataLength": "11",
+            "decPos": "0",
+            "numSep": "true",
+            "zeroBalance": "true",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[quantity]"
+          },
+          "left": "326px",
+          "cursor column": "17",
+          "top": "185px",
+          "cursor row": "10",
+          "width": "116px"
+        },
+        {
+          "id": "constant19",
+          "field type": "output field",
+          "value": "Unit Cost",
+          "css class": "hybrid-constant",
+          "left": "230px",
+          "cursor column": "5",
+          "top": "225px",
+          "cursor row": "12",
+          "css class 2": "WHT"
+        },
+        {
+          "id": "DETAILEDIT_UNIT_COST",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "unit_cost",
+            "dataLength": "18",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[unit_cost]"
+          },
+          "text transform": "uppercase",
+          "left": "326px",
+          "cursor column": "17",
+          "top": "225px",
+          "cursor row": "12",
+          "width": "148px"
+        },
+        {
+          "id": "constant23",
+          "field type": "output field",
+          "value": "Inventory Status",
+          "css class": "hybrid-constant",
+          "left": "230px",
+          "cursor column": "5",
+          "top": "265px",
+          "cursor row": "14",
+          "css class 2": "WHT"
+        },
+        {
+          "id": "POSTED",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "posted",
+            "dataLength": "1",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[posted]"
+          },
+          "left": "366px",
+          "cursor column": "22",
+          "top": "265px",
+          "cursor row": "14",
+          "width": "12px"
+        },
+        {
+          "id": "constant25",
+          "field type": "output field",
+          "value": "(0=Not Posted 1=Posted)",
+          "css class": "hybrid-constant",
+          "left": "406px",
+          "cursor column": "27",
+          "top": "265px",
+          "cursor row": "14",
+          "css class 2": "WHT"
+        },
+        {
+          "id": "constant20",
+          "field type": "output field",
+          "value": "Inventory Id",
+          "css class": "hybrid-constant",
+          "left": "230px",
+          "cursor column": "5",
+          "top": "305px",
+          "cursor row": "16",
+          "css class 2": "WHT"
+        },
+        {
+          "id": "DETAILEDIT_INVID",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "invid",
+            "dataLength": "11",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[invid]"
+          },
+          "left": "334px",
+          "cursor column": "18",
+          "top": "305px",
+          "cursor row": "16",
+          "width": "92px"
+        },
+        {
+          "id": "constant21",
+          "field type": "output field",
+          "value": "Date Received",
+          "css class": "hybrid-constant",
+          "left": "230px",
+          "cursor column": "5",
+          "top": "345px",
+          "cursor row": "18",
+          "css class 2": "WHT"
+        },
+        {
+          "id": "DETAILEDIT_RECEIVEDDT",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "receiveddt",
+            "dataType": "date",
+            "formatting": "Date",
+            "dateFormat": "",
+            "locale": "en_US",
+            "designValue": "[receiveddt]"
+          },
+          "left": "350px",
+          "cursor column": "20",
+          "top": "345px",
+          "cursor row": "18"
+        },
+        {
+          "id": "linkSubmit",
+          "field type": "hyperlink",
+          "value": "Continue",
+          "shortcut key": "Enter",
+          "left": "25px",
+          "top": "70px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCA03",
+          "field type": "hyperlink",
+          "bypass validation": "true",
+          "value": "Exit",
+          "shortcut key": "F3",
+          "response": {
+            "fieldName": "*IN03",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "103px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF04",
+          "field type": "hyperlink",
+          "value": "Delete",
+          "shortcut key": "F4",
+          "response": {
+            "fieldName": "*IN04",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "136px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF12",
+          "field type": "hyperlink",
+          "value": "Cancel",
+          "shortcut key": "F12",
+          "response": {
+            "fieldName": "*IN12",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "169px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        }
+      ]
+    }
+  ],
+  "keywords": [
+    "INDARA"
+  ],
+  "long name aliases": true
+}

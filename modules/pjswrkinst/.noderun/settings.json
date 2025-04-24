@@ -1,0 +1,18 @@
+{
+  "description": "Work With PJS Instances",
+  "current git repository": "",
+  "git repositories": [
+    ""
+  ],
+  "app start": "app.js",
+  "routes": {
+    "getInstanceConfig.js": {
+      "method": "all",
+      "route": "getinstanceconfig"
+    },
+    "getInstances.js": {
+      "method": "all",
+      "route": "getinstances"
+    }
+  }
+}

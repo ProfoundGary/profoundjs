@@ -1,0 +1,490 @@
+{
+  "apiFileID": "d0691db7-06e1-4d39-99d6-bfcaf90d738c",
+  "apiType": "rest",
+  "routes": [
+    {
+      "apiRouteID": "147d6fab-239d-4f85-85e1-fb605f752a6d",
+      "name": "Get List",
+      "enableCors": true,
+      "summary": "Get list of productsps",
+      "description": "Get a list of productsps based on criteria",
+      "method": "get",
+      "tag": "productsps",
+      "path": "/productsps",
+      "outputdescription": "Returns an array of productsps along with total count if requested.",
+      "inputs": [
+        {
+          "type": "boolean",
+          "from": "query",
+          "name": "countOnly",
+          "description": "Send true to only return the total count of the matching records"
+        },
+        {
+          "type": "string",
+          "from": "query",
+          "name": "select",
+          "multipleValues": true,
+          "description": "Array of all the fields to be returned."
+        },
+        {
+          "type": "string",
+          "from": "query",
+          "name": "filter",
+          "description": "Enter the query filter."
+        },
+        {
+          "type": "string",
+          "from": "query",
+          "name": "orderby",
+          "multipleValues": true,
+          "description": "Array of all the fields to be sorted by."
+        },
+        {
+          "type": "boolean",
+          "from": "query",
+          "name": "count",
+          "description": "Send true if you want the total count of the matching records"
+        },
+        {
+          "type": "integer",
+          "from": "query",
+          "name": "limit",
+          "description": "Enter the number of records to return"
+        },
+        {
+          "type": "integer",
+          "from": "query",
+          "name": "skip",
+          "description": "Enter the number of records to skip. This is useful when loading a page of records at a time."
+        }
+      ],
+      "outputs": [
+        {
+          "name": "totalCount",
+          "type": "integer"
+        },
+        {
+          "name": "data",
+          "type": "object",
+          "children": [
+            {
+              "name": "prid",
+              "type": "decimal",
+              "description": "Product Id"
+            },
+            {
+              "name": "prname",
+              "type": "string",
+              "description": "Product Name"
+            },
+            {
+              "name": "prdesc",
+              "type": "string",
+              "description": "Description"
+            },
+            {
+              "name": "prprice",
+              "type": "decimal",
+              "description": "Price"
+            },
+            {
+              "name": "primage",
+              "type": "string",
+              "description": "Image URL"
+            },
+            {
+              "name": "prqty",
+              "type": "decimal",
+              "description": "Quantity Available"
+            },
+            {
+              "name": "prcatid",
+              "type": "decimal",
+              "description": "Category Id"
+            }
+          ],
+          "multipleValues": true
+        }
+      ],
+      "steps": [
+        {
+          "text": "Count requested?",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "input[\"count\"]",
+            "type": "truthy",
+            "and-or": "or",
+            "variable2": "input[\"countOnly\"]",
+            "type2": "truthy",
+            "and-or2": ""
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Get record count",
+          "answers": {
+            "plugin": "Database:get-record-count",
+            "connection": "",
+            "tables": "PRODUCTSP",
+            "criteria": "${input[\"filter\"]}",
+            "destination": "API output",
+            "api_output": "output[\"totalCount\"]"
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Records requested?",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "input[\"countOnly\"]",
+            "type": "falsy",
+            "and-or": ""
+          },
+          "isStructureStart": true
+        },
+        {
+          "text": "Get records",
+          "answers": {
+            "plugin": "Database:get-records",
+            "connection": "",
+            "tables": "PRODUCTSP",
+            "columns": "${input[\"select\"]}",
+            "criteria": "${input[\"filter\"]}",
+            "add_order_by": true,
+            "order_by": "${input[\"orderby\"]}",
+            "limit": "${input[\"limit\"]}",
+            "skip": "${input[\"skip\"]}",
+            "destination": "API output",
+            "api_output": "output[\"data\"]"
+          }
+        },
+        {
+          "isStructureEnd": true
+        }
+      ],
+      "subcategory": ""
+    },
+    {
+      "apiRouteID": "2d254d2e-61b7-4953-b07f-765b50bae30a",
+      "name": "Get One",
+      "enableCors": true,
+      "summary": "Get one productsp",
+      "description": "Get one productsp",
+      "method": "get",
+      "tag": "productsps",
+      "path": "/productsps/:prid",
+      "outputdescription": "Returns one productsp.",
+      "inputs": [
+        {
+          "name": "prid",
+          "type": "decimal",
+          "description": "Product Id",
+          "from": "path",
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "data",
+          "type": "object",
+          "children": [
+            {
+              "name": "prid",
+              "type": "decimal",
+              "description": "Product Id"
+            },
+            {
+              "name": "prname",
+              "type": "string",
+              "description": "Product Name"
+            },
+            {
+              "name": "prdesc",
+              "type": "string",
+              "description": "Description"
+            },
+            {
+              "name": "prprice",
+              "type": "decimal",
+              "description": "Price"
+            },
+            {
+              "name": "primage",
+              "type": "string",
+              "description": "Image URL"
+            },
+            {
+              "name": "prqty",
+              "type": "decimal",
+              "description": "Quantity Available"
+            },
+            {
+              "name": "prcatid",
+              "type": "decimal",
+              "description": "Category Id"
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Get record",
+          "answers": {
+            "plugin": "Database:get-record",
+            "connection": "",
+            "tables": "PRODUCTSP",
+            "columns": "prid,prname,prdesc,prprice,primage,prqty,prcatid",
+            "criteria": "prid = ?",
+            "destination": "API output",
+            "api_output": "output[\"data\"]",
+            "parameter": "input[\"prid\"]"
+          }
+        }
+      ],
+      "subcategory": ""
+    },
+    {
+      "apiRouteID": "9da7a289-010d-4676-b3f6-8ba621c38d07",
+      "name": "Add One",
+      "enableCors": true,
+      "summary": "Add one productsp",
+      "description": "Add one productsp",
+      "method": "put",
+      "tag": "productsps",
+      "path": "/productsps",
+      "outputdescription": "Returns the status of the request.",
+      "inputs": [
+        {
+          "name": "data",
+          "type": "object",
+          "from": "body",
+          "required": true,
+          "children": [
+            {
+              "name": "prid",
+              "type": "decimal",
+              "required": true,
+              "description": "Product Id"
+            },
+            {
+              "name": "prname",
+              "type": "string",
+              "required": true,
+              "description": "Product Name"
+            },
+            {
+              "name": "prdesc",
+              "type": "string",
+              "required": true,
+              "description": "Description"
+            },
+            {
+              "name": "prprice",
+              "type": "decimal",
+              "required": true,
+              "description": "Price"
+            },
+            {
+              "name": "primage",
+              "type": "string",
+              "required": true,
+              "description": "Image URL"
+            },
+            {
+              "name": "prqty",
+              "type": "decimal",
+              "required": true,
+              "description": "Quantity Available"
+            },
+            {
+              "name": "prcatid",
+              "type": "decimal",
+              "required": true,
+              "description": "Category Id"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "status",
+          "children": [
+            {
+              "type": "boolean",
+              "name": "success"
+            },
+            {
+              "type": "integer",
+              "name": "affectedRows",
+              "example": 1
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Insert",
+          "answers": {
+            "plugin": "Database:insert-record",
+            "connection": "",
+            "table": "PRODUCTSP",
+            "record_source": "From API input",
+            "api_input": "input[\"data\"]",
+            "results": "output[\"status\"]"
+          }
+        }
+      ],
+      "subcategory": ""
+    },
+    {
+      "apiRouteID": "aaca9f94-a5be-4d55-86fc-b866592b1b38",
+      "name": "Update One",
+      "enableCors": true,
+      "summary": "Update one productsp",
+      "description": "Update one productsp",
+      "tag": "productsps",
+      "method": "post",
+      "path": "/productsps/:prid",
+      "outputdescription": "Returns the status of the request.",
+      "inputs": [
+        {
+          "name": "prid",
+          "type": "decimal",
+          "description": "Product Id",
+          "from": "path",
+          "required": true
+        },
+        {
+          "name": "data",
+          "type": "object",
+          "from": "body",
+          "required": true,
+          "children": [
+            {
+              "name": "prid",
+              "type": "decimal",
+              "description": "Product Id"
+            },
+            {
+              "name": "prname",
+              "type": "string",
+              "description": "Product Name"
+            },
+            {
+              "name": "prdesc",
+              "type": "string",
+              "description": "Description"
+            },
+            {
+              "name": "prprice",
+              "type": "decimal",
+              "description": "Price"
+            },
+            {
+              "name": "primage",
+              "type": "string",
+              "description": "Image URL"
+            },
+            {
+              "name": "prqty",
+              "type": "decimal",
+              "description": "Quantity Available"
+            },
+            {
+              "name": "prcatid",
+              "type": "decimal",
+              "description": "Category Id"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "status",
+          "children": [
+            {
+              "type": "boolean",
+              "name": "success"
+            },
+            {
+              "type": "integer",
+              "name": "affectedRows",
+              "example": 1
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Update",
+          "answers": {
+            "plugin": "Database:update-records",
+            "connection": "",
+            "table": "PRODUCTSP",
+            "criteria": "prid = ?",
+            "record_source": "From API input",
+            "api_input": "input[\"data\"]",
+            "results": "output[\"status\"]",
+            "parameter": "input[\"prid\"]"
+          }
+        }
+      ],
+      "subcategory": ""
+    },
+    {
+      "apiRouteID": "439f7c17-5c11-493e-a509-29f7c3b275e8",
+      "name": "Delete One",
+      "enableCors": true,
+      "summary": "Delete one productsp",
+      "description": "Delete one productsp",
+      "method": "delete",
+      "tag": "productsps",
+      "path": "/productsps/:prid",
+      "outputdescription": "Returns the status of the request.",
+      "inputs": [
+        {
+          "name": "prid",
+          "type": "decimal",
+          "description": "Product Id",
+          "from": "path",
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "status",
+          "children": [
+            {
+              "type": "boolean",
+              "name": "success"
+            },
+            {
+              "type": "integer",
+              "name": "affectedRows",
+              "example": 1
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Delete",
+          "answers": {
+            "plugin": "Database:delete-records",
+            "connection": "",
+            "table": "PRODUCTSP",
+            "criteria": "prid = ?",
+            "results": "output[\"status\"]",
+            "parameter": "input[\"prid\"]"
+          }
+        }
+      ],
+      "subcategory": ""
+    }
+  ]
+}

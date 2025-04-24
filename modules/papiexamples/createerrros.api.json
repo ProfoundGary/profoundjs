@@ -1,0 +1,51 @@
+{
+  "apiFileID": "90003002-ae3b-4d7d-9e65-2a70cf9d8a06",
+  "routes": [
+    {
+      "apiRouteID": "748952dd-f04c-43e5-8856-f5375f25c6c9",
+      "name": "get error",
+      "enableCors": true,
+      "summary": "causes error ",
+      "method": "get",
+      "path": "/errorget",
+      "inputs": [],
+      "steps": [
+        {
+          "text": "Call IBM i program",
+          "answers": {
+            "plugin": "IBM i:call-ibmi-program",
+            "program-name": "notapgm",
+            "extractRPGParms": null,
+            "parameter": {
+              "dimension": null
+            }
+          }
+        }
+      ],
+      "subcategory": ""
+    },
+    {
+      "apiRouteID": "43cee330-5ece-4981-a68a-8d94a2cd5c08",
+      "name": "post error",
+      "enableCors": true,
+      "summary": "error from post",
+      "method": "post",
+      "path": "/errorpost",
+      "inputs": [],
+      "steps": [
+        {
+          "text": "Call IBM i program",
+          "answers": {
+            "plugin": "IBM i:call-ibmi-program",
+            "program-name": "notapgm",
+            "extractRPGParms": null,
+            "parameter": {
+              "dimension": null
+            }
+          }
+        }
+      ],
+      "subcategory": ""
+    }
+  ]
+}

@@ -1,0 +1,991 @@
+{
+  "text": "View Products (Green-Screen)",
+  "formats": [
+    {
+      "screen": {
+        "record format name": "PRODCTL",
+        "description": "View Products",
+        "overlay": "true",
+        "overlay range": "1-20"
+      },
+      "items": [
+        {
+          "id": "INQ01D_PRODCTL_ActionsPanel",
+          "field type": "panel",
+          "panel style": "Sapphire",
+          "value": "Actions",
+          "text align": "center",
+          "left": "5px",
+          "top": "15px",
+          "height": "640px",
+          "width": "125px",
+          "z index": "8",
+          "locked in place": "true"
+        },
+        {
+          "id": "INQ01D_PRODCTL_MainPanel",
+          "field type": "panel",
+          "panel style": "Sapphire",
+          "left": "135px",
+          "top": "15px",
+          "width": "740px",
+          "height": "640px",
+          "z index": "8",
+          "locked in place": "true"
+        },
+        {
+          "id": "constant1",
+          "field type": "output field",
+          "value": "View Products",
+          "css class": "enhanced-constant",
+          "left": "438px",
+          "cursor column": "36",
+          "top": "20px",
+          "cursor row": "1",
+          "css class 2": "top-line",
+          "css class 3": "HI"
+        },
+        {
+          "id": "constant9",
+          "field type": "output field",
+          "value": "Filter by Category:",
+          "css class": "enhanced-constant",
+          "left": "254px",
+          "cursor column": "13",
+          "top": "80px",
+          "cursor row": "4",
+          "css class 2": "HI"
+        },
+        {
+          "id": "S1CATID",
+          "field type": "textbox",
+          "css class": "enhanced-input",
+          "value": {
+            "fieldName": "S1CATID",
+            "designValue": "[S1CATID]",
+            "noExtraSpaces": "true",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "zeroFill": "false",
+            "curSym": "",
+            "units": "",
+            "negNum": "999.00",
+            "dataLength": "5",
+            "decPos": "0"
+          },
+          "left": "462px",
+          "cursor column": "39",
+          "top": "80px",
+          "cursor row": "4",
+          "width": "44px"
+        },
+        {
+          "id": "CATNAME",
+          "field type": "output field",
+          "value": {
+            "fieldName": "CATNAME",
+            "designValue": "[CATNAME]",
+            "dataType": "char",
+            "formatting": "Text",
+            "trimLeading": "false",
+            "trimTrailing": "false",
+            "textTransform": "none",
+            "dataLength": "30"
+          },
+          "css class": "enhanced-output-field",
+          "left": "518px",
+          "cursor column": "46",
+          "top": "80px",
+          "cursor row": "4"
+        },
+        {
+          "id": "constant8",
+          "field type": "output field",
+          "value": "Position by Product Id:",
+          "css class": "enhanced-constant",
+          "left": "254px",
+          "cursor column": "13",
+          "top": "120px",
+          "cursor row": "6",
+          "css class 2": "HI"
+        },
+        {
+          "id": "S1PRID",
+          "field type": "textbox",
+          "css class": "enhanced-input",
+          "value": {
+            "fieldName": "S1PRID",
+            "designValue": "[S1PRID]",
+            "noExtraSpaces": "true",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "zeroFill": "false",
+            "curSym": "",
+            "units": "",
+            "negNum": "999.00",
+            "dataLength": "5",
+            "decPos": "0"
+          },
+          "left": "462px",
+          "cursor column": "39",
+          "top": "120px",
+          "cursor row": "6",
+          "width": "44px"
+        },
+        {
+          "id": "constant5",
+          "field type": "output field",
+          "value": "Position by Product Name:",
+          "css class": "enhanced-constant",
+          "left": "254px",
+          "cursor column": "13",
+          "top": "160px",
+          "cursor row": "8",
+          "css class 2": "HI"
+        },
+        {
+          "id": "S1PRNAME",
+          "field type": "textbox",
+          "css class": "enhanced-input",
+          "value": {
+            "fieldName": "S1PRNAME",
+            "designValue": "[S1PRNAME]",
+            "dataType": "char",
+            "formatting": "Text",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "dataLength": "30"
+          },
+          "left": "462px",
+          "cursor column": "39",
+          "top": "160px",
+          "cursor row": "8",
+          "width": "244px",
+          "comparison operator": "Not Equal",
+          "comparison value": "JUNK"
+        },
+        {
+          "id": "PRODSFL",
+          "field type": "grid",
+          "number of columns": "5",
+          "record format name": "PRODSFL",
+          "description": "Products Subfile",
+          "display subfile": {
+            "fieldName": "N70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "display control record": {
+            "fieldName": "N70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "clear subfile": {
+            "fieldName": "70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "subfile size": "100",
+          "header height": "20",
+          "row height": "20",
+          "css class": "crystal-grid",
+          "subfile end": {
+            "fieldName": "N70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "sortable columns": "true",
+          "find option": "true",
+          "filter option": "true",
+          "number of rows": "10",
+          "top": "220px",
+          "left": "215px",
+          "column widths": "44,116,256,96,93",
+          "height": "200px",
+          "width": "606px",
+          "column headings": "Opt,Product,Product Name,Price,Qty",
+          "header text align": "left"
+        },
+        {
+          "id": "btnSubmit",
+          "field type": "styled button",
+          "button style": "Ice Blue",
+          "value": "Submit",
+          "shortcut key": "Enter",
+          "left": "16px",
+          "top": "60px",
+          "width": "100px",
+          "height": "23px",
+          "css class": "button",
+          "auto arrange": "true"
+        },
+        {
+          "id": "btnCA03",
+          "field type": "styled button",
+          "button style": "Ice Blue",
+          "bypass validation": "true",
+          "value": "Exit",
+          "shortcut key": "F3",
+          "response": {
+            "fieldName": "*IN03",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "16px",
+          "top": "93px",
+          "width": "100px",
+          "height": "23px",
+          "css class": "button",
+          "auto arrange": "true"
+        },
+        {
+          "id": "btnCA05",
+          "field type": "styled button",
+          "button style": "Ice Blue",
+          "bypass validation": "true",
+          "value": "Refresh",
+          "shortcut key": "F5",
+          "response": {
+            "fieldName": "*IN05",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "16px",
+          "top": "126px",
+          "width": "100px",
+          "height": "23px",
+          "css class": "button",
+          "auto arrange": "true"
+        },
+        {
+          "id": "OPT",
+          "field type": "select box",
+          "css class": "enhanced-input",
+          "value": {
+            "fieldName": "OPT",
+            "designValue": "[OPT]",
+            "dataType": "char",
+            "formatting": "Text",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "textTransform": "uppercase",
+            "dataLength": "1"
+          },
+          "left": "8px",
+          "cursor column": "9",
+          "top": "1px",
+          "cursor row": "12",
+          "width": "198px",
+          "choices": ",Select to view details",
+          "choice values": ",1",
+          "onchange": "pui.click(\"btnSubmit\")",
+          "grid": "PRODSFL",
+          "column": "0"
+        },
+        {
+          "id": "PRID",
+          "field type": "output field",
+          "value": {
+            "fieldName": "PRID",
+            "designValue": "[PRID]",
+            "noExtraSpaces": "true",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "zeroFill": "false",
+            "curSym": "",
+            "units": "",
+            "negNum": "999.00",
+            "dataLength": "5",
+            "decPos": "0"
+          },
+          "css class": "enhanced-output-field",
+          "left": "5px",
+          "cursor column": "14",
+          "top": "1px",
+          "cursor row": "12",
+          "width": "40px",
+          "text align": "right",
+          "grid": "PRODSFL",
+          "column": "1"
+        },
+        {
+          "id": "PRNAME",
+          "field type": "output field",
+          "value": {
+            "fieldName": "PRNAME",
+            "designValue": "[PRNAME]",
+            "dataType": "char",
+            "formatting": "Text",
+            "trimLeading": "false",
+            "trimTrailing": "false",
+            "textTransform": "none",
+            "dataLength": "30"
+          },
+          "css class": "enhanced-output-field",
+          "left": "5px",
+          "cursor column": "21",
+          "top": "1px",
+          "cursor row": "12",
+          "width": "230px",
+          "grid": "PRODSFL",
+          "column": "2"
+        },
+        {
+          "id": "PRPRICE",
+          "field type": "output field",
+          "value": {
+            "fieldName": "PRPRICE",
+            "designValue": "[PRPRICE]",
+            "noExtraSpaces": "true",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "numSep": "false",
+            "zeroBalance": "true",
+            "zeroFill": "false",
+            "curSym": "",
+            "units": "",
+            "negNum": "999.00 (Y)",
+            "dataLength": "7",
+            "decPos": "2"
+          },
+          "css class": "enhanced-output-field",
+          "left": "5px",
+          "cursor column": "53",
+          "top": "1px",
+          "cursor row": "12",
+          "width": "70px",
+          "text align": "right",
+          "grid": "PRODSFL",
+          "column": "3"
+        },
+        {
+          "id": "PRQTY",
+          "field type": "output field",
+          "value": {
+            "fieldName": "PRQTY",
+            "designValue": "[PRQTY]",
+            "noExtraSpaces": "true",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "zeroFill": "false",
+            "curSym": "",
+            "units": "",
+            "negNum": "999.00",
+            "dataLength": "5",
+            "decPos": "0"
+          },
+          "css class": "enhanced-output-field",
+          "left": "5px",
+          "cursor column": "65",
+          "top": "1px",
+          "cursor row": "12",
+          "width": "65px",
+          "text align": "right",
+          "grid": "PRODSFL",
+          "column": "4"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "PRODDETL",
+        "description": "Product Details",
+        "overlay range": "1-22"
+      },
+      "items": [
+        {
+          "id": "INQ01D_PRODDETL_ActionsPanel",
+          "field type": "panel",
+          "panel style": "Sapphire",
+          "value": "Actions",
+          "text align": "center",
+          "left": "5px",
+          "top": "15px",
+          "height": "640px",
+          "width": "125px",
+          "z index": "8",
+          "locked in place": "true"
+        },
+        {
+          "id": "INQ01D_PRODDETL_MainPanel",
+          "field type": "panel",
+          "panel style": "Sapphire",
+          "left": "135px",
+          "top": "15px",
+          "width": "740px",
+          "height": "640px",
+          "z index": "8",
+          "locked in place": "true"
+        },
+        {
+          "id": "constant10",
+          "field type": "output field",
+          "value": "Product Details",
+          "css class": "enhanced-constant",
+          "left": "422px",
+          "cursor column": "34",
+          "top": "20px",
+          "cursor row": "1",
+          "css class 2": "top-line",
+          "css class 3": "HI"
+        },
+        {
+          "id": "constant11",
+          "field type": "output field",
+          "value": "Product Id:",
+          "css class": "enhanced-constant",
+          "left": "190px",
+          "cursor column": "5",
+          "top": "80px",
+          "cursor row": "4",
+          "css class 2": "HI"
+        },
+        {
+          "id": "PRODDETL_PRID",
+          "field type": "output field",
+          "value": {
+            "fieldName": "PRID",
+            "designValue": "[PRID]",
+            "noExtraSpaces": "true",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "zeroFill": "false",
+            "curSym": "",
+            "units": "",
+            "negNum": "999.00",
+            "dataLength": "5",
+            "decPos": "0"
+          },
+          "css class": "enhanced-output-field",
+          "left": "310px",
+          "cursor column": "20",
+          "top": "80px",
+          "cursor row": "4",
+          "width": "40px",
+          "text align": "right"
+        },
+        {
+          "id": "constant12",
+          "field type": "output field",
+          "value": "Product Name:",
+          "css class": "enhanced-constant",
+          "left": "190px",
+          "cursor column": "5",
+          "top": "120px",
+          "cursor row": "6",
+          "css class 2": "HI"
+        },
+        {
+          "id": "PRODDETL_PRNAME",
+          "field type": "output field",
+          "value": {
+            "fieldName": "PRNAME",
+            "designValue": "[PRNAME]",
+            "dataType": "char",
+            "formatting": "Text",
+            "trimLeading": "false",
+            "trimTrailing": "false",
+            "textTransform": "none",
+            "dataLength": "30"
+          },
+          "css class": "enhanced-output-field",
+          "left": "310px",
+          "cursor column": "20",
+          "top": "120px",
+          "cursor row": "6"
+        },
+        {
+          "id": "constant13",
+          "field type": "output field",
+          "value": "Description:",
+          "css class": "enhanced-constant",
+          "left": "190px",
+          "cursor column": "5",
+          "top": "160px",
+          "cursor row": "8",
+          "css class 2": "HI"
+        },
+        {
+          "id": "PRDESC",
+          "field type": "output field",
+          "value": {
+            "fieldName": "PRDESC",
+            "designValue": "[PRDESC]",
+            "dataType": "char",
+            "formatting": "Text",
+            "trimLeading": "false",
+            "trimTrailing": "false",
+            "textTransform": "none",
+            "dataLength": "60"
+          },
+          "css class": "enhanced-output-field",
+          "left": "310px",
+          "cursor column": "20",
+          "top": "160px",
+          "cursor row": "8"
+        },
+        {
+          "id": "constant14",
+          "field type": "output field",
+          "value": "Price:",
+          "css class": "enhanced-constant",
+          "left": "190px",
+          "cursor column": "5",
+          "top": "200px",
+          "cursor row": "10",
+          "css class 2": "HI"
+        },
+        {
+          "id": "PRODDETL_PRPRICE",
+          "field type": "output field",
+          "value": {
+            "fieldName": "PRPRICE",
+            "designValue": "[PRPRICE]",
+            "noExtraSpaces": "true",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "numSep": "true",
+            "zeroBalance": "true",
+            "zeroFill": "false",
+            "curSym": "",
+            "units": "",
+            "negNum": "999.00-",
+            "dataLength": "7",
+            "decPos": "2"
+          },
+          "css class": "enhanced-output-field",
+          "left": "278px",
+          "cursor column": "16",
+          "top": "200px",
+          "cursor row": "10",
+          "width": "80px",
+          "text align": "right"
+        },
+        {
+          "id": "constant15",
+          "field type": "output field",
+          "value": "Quantity:",
+          "css class": "enhanced-constant",
+          "left": "190px",
+          "cursor column": "5",
+          "top": "240px",
+          "cursor row": "12",
+          "css class 2": "HI"
+        },
+        {
+          "id": "PRODDETL_PRQTY",
+          "field type": "output field",
+          "value": {
+            "fieldName": "PRQTY",
+            "designValue": "[PRQTY]",
+            "noExtraSpaces": "true",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "zeroFill": "false",
+            "curSym": "",
+            "units": "",
+            "negNum": "999.00",
+            "dataLength": "5",
+            "decPos": "0"
+          },
+          "css class": "enhanced-output-field",
+          "left": "310px",
+          "cursor column": "20",
+          "top": "240px",
+          "cursor row": "12",
+          "width": "40px",
+          "text align": "right"
+        },
+        {
+          "id": "constant16",
+          "field type": "output field",
+          "value": "Category:",
+          "css class": "enhanced-constant",
+          "left": "190px",
+          "cursor column": "5",
+          "top": "280px",
+          "cursor row": "14",
+          "css class 2": "HI"
+        },
+        {
+          "id": "PRCATID",
+          "field type": "output field",
+          "value": {
+            "fieldName": "PRCATID",
+            "designValue": "[PRCATID]",
+            "noExtraSpaces": "true",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "zeroFill": "false",
+            "curSym": "",
+            "units": "",
+            "negNum": "999.00",
+            "dataLength": "5",
+            "decPos": "0"
+          },
+          "css class": "enhanced-output-field",
+          "left": "310px",
+          "cursor column": "20",
+          "top": "280px",
+          "cursor row": "14",
+          "width": "40px",
+          "text align": "right"
+        },
+        {
+          "id": "PRODDETL_CATNAME",
+          "field type": "output field",
+          "value": {
+            "fieldName": "CATNAME",
+            "designValue": "[CATNAME]",
+            "dataType": "char",
+            "formatting": "Text",
+            "trimLeading": "false",
+            "trimTrailing": "false",
+            "textTransform": "none",
+            "dataLength": "30"
+          },
+          "css class": "enhanced-output-field",
+          "left": "366px",
+          "cursor column": "27",
+          "top": "280px",
+          "cursor row": "14"
+        },
+        {
+          "id": "btnSubmit",
+          "field type": "styled button",
+          "button style": "Ice Blue",
+          "value": "Submit",
+          "shortcut key": "Enter",
+          "left": "16px",
+          "top": "60px",
+          "width": "100px",
+          "height": "23px",
+          "css class": "button",
+          "auto arrange": "true"
+        },
+        {
+          "id": "btnCA03",
+          "field type": "styled button",
+          "button style": "Ice Blue",
+          "bypass validation": "true",
+          "value": "Exit",
+          "shortcut key": "F3",
+          "response": {
+            "fieldName": "*IN03",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "16px",
+          "top": "93px",
+          "width": "100px",
+          "height": "23px",
+          "css class": "button",
+          "auto arrange": "true"
+        },
+        {
+          "id": "btnCF06",
+          "field type": "styled button",
+          "button style": "Ice Blue",
+          "value": "Show Features",
+          "shortcut key": "F6",
+          "response": {
+            "fieldName": "*IN06",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "16px",
+          "top": "126px",
+          "width": "100px",
+          "height": "23px",
+          "css class": "button",
+          "auto arrange": "true"
+        },
+        {
+          "id": "btnCA12",
+          "field type": "styled button",
+          "button style": "Ice Blue",
+          "bypass validation": "true",
+          "value": "Cancel",
+          "shortcut key": "F12",
+          "response": {
+            "fieldName": "*IN12",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "16px",
+          "top": "159px",
+          "width": "100px",
+          "height": "23px",
+          "css class": "button",
+          "auto arrange": "true"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "FEATWIN",
+        "description": "Features Window",
+        "show as window": "true",
+        "window top": "8",
+        "window left": "19",
+        "overlay range": "1-8"
+      },
+      "items": [
+        {
+          "id": "FEATWIN",
+          "field type": "panel",
+          "panel style": "Modern Dialog",
+          "value": " Product Features ",
+          "text align": "center",
+          "left": "5px",
+          "top": "5px",
+          "height": "330px",
+          "width": "390px",
+          "z index": "8",
+          "locked in place": "true"
+        },
+        {
+          "id": "FEATSFL",
+          "field type": "grid",
+          "number of columns": "2",
+          "record format name": "FEATSFL",
+          "description": "Features Subfile",
+          "display subfile": {
+            "fieldName": "N60",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "display control record": {
+            "fieldName": "N60",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "clear subfile": {
+            "fieldName": "60",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "subfile size": "50",
+          "header height": "20",
+          "row height": "20",
+          "css class": "crystal-grid",
+          "subfile end": {
+            "fieldName": "N60",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "sortable columns": "true",
+          "find option": "true",
+          "filter option": "true",
+          "number of rows": "8",
+          "top": "65px",
+          "left": "34px",
+          "column widths": "56,275",
+          "height": "160px",
+          "width": "332px",
+          "column headings": "Id, Feature",
+          "header text align": "left"
+        },
+        {
+          "id": "btnSubmit",
+          "field type": "styled button",
+          "button style": "Ice Blue",
+          "value": "Submit",
+          "shortcut key": "Enter",
+          "left": "16px",
+          "top": "290px",
+          "width": "80px",
+          "height": "23px",
+          "css class": "button",
+          "auto arrange": "true"
+        },
+        {
+          "id": "btnCA12",
+          "field type": "styled button",
+          "button style": "Ice Blue",
+          "bypass validation": "true",
+          "value": "Close",
+          "shortcut key": "F12",
+          "response": {
+            "fieldName": "*IN12",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "106px",
+          "top": "290px",
+          "width": "80px",
+          "height": "23px",
+          "css class": "button",
+          "auto arrange": "true"
+        },
+        {
+          "id": "FEID",
+          "field type": "output field",
+          "value": {
+            "fieldName": "FEID",
+            "designValue": "[FEID]",
+            "noExtraSpaces": "true",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "zeroFill": "false",
+            "curSym": "",
+            "units": "",
+            "negNum": "999.00",
+            "dataLength": "5",
+            "decPos": "0"
+          },
+          "css class": "enhanced-output-field",
+          "left": "5px",
+          "cursor column": "3",
+          "top": "1px",
+          "cursor row": "2",
+          "width": "40px",
+          "text align": "right",
+          "grid": "FEATSFL",
+          "column": "0"
+        },
+        {
+          "id": "FENAME",
+          "field type": "output field",
+          "value": {
+            "fieldName": "FENAME",
+            "designValue": "[FENAME]",
+            "dataType": "char",
+            "formatting": "Text",
+            "trimLeading": "false",
+            "trimTrailing": "false",
+            "textTransform": "none",
+            "dataLength": "30"
+          },
+          "css class": "enhanced-output-field",
+          "left": "5px",
+          "cursor column": "10",
+          "top": "1px",
+          "cursor row": "2",
+          "grid": "FEATSFL",
+          "column": "1"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "PRODBOTTOM",
+        "description": "Function Keys",
+        "overlay": "true",
+        "overlay range": "23-23"
+      },
+      "items": [
+        {
+          "id": "INQ01D_PRODBOTTOM_ActionsPanel",
+          "field type": "panel",
+          "panel style": "Sapphire",
+          "value": "Actions",
+          "text align": "center",
+          "left": "5px",
+          "top": "15px",
+          "height": "640px",
+          "width": "125px",
+          "z index": "8",
+          "locked in place": "true"
+        },
+        {
+          "id": "INQ01D_PRODBOTTOM_MainPanel",
+          "field type": "panel",
+          "panel style": "Sapphire",
+          "left": "135px",
+          "top": "15px",
+          "width": "740px",
+          "height": "640px",
+          "z index": "8",
+          "locked in place": "true"
+        },
+        {
+          "id": "btnSubmit",
+          "field type": "styled button",
+          "button style": "Ice Blue",
+          "value": "Submit",
+          "shortcut key": "Enter",
+          "left": "16px",
+          "top": "60px",
+          "width": "100px",
+          "height": "23px",
+          "css class": "button",
+          "auto arrange": "true"
+        },
+        {
+          "id": "btnCA03",
+          "field type": "styled button",
+          "button style": "Ice Blue",
+          "bypass validation": "true",
+          "value": "Exit",
+          "shortcut key": "F3",
+          "response": {
+            "fieldName": "*IN03",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "16px",
+          "top": "93px",
+          "width": "100px",
+          "height": "23px",
+          "css class": "button",
+          "auto arrange": "true"
+        },
+        {
+          "id": "btnCA05",
+          "field type": "styled button",
+          "button style": "Ice Blue",
+          "bypass validation": "true",
+          "value": "Refresh",
+          "shortcut key": "F5",
+          "response": {
+            "fieldName": "*IN05",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "16px",
+          "top": "126px",
+          "width": "100px",
+          "height": "23px",
+          "css class": "button",
+          "auto arrange": "true"
+        }
+      ]
+    }
+  ],
+  "keywords": [
+    "INDARA"
+  ]
+}

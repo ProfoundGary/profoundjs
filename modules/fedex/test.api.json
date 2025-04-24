@@ -1,0 +1,1102 @@
+{
+  "apiFileID": "97441c03-2fdf-4efb-9aac-8045050098eb",
+  "apiType": "rest",
+  "routes": [
+    {
+      "apiRouteID": "24d5b16d-f94c-4858-8d1b-f8611403ec29",
+      "name": "testTokenModule",
+      "enableCors": true,
+      "summary": "test token module",
+      "method": "post",
+      "path": "/fedextoken",
+      "inputs": [],
+      "subcategory": "",
+      "outputs": [
+        {
+          "type": "string",
+          "name": "token"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('>>>>>------------'+new Date()+'------------>>>>')"
+          }
+        },
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "returnedToken",
+            "value": "\"\""
+          }
+        },
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "getToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "output[\"token\"]",
+                "captureType": "values"
+              }
+            }
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log(returnedToken)"
+          }
+        }
+      ]
+    },
+    {
+      "apiRouteID": "fe2b273d-5e5a-4393-ad4c-9a77eb4276f5",
+      "name": "testTrack",
+      "enableCors": true,
+      "summary": "test track module",
+      "method": "get",
+      "path": "/fedextracking",
+      "inputs": [
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "trackingnumbers",
+          "multipleValues": false,
+          "example": "394634182032"
+        }
+      ],
+      "subcategory": "",
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": []
+        }
+      ],
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "track",
+            "module-input-parameters": {
+              "trackingNumber": "input[\"trackingnumbers\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "apiRouteID": "303c3c2e-a40b-4efd-85fb-4dd156d96aac",
+      "name": "address",
+      "enableCors": true,
+      "summary": "test address validation",
+      "method": "post",
+      "path": "/fedexaddress",
+      "inputs": [
+        {
+          "type": "object",
+          "from": "body",
+          "name": "address",
+          "children": [
+            {
+              "type": "string",
+              "name": "streetLine1",
+              "example": "396 Congress Park Dr"
+            },
+            {
+              "type": "string",
+              "name": "streetLine2",
+              "example": " "
+            },
+            {
+              "type": "string",
+              "name": "city",
+              "example": "Dayton"
+            },
+            {
+              "type": "string",
+              "name": "state",
+              "example": "OH"
+            },
+            {
+              "type": "string",
+              "name": "postalCode",
+              "example": "45459"
+            },
+            {
+              "type": "string",
+              "name": "countryCode",
+              "example": "US"
+            }
+          ]
+        }
+      ],
+      "subcategory": "",
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "addressValidation",
+            "module-input-parameters": {
+              "address": "input[\"address\"]"
+            },
+            "module-output-parameters": {
+              "resolvedAddress": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "apiRouteID": "29d3a09b-1314-45dd-b914-7487c69c9dc1",
+      "name": "ratesAndTimes",
+      "enableCors": true,
+      "summary": "test rates and transit times module",
+      "method": "post",
+      "path": "/fedexrateandtime",
+      "inputs": [
+        {
+          "type": "object",
+          "name": "originAddress",
+          "children": [
+            {
+              "type": "string",
+              "name": "streetLine1",
+              "example": "65 Waverly Pl"
+            },
+            {
+              "type": "string",
+              "name": "streetLine2"
+            },
+            {
+              "type": "string",
+              "name": "city",
+              "example": "San Francisco"
+            },
+            {
+              "type": "string",
+              "name": "state",
+              "example": "CA"
+            },
+            {
+              "type": "string",
+              "name": "postalCode",
+              "example": "94108"
+            },
+            {
+              "type": "string",
+              "name": "countryCode",
+              "example": "US"
+            }
+          ],
+          "from": "body",
+          "example": ""
+        },
+        {
+          "type": "object",
+          "name": "destinAddress",
+          "children": [
+            {
+              "type": "string",
+              "name": "streetLine1",
+              "example": "396 Congress Park Dr"
+            },
+            {
+              "type": "string",
+              "name": "streetLine2",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "name": "city",
+              "example": "Dayton"
+            },
+            {
+              "type": "string",
+              "name": "state",
+              "example": "OH"
+            },
+            {
+              "type": "string",
+              "name": "postalCode",
+              "example": "45459"
+            },
+            {
+              "type": "string",
+              "name": "countryCode",
+              "example": "US"
+            }
+          ],
+          "from": "body",
+          "example": ""
+        },
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "packageDetail",
+          "children": [
+            {
+              "type": "decimal",
+              "name": "weightPounds",
+              "ibmiDecimals": 2,
+              "example": 5
+            },
+            {
+              "type": "decimal",
+              "name": "lengthInches",
+              "ibmiDecimals": 2,
+              "example": 12
+            },
+            {
+              "type": "decimal",
+              "name": "widthInches",
+              "ibmiDecimals": 2,
+              "example": 4
+            },
+            {
+              "type": "decimal",
+              "name": "heightInches",
+              "ibmiDecimals": 2,
+              "example": 10
+            },
+            {
+              "type": "decimal",
+              "name": "declaredValueUSD",
+              "ibmiDecimals": 2,
+              "example": 1200
+            }
+          ],
+          "from": "body",
+          "example": ""
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": []
+        }
+      ],
+      "subcategory": "",
+      "steps": [
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('>>>>>>>>>>>>>>>>>>>>>>>');"
+          }
+        },
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "rateAndTimes",
+            "module-input-parameters": {
+              "originAddress": "input[\"originAddress\"]",
+              "originAddress[\"streetLine1\"]": "input[\"originAddress\"][\"streetLine1\"]",
+              "originAddress[\"streetLine2\"]": "input[\"originAddress\"][\"streetLine2\"]",
+              "originAddress[\"city\"]": "input[\"originAddress\"][\"city\"]",
+              "originAddress[\"state\"]": "input[\"originAddress\"][\"state\"]",
+              "originAddress[\"postalCode\"]": "input[\"originAddress\"][\"postalCode\"]",
+              "originAddress[\"countryCode\"]": "input[\"originAddress\"][\"countryCode\"]",
+              "destinAddress": "input[\"destinAddress\"]",
+              "destinAddress[\"streetLine1\"]": "input[\"destinAddress\"][\"streetLine1\"]",
+              "destinAddress[\"streetLine2\"]": "input[\"destinAddress\"][\"streetLine2\"]",
+              "destinAddress[\"city\"]": "input[\"destinAddress\"][\"city\"]",
+              "destinAddress[\"state\"]": "input[\"destinAddress\"][\"state\"]",
+              "destinAddress[\"postalCode\"]": "input[\"destinAddress\"][\"postalCode\"]",
+              "destinAddress[\"countryCode\"]": "input[\"destinAddress\"][\"countryCode\"]",
+              "packageDetail": "input[\"packageDetail\"]",
+              "packageDetail[\"weightPounds\"]": "input[\"packageDetail\"][\"weightPounds\"]",
+              "packageDetail[\"lengthInches\"]": "input[\"packageDetail\"][\"lengthInches\"]",
+              "packageDetail[\"widthInches\"]": "input[\"packageDetail\"][\"widthInches\"]",
+              "packageDetail[\"heightInches\"]": "input[\"packageDetail\"][\"heightInches\"]",
+              "packageDetail[\"declaredValueUSD\"]": "input[\"packageDetail\"][\"declaredValueUSD\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            }
+          }
+        },
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "rateAndTimesAllData",
+            "module-input-parameters": {
+              "originAddress": "input[\"originAddress\"]",
+              "originAddress[\"streetLine1\"]": "input[\"originAddress\"][\"streetLine1\"]",
+              "originAddress[\"streetLine2\"]": "input[\"originAddress\"][\"streetLine2\"]",
+              "originAddress[\"city\"]": "input[\"originAddress\"][\"city\"]",
+              "originAddress[\"state\"]": "input[\"originAddress\"][\"state\"]",
+              "originAddress[\"postalCode\"]": "input[\"originAddress\"][\"postalCode\"]",
+              "originAddress[\"countryCode\"]": "input[\"originAddress\"][\"countryCode\"]",
+              "destinAddress": "input[\"destinAddress\"]",
+              "destinAddress[\"streetLine1\"]": "input[\"destinAddress\"][\"streetLine1\"]",
+              "destinAddress[\"streetLine2\"]": "input[\"destinAddress\"][\"streetLine2\"]",
+              "destinAddress[\"city\"]": "input[\"destinAddress\"][\"city\"]",
+              "destinAddress[\"state\"]": "input[\"destinAddress\"][\"state\"]",
+              "destinAddress[\"postalCode\"]": "input[\"destinAddress\"][\"postalCode\"]",
+              "destinAddress[\"countryCode\"]": "input[\"destinAddress\"][\"countryCode\"]",
+              "packageDetail": "input[\"packageDetail\"]",
+              "packageDetail[\"weightPounds\"]": "input[\"packageDetail\"][\"weightPounds\"]",
+              "packageDetail[\"lengthInches\"]": "input[\"packageDetail\"][\"lengthInches\"]",
+              "packageDetail[\"widthInches\"]": "input[\"packageDetail\"][\"widthInches\"]",
+              "packageDetail[\"heightInches\"]": "input[\"packageDetail\"][\"heightInches\"]",
+              "packageDetail[\"declaredValueUSD\"]": "input[\"packageDetail\"][\"declaredValueUSD\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            }
+          },
+          "disabled": true
+        }
+      ]
+    },
+    {
+      "apiRouteID": "29b1b8a3-3ef6-460c-84f9-16ddbdb7121a",
+      "name": "testTrack2",
+      "enableCors": true,
+      "summary": "test track module",
+      "method": "get",
+      "path": "/fedextracking2",
+      "inputs": [
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "trackingnumbers",
+          "multipleValues": false,
+          "example": "394634182032"
+        }
+      ],
+      "subcategory": "",
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": []
+        }
+      ],
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "trackAllData",
+            "module-input-parameters": {
+              "trackingNumber": "input[\"trackingnumbers\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "results",
+                "captureType": "records"
+              }
+            }
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('xxxxxxxxxxxxxxxxxxxxxxxx');\r\nconsole.log(results);"
+          }
+        }
+      ]
+    },
+    {
+      "apiRouteID": "c6a9eead-9c00-47fb-b92b-d0bd15f7dac7",
+      "name": "testTrackScanHistory",
+      "enableCors": true,
+      "summary": "test track module",
+      "method": "get",
+      "path": "/fedextrackscanhistory",
+      "inputs": [
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "trackingnumbers",
+          "multipleValues": false,
+          "example": "394634182032"
+        }
+      ],
+      "subcategory": "",
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": []
+        }
+      ],
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "trackScanHistory",
+            "module-input-parameters": {
+              "trackingNumber": "input[\"trackingnumbers\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "results",
+                "captureType": "records"
+              }
+            }
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('xxxxxxxxxxxxxxxxxxxxxxxx');\r\nconsole.log(results);"
+          }
+        }
+      ]
+    },
+    {
+      "apiRouteID": "abbb6b50-faf7-452b-8c9e-ccdf5d86afb7",
+      "name": "testTrack - static",
+      "enableCors": true,
+      "summary": "test track module",
+      "method": "get",
+      "path": "/fedextrackingstatic",
+      "inputs": [
+        {
+          "type": "bigint",
+          "from": "query",
+          "name": "trackingnumbers",
+          "multipleValues": false,
+          "example": "394634182032"
+        }
+      ],
+      "subcategory": "",
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": []
+        }
+      ],
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "track - static",
+            "module-input-parameters": {
+              "trackingNumber": "input[\"trackingnumbers\"]"
+            },
+            "module-output-parameters": {
+              "data[\"error\"]": {
+                "name": "output[\"data\"][\"error\"]",
+                "captureType": "values"
+              },
+              "data[\"latestStatusDetail\"]": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              },
+              "data[\"latestStatusDetail\"][\"code\"]": {
+                "name": "output[\"data\"][\"code\"]",
+                "captureType": "values"
+              },
+              "data[\"latestStatusDetail\"][\"description\"]": {
+                "name": "output[\"data\"][\"description\"]",
+                "captureType": "values"
+              },
+              "data[\"latestStatusDetail\"][\"city\"]": {
+                "name": "output[\"data\"][\"city\"]",
+                "captureType": "values"
+              },
+              "data[\"lastActivity\"]": {
+                "name": "output[\"data\"][\"lastact\"]",
+                "captureType": "values"
+              },
+              "data[\"lastActivityTimestamp\"]": {
+                "name": "output[\"data\"][\"time\"]",
+                "captureType": "values"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "apiRouteID": "a996dbc2-9020-42c2-94e5-c1924838c8f4",
+      "name": "address simple parms",
+      "enableCors": true,
+      "summary": "test address validation",
+      "method": "post",
+      "path": "/fedexaddresssimpleparm",
+      "inputs": [
+        {
+          "type": "object",
+          "from": "body",
+          "name": "address",
+          "children": [
+            {
+              "type": "string",
+              "name": "streetLine1",
+              "example": "396 Congress Park Dr"
+            },
+            {
+              "type": "string",
+              "name": "streetLine2",
+              "example": " "
+            },
+            {
+              "type": "string",
+              "name": "city",
+              "example": "Dayton"
+            },
+            {
+              "type": "string",
+              "name": "state",
+              "example": "OH"
+            },
+            {
+              "type": "string",
+              "name": "postalCode",
+              "example": "45459"
+            },
+            {
+              "type": "string",
+              "name": "countryCode",
+              "example": "US"
+            }
+          ]
+        }
+      ],
+      "subcategory": "",
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "addressValidation simple parms",
+            "module-input-parameters": {
+              "address": "input[\"address\"]"
+            },
+            "module-output-parameters": {}
+          }
+        }
+      ]
+    },
+    {
+      "apiRouteID": "62cb9f05-6c1c-422b-9031-7025905ebea4",
+      "name": "address - copy 1",
+      "enableCors": true,
+      "summary": "test address validation",
+      "method": "post",
+      "path": "/fedexaddresscopy1",
+      "inputs": [
+        {
+          "type": "object",
+          "from": "body",
+          "name": "address",
+          "children": [
+            {
+              "type": "string",
+              "name": "streetLine1",
+              "example": "396 Congress Park Dr"
+            },
+            {
+              "type": "string",
+              "name": "streetLine2",
+              "example": " "
+            },
+            {
+              "type": "string",
+              "name": "city",
+              "example": "Dayton"
+            },
+            {
+              "type": "string",
+              "name": "state",
+              "example": "OH"
+            },
+            {
+              "type": "string",
+              "name": "postalCode",
+              "example": "45459"
+            },
+            {
+              "type": "string",
+              "name": "countryCode",
+              "example": "US"
+            }
+          ]
+        }
+      ],
+      "subcategory": "",
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data"
+        }
+      ],
+      "code": "\n// Call external routine\nvar parms = {};\nparms[\"address\"] = input[\"address\"];\n\nvar _success = false;\nvar _error = null;   \nvar _results = null;\n\ntry {\n  var pjsModule = pjs.require(\"fedex.module.json\");\n  _results = pjsModule[\"addressValidation\"](parms);\n  _success = true;\n}\ncatch (err) {\n  _error = err;\n  console.error(err);\n}\n\noutput[\"data\"] = _results ? _results[\"resolvedAddress\"] : null;\n"
+    },
+    {
+      "apiRouteID": "49a005d7-ad59-4853-9322-9426a008242d",
+      "name": "ratesAndTimes - simple parms",
+      "enableCors": true,
+      "summary": "test rates and transit times module",
+      "method": "post",
+      "path": "/fedexrateandtimesimpelparms",
+      "inputs": [
+        {
+          "type": "object",
+          "name": "originAddress",
+          "children": [
+            {
+              "type": "string",
+              "name": "streetLine1",
+              "example": "65 Waverly Pl"
+            },
+            {
+              "type": "string",
+              "name": "streetLine2"
+            },
+            {
+              "type": "string",
+              "name": "city",
+              "example": "San Francisco"
+            },
+            {
+              "type": "string",
+              "name": "state",
+              "example": "CA"
+            },
+            {
+              "type": "string",
+              "name": "postalCode",
+              "example": "94108"
+            },
+            {
+              "type": "string",
+              "name": "countryCode",
+              "example": "US"
+            }
+          ],
+          "from": "body",
+          "example": ""
+        },
+        {
+          "type": "object",
+          "name": "destinAddress",
+          "children": [
+            {
+              "type": "string",
+              "name": "streetLine1",
+              "example": "396 Congress Park Dr"
+            },
+            {
+              "type": "string",
+              "name": "streetLine2",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "name": "city",
+              "example": "Dayton"
+            },
+            {
+              "type": "string",
+              "name": "state",
+              "example": "OH"
+            },
+            {
+              "type": "string",
+              "name": "postalCode",
+              "example": "45459"
+            },
+            {
+              "type": "string",
+              "name": "countryCode",
+              "example": "US"
+            }
+          ],
+          "from": "body",
+          "example": ""
+        },
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "packageDetail",
+          "children": [
+            {
+              "type": "decimal",
+              "name": "weightPounds",
+              "ibmiDecimals": 2,
+              "example": 5
+            },
+            {
+              "type": "decimal",
+              "name": "lengthInches",
+              "ibmiDecimals": 2,
+              "example": 12
+            },
+            {
+              "type": "decimal",
+              "name": "widthInches",
+              "ibmiDecimals": 2,
+              "example": 4
+            },
+            {
+              "type": "decimal",
+              "name": "heightInches",
+              "ibmiDecimals": 2,
+              "example": 10
+            },
+            {
+              "type": "decimal",
+              "name": "declaredValueUSD",
+              "ibmiDecimals": 2,
+              "example": 1200
+            }
+          ],
+          "from": "body",
+          "example": ""
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": []
+        }
+      ],
+      "subcategory": "",
+      "steps": [
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('>>>>>>>>>>>>>>>>>>>>>>>');"
+          }
+        },
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "rateAndTimes simple parms",
+            "module-input-parameters": {
+              "originAddress": "input[\"originAddress\"]",
+              "originAddress[\"streetLine1\"]": "input[\"originAddress\"][\"streetLine1\"]",
+              "originAddress[\"streetLine2\"]": "input[\"originAddress\"][\"streetLine2\"]",
+              "originAddress[\"city\"]": "input[\"originAddress\"][\"city\"]",
+              "originAddress[\"state\"]": "input[\"originAddress\"][\"state\"]",
+              "originAddress[\"postalCode\"]": "input[\"originAddress\"][\"postalCode\"]",
+              "originAddress[\"countryCode\"]": "input[\"originAddress\"][\"countryCode\"]",
+              "destinAddress": "input[\"destinAddress\"]",
+              "destinAddress[\"streetLine1\"]": "input[\"destinAddress\"][\"streetLine1\"]",
+              "destinAddress[\"streetLine2\"]": "input[\"destinAddress\"][\"streetLine2\"]",
+              "destinAddress[\"city\"]": "input[\"destinAddress\"][\"city\"]",
+              "destinAddress[\"state\"]": "input[\"destinAddress\"][\"state\"]",
+              "destinAddress[\"postalCode\"]": "input[\"destinAddress\"][\"postalCode\"]",
+              "destinAddress[\"countryCode\"]": "input[\"destinAddress\"][\"countryCode\"]",
+              "packageDetail": "input[\"packageDetail\"]",
+              "packageDetail[\"weightPounds\"]": "input[\"packageDetail\"][\"weightPounds\"]",
+              "packageDetail[\"lengthInches\"]": "input[\"packageDetail\"][\"lengthInches\"]",
+              "packageDetail[\"widthInches\"]": "input[\"packageDetail\"][\"widthInches\"]",
+              "packageDetail[\"heightInches\"]": "input[\"packageDetail\"][\"heightInches\"]",
+              "packageDetail[\"declaredValueUSD\"]": "input[\"packageDetail\"][\"declaredValueUSD\"]"
+            },
+            "module-output-parameters": {
+              "rateReplyDetails": {
+                "name": "output[\"data\"]",
+                "captureType": "lists"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "apiRouteID": "7c2168b0-fcf5-44f2-a599-6b6e85bc5301",
+      "name": "ship",
+      "enableCors": true,
+      "summary": "test ship module",
+      "method": "post",
+      "path": "/fedexship",
+      "inputs": [
+        {
+          "type": "object",
+          "name": "originAddress",
+          "children": [
+            {
+              "type": "string",
+              "name": "streetLine1",
+              "example": "65 Waverly Pl"
+            },
+            {
+              "type": "string",
+              "name": "streetLine2"
+            },
+            {
+              "type": "string",
+              "name": "city",
+              "example": "San Francisco"
+            },
+            {
+              "type": "string",
+              "name": "state",
+              "example": "CA"
+            },
+            {
+              "type": "string",
+              "name": "postalCode",
+              "example": "94108"
+            },
+            {
+              "type": "string",
+              "name": "countryCode",
+              "example": "US"
+            }
+          ],
+          "from": "body",
+          "example": ""
+        },
+        {
+          "type": "object",
+          "name": "destinAddress",
+          "children": [
+            {
+              "type": "string",
+              "name": "streetLine1",
+              "example": "396 Congress Park Dr"
+            },
+            {
+              "type": "string",
+              "name": "streetLine2",
+              "example": ""
+            },
+            {
+              "type": "string",
+              "name": "city",
+              "example": "Dayton"
+            },
+            {
+              "type": "string",
+              "name": "state",
+              "example": "OH"
+            },
+            {
+              "type": "string",
+              "name": "postalCode",
+              "example": "45459"
+            },
+            {
+              "type": "string",
+              "name": "countryCode",
+              "example": "US"
+            }
+          ],
+          "from": "body",
+          "example": ""
+        },
+        {
+          "type": "object",
+          "ibmiLength": 10,
+          "name": "packageDetail",
+          "children": [
+            {
+              "type": "decimal",
+              "name": "weightPounds",
+              "ibmiDecimals": 2,
+              "example": 5
+            },
+            {
+              "type": "decimal",
+              "name": "lengthInches",
+              "ibmiDecimals": 2,
+              "example": 12
+            },
+            {
+              "type": "decimal",
+              "name": "widthInches",
+              "ibmiDecimals": 2,
+              "example": 4
+            },
+            {
+              "type": "decimal",
+              "name": "heightInches",
+              "ibmiDecimals": 2,
+              "example": 10
+            },
+            {
+              "type": "decimal",
+              "name": "declaredValueUSD",
+              "ibmiDecimals": 2,
+              "example": 1200
+            }
+          ],
+          "from": "body",
+          "example": ""
+        },
+        {
+          "type": "string",
+          "from": "body",
+          "name": "shipperName",
+          "example": "Spicy King"
+        },
+        {
+          "type": "decimal",
+          "from": "body",
+          "name": "shipperPhone",
+          "example": "1231231231"
+        },
+        {
+          "type": "string",
+          "from": "body",
+          "name": "recipientName",
+          "example": "Ted Smith"
+        },
+        {
+          "type": "decimal",
+          "from": "body",
+          "name": "recipientPhone",
+          "example": "3213213214"
+        },
+        {
+          "type": "string",
+          "from": "body",
+          "name": "shipDate",
+          "example": "2023-06-01"
+        },
+        {
+          "type": "string",
+          "from": "body",
+          "name": "serviceType",
+          "example": "PRIORITY_OVERNIGHT"
+        },
+        {
+          "type": "string",
+          "from": "body",
+          "name": "packagingType",
+          "example": "FEDEX_SMALL_BOX"
+        },
+        {
+          "type": "string",
+          "from": "body",
+          "name": "pickupType",
+          "example": "USE_SCHEDULED_PICKUP"
+        },
+        {
+          "type": "string",
+          "from": "body",
+          "name": "paymentType",
+          "example": "SENDER"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": []
+        }
+      ],
+      "subcategory": "",
+      "steps": [
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('>>>>>>>>>>>>>>>>>>>>>>>');"
+          }
+        },
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "ship",
+            "module-input-parameters": {
+              "shipperName": "input[\"shipperName\"]",
+              "shipperPhone": "input[\"shipperPhone\"]",
+              "originAddress": "input[\"originAddress\"]",
+              "originAddress[\"streetLine1\"]": "input[\"originAddress\"][\"streetLine1\"]",
+              "originAddress[\"streetLine2\"]": "input[\"originAddress\"][\"streetLine2\"]",
+              "originAddress[\"city\"]": "input[\"originAddress\"][\"city\"]",
+              "originAddress[\"state\"]": "input[\"originAddress\"][\"state\"]",
+              "originAddress[\"postalCode\"]": "input[\"originAddress\"][\"postalCode\"]",
+              "originAddress[\"countryCode\"]": "input[\"originAddress\"][\"countryCode\"]",
+              "recipientName": "input[\"recipientName\"]",
+              "recipientPhone": "input[\"recipientPhone\"]",
+              "destinAddress": "input[\"destinAddress\"]",
+              "destinAddress[\"streetLine1\"]": "input[\"destinAddress\"][\"streetLine1\"]",
+              "destinAddress[\"streetLine2\"]": "input[\"destinAddress\"][\"streetLine2\"]",
+              "destinAddress[\"city\"]": "input[\"destinAddress\"][\"city\"]",
+              "destinAddress[\"state\"]": "input[\"destinAddress\"][\"state\"]",
+              "destinAddress[\"postalCode\"]": "input[\"destinAddress\"][\"postalCode\"]",
+              "destinAddress[\"countryCode\"]": "input[\"destinAddress\"][\"countryCode\"]",
+              "packageDetail": "input[\"packageDetail\"]",
+              "packageDetail[\"weightPounds\"]": "input[\"packageDetail\"][\"weightPounds\"]",
+              "packageDetail[\"lengthInches\"]": "input[\"packageDetail\"][\"lengthInches\"]",
+              "packageDetail[\"widthInches\"]": "input[\"packageDetail\"][\"widthInches\"]",
+              "packageDetail[\"heightInches\"]": "input[\"packageDetail\"][\"heightInches\"]",
+              "packageDetail[\"declaredValueUSD\"]": "input[\"packageDetail\"][\"declaredValueUSD\"]",
+              "shipDate": "input[\"shipDate\"]",
+              "serviceType": "input[\"serviceType\"]",
+              "packagingType": "input[\"packagingType\"]",
+              "pickupType": "input[\"pickupType\"]",
+              "paymentType": "input[\"paymentType\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1361 @@
+{
+  "routines": [
+    {
+      "name": "GetAccessToken",
+      "isPrivate": true,
+      "summary": "Get API Access token",
+      "outputs": [
+        {
+          "type": "string",
+          "name": "token"
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set Module output",
+          "answers": {
+            "plugin": "Program Data:set-module-output",
+            "module-output-values": {
+              "token": "\"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\""
+            },
+            "comment": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "GetProductInfo",
+      "summary": "Gets information about 1 product",
+      "inputs": [
+        {
+          "type": "bigint",
+          "name": "ProductId",
+          "required": true,
+          "example": ""
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "object",
+              "name": "product",
+              "children": [
+                {
+                  "type": "bigint",
+                  "name": "id"
+                },
+                {
+                  "type": "string",
+                  "name": "title",
+                  "ibmiLength": 60
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 50,
+                  "name": "vendor"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 50,
+                  "name": "product_type"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "created_at"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 10,
+                  "name": "status"
+                },
+                {
+                  "type": "object",
+                  "ibmiLength": 10,
+                  "name": "variants",
+                  "multipleValues": true,
+                  "ibmiDim": 5,
+                  "children": [
+                    {
+                      "type": "bigint",
+                      "ibmiLength": 10,
+                      "name": "id"
+                    },
+                    {
+                      "type": "bigint",
+                      "ibmiLength": 10,
+                      "name": "product_id"
+                    },
+                    {
+                      "type": "decimal",
+                      "ibmiLength": 10,
+                      "name": "price",
+                      "ibmiDecimals": 2
+                    },
+                    {
+                      "type": "bigint",
+                      "ibmiLength": 10,
+                      "name": "inventory_item_id"
+                    },
+                    {
+                      "type": "integer",
+                      "ibmiLength": 10,
+                      "name": "inventory_quantity"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('>>>>>>>>>>>>>>');",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "GetAccessToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://quickstart-161e3790.myshopify.com/admin/products/${encodeURIComponent(input[\"ProductId\"])}.json",
+            "method": "GET",
+            "headers": "{\"X-Shopify-Access-Token\":token}",
+            "body": "",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Module output",
+            "module_output": "output[\"data\"]",
+            "comment": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "AddNewProduct",
+      "summary": "Add a new product to online store",
+      "inputs": [
+        {
+          "type": "string",
+          "name": "title",
+          "required": true,
+          "example": "",
+          "ibmiLength": 60
+        },
+        {
+          "type": "string",
+          "name": "body_html",
+          "ibmiLength": 100,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "vendor",
+          "ibmiLength": 50,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "product_type",
+          "ibmiLength": 50,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "status",
+          "ibmiLength": 10,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "tags",
+          "ibmiLength": 500,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "imageSrc",
+          "example": "/profoundui/userdata/images/products/101.jpg",
+          "ibmiLength": 100
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "object",
+              "name": "product",
+              "children": [
+                {
+                  "type": "bigint",
+                  "name": "id"
+                },
+                {
+                  "type": "string",
+                  "name": "title",
+                  "ibmiLength": 60
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 50,
+                  "name": "vendor"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 50,
+                  "name": "product_type"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "created_at"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 10,
+                  "name": "status"
+                },
+                {
+                  "type": "object",
+                  "ibmiLength": 10,
+                  "name": "variants",
+                  "multipleValues": true,
+                  "ibmiDim": 5,
+                  "children": [
+                    {
+                      "type": "bigint",
+                      "ibmiLength": 10,
+                      "name": "id"
+                    },
+                    {
+                      "type": "bigint",
+                      "ibmiLength": 10,
+                      "name": "product_id"
+                    },
+                    {
+                      "type": "decimal",
+                      "ibmiLength": 10,
+                      "name": "price",
+                      "ibmiDecimals": 2
+                    },
+                    {
+                      "type": "bigint",
+                      "ibmiLength": 10,
+                      "name": "inventory_item_id"
+                    },
+                    {
+                      "type": "integer",
+                      "ibmiLength": 10,
+                      "name": "inventory_quantity"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "GetAccessToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://quickstart-161e3790.myshopify.com/admin/products.json",
+            "method": "POST",
+            "headers": "{\"X-Shopify-Access-Token\":token}",
+            "body": "{\n    \"product\":{\n        \"title\":input[\"title\"],\n    \"body_html\": input[\"body_html\"],\n    \"vendor\": input[\"vendor\"],\n    \"product_type\": input[\"product_type\"],\n    \"status\": input[\"status\"],\n    \"published_scope\": \"web\",\n    \"tags\": input[\"tags\"],\n    \"images\":[{\"src\":input[\"imageSrc\"]}]\n    }\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Module output",
+            "module_output": "output[\"data\"]",
+            "comment": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "UpdateInventoryItem",
+      "summary": "update inventory item",
+      "inputs": [
+        {
+          "type": "bigint",
+          "name": "id"
+        },
+        {
+          "type": "string",
+          "name": "sku",
+          "required": true,
+          "example": "",
+          "ibmiLength": 20
+        },
+        {
+          "type": "decimal",
+          "name": "cost",
+          "example": "",
+          "ibmiLength": 10,
+          "ibmiDecimals": 2
+        },
+        {
+          "type": "boolean",
+          "name": "tracked",
+          "example": ""
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "object",
+              "ibmiLength": 10,
+              "name": "inventory_item",
+              "children": [
+                {
+                  "type": "bigint",
+                  "ibmiLength": 10,
+                  "name": "id"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 15,
+                  "name": "sku"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "created_at"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "updated_at"
+                },
+                {
+                  "type": "decimal",
+                  "ibmiLength": 10,
+                  "name": "cost",
+                  "ibmiDecimals": 2
+                },
+                {
+                  "type": "boolean",
+                  "ibmiLength": 10,
+                  "name": "tracked"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "GetAccessToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://quickstart-161e3790.myshopify.com/admin/inventory_items/${encodeURIComponent(input[\"id\"])}.json",
+            "method": "PUT",
+            "headers": "{\"X-Shopify-Access-Token\":token}",
+            "body": "{\n    \"inventory_item\":{\n    \"sku\": input[\"sku\"],\n    \"cost\": input[\"cost\"],\n    \"tracked\": input[\"tracked\"]\n    }\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Module output",
+            "module_output": "output[\"data\"]",
+            "comment": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "GetInventoryItem",
+      "summary": "Gets information about 1 inventory item",
+      "inputs": [
+        {
+          "type": "bigint",
+          "name": "InventoryId",
+          "required": true,
+          "example": "48522310091059"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "object",
+              "ibmiLength": 10,
+              "name": "inventory_item",
+              "children": [
+                {
+                  "type": "bigint",
+                  "ibmiLength": 10,
+                  "name": "id"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 15,
+                  "name": "sku"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "created_at"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "updated_at"
+                },
+                {
+                  "type": "decimal",
+                  "ibmiLength": 10,
+                  "name": "cost",
+                  "ibmiDecimals": 2
+                },
+                {
+                  "type": "boolean",
+                  "ibmiLength": 10,
+                  "name": "tracked"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "GetAccessToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://quickstart-161e3790.myshopify.com/admin/inventory_items/${encodeURIComponent(input[\"InventoryId\"])}.json",
+            "method": "GET",
+            "headers": "{\"X-Shopify-Access-Token\":token}",
+            "body": "",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Module output",
+            "module_output": "output[\"data\"]",
+            "comment": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "SetInventoryLevel",
+      "inputs": [
+        {
+          "type": "bigint",
+          "name": "locationId"
+        },
+        {
+          "type": "bigint",
+          "name": "inventoryItemId"
+        },
+        {
+          "type": "integer",
+          "name": "available"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "object",
+              "ibmiLength": 10,
+              "name": "inventory_level",
+              "children": [
+                {
+                  "type": "bigint",
+                  "ibmiLength": 10,
+                  "name": "inventory_item_id"
+                },
+                {
+                  "type": "bigint",
+                  "ibmiLength": 10,
+                  "name": "location_id"
+                },
+                {
+                  "type": "integer",
+                  "ibmiLength": 10,
+                  "name": "available"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "updated_at"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "GetAccessToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://quickstart-161e3790.myshopify.com/admin/inventory_levels/set.json",
+            "method": "POST",
+            "headers": "{\"X-Shopify-Access-Token\":token}",
+            "body": "{\n\"location_id\":input[\"locationId\"],\n    \"inventory_item_id\":input[\"inventoryItemId\"],\n    \"available\": input[\"available\"]\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Module output",
+            "module_output": "output[\"data\"]",
+            "comment": ""
+          }
+        }
+      ],
+      "summary": "set inventory level for product item"
+    },
+    {
+      "name": "AddProductAndSetInventory",
+      "summary": "Add Product And Set Inventory",
+      "inputs": [
+        {
+          "type": "string",
+          "name": "title",
+          "required": true,
+          "example": "",
+          "ibmiLength": 60
+        },
+        {
+          "type": "string",
+          "name": "body_html",
+          "ibmiLength": 100,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "vendor",
+          "ibmiLength": 50,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "product_type",
+          "ibmiLength": 50,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "status",
+          "ibmiLength": 10,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "tags",
+          "ibmiLength": 500,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "imageSrc",
+          "example": "/profoundui/userdata/images/products/101.jpg",
+          "ibmiLength": 100
+        },
+        {
+          "type": "string",
+          "ibmiLength": 20,
+          "name": "sku"
+        },
+        {
+          "type": "decimal",
+          "ibmiLength": 10,
+          "name": "cost",
+          "ibmiDecimals": 2
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "object",
+              "name": "product",
+              "children": [
+                {
+                  "type": "bigint",
+                  "name": "id"
+                },
+                {
+                  "type": "string",
+                  "name": "title",
+                  "ibmiLength": 60
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 50,
+                  "name": "vendor"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 50,
+                  "name": "product_type"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "created_at"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 10,
+                  "name": "status"
+                },
+                {
+                  "type": "object",
+                  "ibmiLength": 10,
+                  "name": "variants",
+                  "multipleValues": true,
+                  "ibmiDim": 5,
+                  "children": [
+                    {
+                      "type": "bigint",
+                      "ibmiLength": 10,
+                      "name": "id"
+                    },
+                    {
+                      "type": "bigint",
+                      "ibmiLength": 10,
+                      "name": "product_id"
+                    },
+                    {
+                      "type": "decimal",
+                      "ibmiLength": 10,
+                      "name": "price",
+                      "ibmiDecimals": 2
+                    },
+                    {
+                      "type": "bigint",
+                      "ibmiLength": 10,
+                      "name": "inventory_item_id"
+                    },
+                    {
+                      "type": "integer",
+                      "ibmiLength": 10,
+                      "name": "inventory_quantity"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "GetAccessToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://quickstart-161e3790.myshopify.com/admin/products.json",
+            "method": "POST",
+            "headers": "{\"X-Shopify-Access-Token\":token}",
+            "body": "{\n    \"product\":{\n        \"title\":input[\"title\"],\n    \"body_html\": input[\"body_html\"],\n    \"vendor\": input[\"vendor\"],\n    \"product_type\": input[\"product_type\"],\n    \"status\": input[\"status\"],\n    \"published_scope\": \"web\",\n    \"tags\": input[\"tags\"],\n    \"images\":[{\"src\":input[\"imageSrc\"]}]\n    }\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Module output",
+            "module_output": "output[\"data\"]",
+            "comment": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Variants",
+      "summary": "Gets list of variants for product",
+      "inputs": [
+        {
+          "type": "bigint",
+          "name": "ProductId",
+          "required": true,
+          "example": "8558573125939"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "object",
+              "ibmiLength": 10,
+              "name": "inventory_item",
+              "children": [
+                {
+                  "type": "bigint",
+                  "ibmiLength": 10,
+                  "name": "id"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 15,
+                  "name": "sku"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "created_at"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "updated_at"
+                },
+                {
+                  "type": "decimal",
+                  "ibmiLength": 10,
+                  "name": "cost",
+                  "ibmiDecimals": 2
+                },
+                {
+                  "type": "boolean",
+                  "ibmiLength": 10,
+                  "name": "tracked"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "GetAccessToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://quickstart-161e3790.myshopify.com/admin/products/${encodeURIComponent(input[\"ProductId\"])}/variants.json",
+            "method": "GET",
+            "headers": "{\"X-Shopify-Access-Token\":token}",
+            "body": "",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Module output",
+            "module_output": "output[\"data\"]",
+            "comment": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "UpdateVariant",
+      "summary": "update product variant item",
+      "inputs": [
+        {
+          "type": "bigint",
+          "name": "id"
+        },
+        {
+          "type": "string",
+          "name": "sku",
+          "required": true,
+          "example": "",
+          "ibmiLength": 20
+        },
+        {
+          "type": "decimal",
+          "name": "price",
+          "example": "",
+          "ibmiLength": 10,
+          "ibmiDecimals": 2
+        },
+        {
+          "type": "string",
+          "name": "title",
+          "example": "",
+          "ibmiLength": 50
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "object",
+              "ibmiLength": 10,
+              "name": "variant",
+              "children": [
+                {
+                  "type": "bigint",
+                  "ibmiLength": 10,
+                  "name": "id"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 15,
+                  "name": "sku"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "created_at"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "updated_at"
+                },
+                {
+                  "type": "decimal",
+                  "ibmiLength": 10,
+                  "name": "price",
+                  "ibmiDecimals": 2
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call internal routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "GetAccessToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Consume REST service",
+          "answers": {
+            "plugin": "Custom:web-service",
+            "uri": "https://quickstart-161e3790.myshopify.com/admin/variants/${encodeURIComponent(input[\"id\"])}.json",
+            "method": "PUT",
+            "headers": "{\"X-Shopify-Access-Token\":token}",
+            "body": "{\n    \"variant\":{\n    \"id\": input[\"id\"],\n    \"sku\": input[\"sku\"],\n    \"price\": input[\"price\"],\n    \"title\": input[\"title\"]\n    }\n}",
+            "json": true,
+            "auth": "",
+            "capture_response": true,
+            "capture_on_error": true,
+            "capture_as": "Record",
+            "specific_property": "",
+            "destination": "Module output",
+            "module_output": "output[\"data\"]",
+            "comment": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "CreateNewProduct",
+      "summary": "Add a new product to online store",
+      "inputs": [
+        {
+          "type": "string",
+          "name": "title",
+          "required": true,
+          "example": "",
+          "ibmiLength": 60
+        },
+        {
+          "type": "string",
+          "name": "body_html",
+          "ibmiLength": 100,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "vendor",
+          "ibmiLength": 50,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "product_type",
+          "ibmiLength": 50,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "status",
+          "ibmiLength": 10,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "tags",
+          "ibmiLength": 500,
+          "example": ""
+        },
+        {
+          "type": "string",
+          "name": "imageSrc",
+          "example": "/profoundui/userdata/images/products/101.jpg",
+          "ibmiLength": 100
+        },
+        {
+          "type": "decimal",
+          "ibmiLength": 10,
+          "name": "cost",
+          "ibmiDecimals": 2
+        },
+        {
+          "type": "integer",
+          "ibmiLength": 10,
+          "name": "available"
+        },
+        {
+          "type": "decimal",
+          "ibmiLength": 10,
+          "name": "price",
+          "ibmiDecimals": 2
+        },
+        {
+          "type": "string",
+          "ibmiLength": 20,
+          "name": "sku"
+        },
+        {
+          "type": "bigint",
+          "ibmiLength": 10,
+          "name": "locationId"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "object",
+          "name": "data",
+          "children": [
+            {
+              "type": "object",
+              "name": "product",
+              "children": [
+                {
+                  "type": "bigint",
+                  "name": "id"
+                },
+                {
+                  "type": "string",
+                  "name": "title",
+                  "ibmiLength": 60
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 50,
+                  "name": "vendor"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 50,
+                  "name": "product_type"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 30,
+                  "name": "created_at"
+                },
+                {
+                  "type": "string",
+                  "ibmiLength": 10,
+                  "name": "status"
+                },
+                {
+                  "type": "object",
+                  "ibmiLength": 10,
+                  "name": "variants",
+                  "multipleValues": true,
+                  "ibmiDim": 5,
+                  "children": [
+                    {
+                      "type": "bigint",
+                      "ibmiLength": 10,
+                      "name": "id"
+                    },
+                    {
+                      "type": "bigint",
+                      "ibmiLength": 10,
+                      "name": "product_id"
+                    },
+                    {
+                      "type": "decimal",
+                      "ibmiLength": 10,
+                      "name": "price",
+                      "ibmiDecimals": 2
+                    },
+                    {
+                      "type": "bigint",
+                      "ibmiLength": 10,
+                      "name": "inventory_item_id"
+                    },
+                    {
+                      "type": "integer",
+                      "ibmiLength": 10,
+                      "name": "inventory_quantity"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "description": "add a new product and update the inventory and status",
+      "steps": [
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "token",
+            "value": "null",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call Token routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "GetAccessToken",
+            "module-input-parameters": {},
+            "module-output-parameters": {
+              "token": {
+                "name": "token",
+                "captureType": "values"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call New Product Routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "AddNewProduct",
+            "module-input-parameters": {
+              "title": "input[\"title\"]",
+              "body_html": "input[\"body_html\"]",
+              "vendor": "input[\"vendor\"]",
+              "product_type": "input[\"product_type\"]",
+              "status": "input[\"status\"]",
+              "tags": "input[\"tags\"]",
+              "imageSrc": "input[\"imageSrc\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "newProductData",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "log new product routine call",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('===>> ' + JSON.stringify(newProductData))",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('new variant id ' + newProductData.product.variants[0].inventory_item_id)",
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call Update Inventory Item routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "UpdateInventoryItem",
+            "module-input-parameters": {
+              "id": "newProductData.product.variants[0].inventory_item_id",
+              "sku": "input[\"sku\"]",
+              "cost": "input[\"cost\"]",
+              "tracked": "true"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "inventoryItemResult",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call Set Inventory Level routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "SetInventoryLevel",
+            "module-input-parameters": {
+              "locationId": "input[\"locationId\"]",
+              "inventoryItemId": "newProductData.product.variants[0].inventory_item_id",
+              "available": "input[\"available\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "setInventoryResult",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Call Update Price Routine",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "UpdateVariant",
+            "module-input-parameters": {
+              "id": "newProductData.product.variants[0].id",
+              "sku": "input[\"sku\"]",
+              "price": "input[\"price\"]",
+              "title": "input[\"title\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "updateVariantResult",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Get Completed Product Data",
+          "answers": {
+            "plugin": "Custom:call-internal-routine",
+            "routine-name": "GetProductInfo",
+            "module-input-parameters": {
+              "ProductId": "newProductData.product.id"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "output[\"data\"]",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        }
+      ]
+    }
+  ]
+}

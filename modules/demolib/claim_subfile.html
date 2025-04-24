@@ -1,0 +1,135 @@
+
+<script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<style>
+* {
+  -webkit-border-radius: 0 !important;
+     -moz-border-radius: 0 !important;
+          border-radius: 0 !important;
+          font-family: Arial, Helvetica, sans-serif !important;
+}
+.hover {
+  cursor: pointer;
+}
+.margin {
+  margin-top: 50px;
+}
+.hybrid-text{
+  color:black !important;
+}
+.nav-background{
+  background-color:#337ab7 !important;
+}
+.nav-text{
+  color: white !important;
+}
+
+.btn-hover{
+  border-color:white !important;
+}
+.table-head {
+  background-color: #337ab7!important;
+  color:white;
+}
+.scrollbar {
+  height:400px; 
+  overflow:auto;
+}
+</style>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<div class="container margin">
+  <div class="row">
+    <nav class="navbar navbar-default nav-background">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <p class="navbar-brand nav-text">Maintain Claims</p>
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse-1">
+            <div class="button-toolbar navbar-right nav-text">
+              <button type="button" class="btn btn-primary navbar-btn btn-hover" onclick="pui.submit()">Continue</button>
+              <button type="button" class="btn btn-primary navbar-btn btn-hover" name="*in05" onclick="pui.submit(this.name)">Refresh</button>
+              <button type="button" class="btn btn-primary navbar-btn btn-hover" name="*in06" onclick="pui.submit(this.name)">Add</button>
+              <button type="button" class="btn btn-primary navbar-btn btn-hover" name="*in03" onclick="pui.submit(this.name)">Exit</button>
+            </div>
+          </div>
+      </div>
+    </nav>
+      <div class="col-sm-8 col-sm-offset-2 col-xs-12">
+      <div class="panel panel-primary">
+        <div class="panel-heading text-center"><h4>Search Claims</h4></div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-xs-10 col-xs-offset-1">
+              <form class="form-horizontal" onsubmit="preventEvent(event); pui.submit();">
+                <div class="form-group">
+                  <label class="hybrid-text" for="c1number">Position by Claim:</label>
+                  <% if (c1number == 0) { %>
+                    <input name="c1number" type="text" class="form-control" id="c1number" value="" />  
+                  <% } else { %>
+                    <input name="c1number" type="text" class="form-control" id="c1number" value="<%= c1number %>" />
+                  <% } %>  
+                </div>
+                <div class="form-group">
+                  <label class="hybrid-text" for="c1desc">Position by Description:</label>
+                  <input name="c1desc" type="text" class="form-control" id="c1desc" value="<%= c1desc %>" />
+                </div>
+                <input type="submit" class="hidden" />
+              </form>  
+              <div class="text-center">
+                <input type="button" class="btn btn-primary btn-lg" value="Search" onclick="pui.submit()" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br/>
+      <br/>
+      </div>
+    </div>
+    <div class="row-fluid">
+      <div class="table-reponsive scrollbar">
+         <table class="table table-hover">
+           <tbody>
+             <tr class="table-head">
+              <th>Selection</th>
+              <th>Claim</th>
+              <th>Description</th>
+              <th>Date</th>
+              <th>County</th>
+            </tr>
+
+    <% for (var i = 0; i < claimsfl.length; i++) {
+       // get current subfile record and option click field name
+       var record = claimsfl[i];
+       var field = "claimsfl.option." + (i + 1);
+       // format date
+       var date = record.cmmdy;
+       while (date.length < 6) date = "0" + date;
+       date = date.substr(0,2) + "/" + date.substr(2,2) + "/" + date.substr(4,2); %>
+
+            <tr>
+              <td>
+                <img class="hover" src="/profoundui/proddata/images/icons/view.png" onclick="pui.submit('<%= field %>', '5')" />
+                <img class="hover" src="/profoundui/proddata/images/icons/change.png" onclick="pui.submit('<%= field %>', '2')" />
+                <img class="hover" src="/profoundui/proddata/images/icons/delete.png" onclick="pui.submit('<%= field %>', '4')" />
+              </td>
+              <td><%= record.s1number %></td>
+              <td><%= record.cmdesc %></td>
+              <td><%= date %></td>
+              <td><%= record.cmcounty %></td>
+            </tr>
+     <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+</div>

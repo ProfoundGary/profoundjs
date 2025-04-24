@@ -1,0 +1,470 @@
+{
+  "text": "",
+  "logic": {
+    "start": {
+      "steps": [
+        {
+          "text": "init",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "try {\r\n  // In case the oa data was missing, the page will go to the redirect.\r\n  const oautils = require(\"./oautils.js\");\r\n  var oauthurl = oautils.startURI;\r\n\r\n  pjs.session.provider = oautils.provider;\r\n}\r\ncatch(err){\r\n  var message = String(err);\r\n}",
+            "comment": "and set oa_state"
+          }
+        },
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "validating",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "oauth_url": "oauthurl",
+              "message": "message"
+            },
+            "comment": "Pass on server-side data to where client-side can reach it."
+          }
+        }
+      ]
+    },
+    "Exit": {
+      "steps": [
+        {
+          "text": "Exit",
+          "answers": {
+            "plugin": "Client-side:client-side-code",
+            "code": "pui.confirmOnClose = false;\r\nwindow.location = \"/run/oauth2sample/authpage\";",
+            "comment": ""
+          }
+        }
+      ]
+    },
+    "make api request button click": {
+      "steps": [
+        {
+          "text": "httpRequest to API",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "var oautils = require(\"./oautils.js\");\r\n\r\ntry {\r\n  let respData = await pjs.httpRequest({\r\n    method: \"POST\",\r\n    uri: oautils.PROTOCOL_HOST_PORT +\"/run/oauth2sample/wsapi/postTestService\",\r\n    headers: {\r\n      \"Authorization\": \"Bearer \" + pjs.session.tokens.access_token\r\n    },\r\n    alwaysReadBody: true\r\n  });\r\n\r\n  let ajaxresponseObj = respData;\r\n  usefulapp.apiresponse = JSON.stringify(ajaxresponseObj, null, 2);\r\n}\r\ncatch (err){\r\n  usefulapp.apiresponse = String(err);\r\n}",
+            "comment": ""
+          }
+        }
+      ]
+    },
+    "app screen load": {
+      "steps": [
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "usefulapp",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "userfld": "pjs.session.user",
+              "emailfld": "pjs.session.email",
+              "fldOAProvider": "pjs.session.provider"
+            },
+            "comment": "Set the User and Email fields"
+          }
+        }
+      ]
+    },
+    "validation screen load": {
+      "code": "// Validation screen load.\r\nconst oautils = require(\"./oautils.js\");\r\n\r\n// Read Fields and Check Code\r\n// \"oa_data\" should be set if the app was started from a redirect from our sample authpage.js.\r\nconst oa_code = validating.oa_data;\r\nconst oa_codver = validating.oa_codver;\r\n\r\n// code valid?\r\nif (typeof oa_code === \"string\" && oa_code.length > 0) {\r\n  try {\r\n    // Exchange the code for a token.\r\n    const tokens = await oautils.fetchTokensAsync(oa_code, oa_codver);\r\n    \r\n    if (typeof tokens.access_token !== \"string\" || tokens.access_token.length < 1) {\r\n      // Token was not valid.\r\n      throw new Error(\"Authentication token could not be fetched.\");\r\n    }\r\n    pjs.session.tokens = tokens;\r\n\r\n    // Ask the OAuth2 server for user ID of the user associated with the token.\r\n    pjs.session.user = await oautils.getUserIdAsync(tokens.access_token);\r\n\r\n    // Show different screen\r\n    screenHistory.push(\"usefulapp\");\r\n    activeScreen = screens[\"usefulapp\"];\r\n  }\r\n  catch (err) {\r\n    showErrorScreen(err);\r\n  }\r\n}\r\n// Else: the code may not be set in a field, because this server side code runs before the\r\n// client-side code can run.\r\n\r\nfunction showErrorScreen(msg) {\r\n  const cause = typeof msg.cause === \"object\" && msg.cause !== null ? \" \" + JSON.stringify(msg.cause) : \"\";\r\n  Object.assign(error, { \"message\": msg.message + cause });\r\n  screenHistory.push(\"error\");\r\n  activeScreen = screens[\"error\"];\r\n}\r\n"
+    }
+  },
+  "start routine": "start",
+  "formats": [
+    {
+      "screen": {
+        "record format name": "validating",
+        "initial routine": {
+          "routine": "validation screen load",
+          "designValue": "validation screen load"
+        },
+        "onload": "// Pass on the OAuth2 data to the server, or send the user to the auth page.\nconst oa_data = localStorage.getItem(\"pjs_oadata\");\nconst oa_url = get(\"ofAuthURL\");\n\nif (typeof oa_data === \"string\" && oa_data.length > 0){\n  pui.set(\"tb_oa_data\", oa_data);\n  pui.set(\"tb_oa_codver\", localStorage.getItem(\"pjs_codver\"));\n  localStorage.setItem(\"pjs_oadata\",\"\");\n  localStorage.setItem(\"pjs_codver\",\"\");\n  pui.click();\n}\nelse if(typeof oa_url === \"string\" && oa_url.length > 0) {\n  localStorage.setItem(\"pjs_oadata\",\"\");\n  window.location = oa_url + \"?error=Redirected+from+validation+page\";\n}\nelse {\n  pui.set(\"message\", \"The required OAuth2 data was missing, and the sample application's start URI was not set in oautils.js\");\n}"
+      },
+      "items": [
+        {
+          "id": "OutputField1",
+          "field type": "output field",
+          "css class": "heading",
+          "value": "Validating...",
+          "left": "15px",
+          "top": "20px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-text-header"
+        },
+        {
+          "id": "btnCancel",
+          "field type": "graphic button",
+          "css class": "pui-solid-button-no",
+          "value": "Exit",
+          "left": "15px",
+          "top": "170px",
+          "width": "100px",
+          "css class 2": "blueprint-defaults",
+          "height": "25px",
+          "onclick": {
+            "routine": "Exit",
+            "designValue": "Exit"
+          }
+        },
+        {
+          "id": "ofAuthURL",
+          "field type": "html container",
+          "css class": "outputField",
+          "left": "30px",
+          "top": "435px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "visibility": "hidden",
+          "width": "610px",
+          "html": {
+            "fieldName": "oauth_url",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "string",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[oauth_url]"
+          },
+          "white space": "pre-wrap",
+          "height": "95px"
+        },
+        {
+          "id": "tb_oa_data",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "oa_data",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "string",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[oa_data]"
+          },
+          "left": "170px",
+          "top": "330px",
+          "width": "150px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "visibility": "hidden",
+          "read only": "true"
+        },
+        {
+          "id": "OutputField4",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Code:",
+          "left": "30px",
+          "top": "330px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "visibility": "hidden"
+        },
+        {
+          "id": "OutputField6",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Auth URL in case of error",
+          "left": "20px",
+          "top": "410px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "visibility": "hidden",
+          "width": "195px",
+          "height": "25px"
+        },
+        {
+          "id": "HtmlContainer1",
+          "field type": "html container",
+          "left": "15px",
+          "top": "45px",
+          "html": "Checking your user token with the OAuth2 provider configured in the openapi.json config file.",
+          "white space": "normal",
+          "width": "685px",
+          "height": "35px"
+        },
+        {
+          "id": "HtmlContainer2",
+          "field type": "html container",
+          "left": "15px",
+          "top": "85px",
+          "html": {
+            "fieldName": "message",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "string",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[message]"
+          },
+          "white space": "normal",
+          "width": "520px",
+          "height": "75px"
+        },
+        {
+          "id": "Label1",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Hidden Fields Used to relay OAuth2 data:",
+          "left": "25px",
+          "top": "290px",
+          "width": "150px",
+          "visibility": "hidden",
+          "text align": "left"
+        },
+        {
+          "id": "OutputField2",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Code Verifier:",
+          "left": "30px",
+          "top": "360px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "visibility": "hidden"
+        },
+        {
+          "id": "tb_oa_codver",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "oa_codver",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "string",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[oa_codver]"
+          },
+          "left": "170px",
+          "top": "360px",
+          "width": "150px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "visibility": "hidden"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "usefulapp",
+        "initial routine": {
+          "routine": "app screen load",
+          "designValue": "app screen load"
+        }
+      },
+      "items": [
+        {
+          "id": "OutputField1",
+          "field type": "output field",
+          "css class": "heading",
+          "value": "I am Some Useful App that Requires Authentication",
+          "left": "25px",
+          "top": "25px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-text-header"
+        },
+        {
+          "id": "HtmlContainer1",
+          "field type": "html container",
+          "css class": "blueprint-defaults",
+          "left": "25px",
+          "top": "55px",
+          "html": "You signed onto this app via:",
+          "white space": "normal",
+          "width": "190px",
+          "height": "25px",
+          "css class 2": "blueprint-wrapping-text"
+        },
+        {
+          "id": "btnMakeAPIReq",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Make API Request",
+          "icon position": "left",
+          "left": "10px",
+          "top": "220px",
+          "height": "25px",
+          "width": "155px",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "onclick": {
+            "routine": "make api request button click",
+            "designValue": "make api request button click"
+          }
+        },
+        {
+          "id": "btnExit",
+          "field type": "graphic button",
+          "css class": "pui-solid-button-no",
+          "value": "Exit",
+          "icon position": "left",
+          "left": "210px",
+          "top": "220px",
+          "height": "25px",
+          "width": "100px",
+          "css class 2": "blueprint-defaults",
+          "onclick": {
+            "routine": "Exit",
+            "designValue": "Exit"
+          }
+        },
+        {
+          "id": "Layout1",
+          "field type": "layout",
+          "left": "10px",
+          "top": "260px",
+          "template": "fieldset",
+          "width": "625px",
+          "height": "320px",
+          "legend": "API Response"
+        },
+        {
+          "id": "OutputField2",
+          "field type": "output field",
+          "css class": "label",
+          "value": "User:",
+          "left": "30px",
+          "top": "95px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label"
+        },
+        {
+          "id": "OutputField3",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "userfld",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "string",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[userfld]"
+          },
+          "left": "85px",
+          "top": "95px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field"
+        },
+        {
+          "id": "HtmlContainer3",
+          "field type": "html container",
+          "left": "10px",
+          "top": "130px",
+          "html": "Clicking \"Make API Request\" will call a sample API using an OAuth2 token associated with your username. The API Security Store must permit your username to access the API, or else a 403 error will be returned.",
+          "white space": "normal",
+          "width": "620px",
+          "height": "75px"
+        },
+        {
+          "id": "OutputField6",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "fldOAProvider",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "string",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[fldOAProvider]"
+          },
+          "left": "215px",
+          "top": "60px"
+        },
+        {
+          "id": "ajaxresponse",
+          "field type": "html container",
+          "white space": "pre-wrap",
+          "html": {
+            "fieldName": "apiresponse",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "string",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[apiresponse]"
+          },
+          "left": "5px",
+          "top": "5px",
+          "height": "calc(100% - 10px)",
+          "width": "calc(100% - 10px)",
+          "layout": "Layout1",
+          "container": "1"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "error"
+      },
+      "items": [
+        {
+          "id": "OutputField1",
+          "field type": "output field",
+          "css class": "heading",
+          "value": "Error",
+          "left": "10px",
+          "top": "10px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-text-header"
+        },
+        {
+          "id": "HtmlContainer2",
+          "field type": "html container",
+          "white space": "normal",
+          "html": {
+            "fieldName": "message",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "string",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[message]"
+          },
+          "left": "15px",
+          "top": "70px",
+          "height": "270px",
+          "width": "520px"
+        },
+        {
+          "id": "btnCancel",
+          "field type": "graphic button",
+          "css class": "pui-solid-button-no",
+          "value": "Exit",
+          "left": "15px",
+          "top": "40px",
+          "height": "25px",
+          "width": "100px",
+          "css class 2": "blueprint-defaults",
+          "onclick": {
+            "routine": "Exit",
+            "designValue": "Exit"
+          }
+        }
+      ]
+    }
+  ],
+  "keywords": [],
+  "long name aliases": true
+}

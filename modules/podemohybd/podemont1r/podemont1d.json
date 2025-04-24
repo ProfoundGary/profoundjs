@@ -1,0 +1,309 @@
+{
+  "text": "Maintain Accidents/Claims (Green-Screen)",
+  "formats": [
+    {
+      "screen": {
+        "record format name": "notectl",
+        "overlay": "true",
+        "overlay range": "1-18"
+      },
+      "items": [
+        {
+          "id": "PODEMONT1D_NOTECTL_HeadingPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "0px",
+          "width": "1290px",
+          "height": "44px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-heading2",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant1",
+          "field type": "output field",
+          "value": "PO Notes",
+          "css class": "hybrid-constant",
+          "left": "582px",
+          "cursor column": "49",
+          "top": "5px",
+          "cursor row": "1",
+          "css class 2": "top-line"
+        },
+        {
+          "id": "PODEMONT1D_NOTECTL_ActionsPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "52px",
+          "height": "720px",
+          "width": "165px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-actions",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant2",
+          "field type": "output field",
+          "value": "PO",
+          "css class": "hybrid-constant",
+          "left": "230px",
+          "cursor column": "5",
+          "top": "65px",
+          "cursor row": "4",
+          "css class 2": "WHT"
+        },
+        {
+          "id": "RECORDID",
+          "field type": "output field",
+          "value": {
+            "fieldName": "recordid",
+            "dataLength": "11",
+            "decPos": "0",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "999.00",
+            "units": "",
+            "designValue": "[recordid]"
+          },
+          "css class": "hybrid-output-field",
+          "left": "262px",
+          "cursor column": "9",
+          "top": "65px",
+          "cursor row": "4",
+          "width": "88px",
+          "text align": "right"
+        },
+        {
+          "id": "NOTESFL",
+          "field type": "grid",
+          "number of columns": "1",
+          "record format name": "notesfl",
+          "display subfile": {
+            "fieldName": "N70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "display control record": {
+            "fieldName": "N70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "clear subfile": {
+            "fieldName": "70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "subfile size": "100",
+          "row height": "20",
+          "css class": "hybrid-grid",
+          "subfile end": {
+            "fieldName": "N70",
+            "dataType": "expression",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "sortable columns": "true",
+          "find option": "true",
+          "filter option": "true",
+          "number of rows": "12",
+          "has header": "false",
+          "top": "125px",
+          "left": "361px",
+          "column widths": "635",
+          "header height": "30",
+          "height": "240px",
+          "width": "636px"
+        },
+        {
+          "id": "linkSubmit",
+          "field type": "hyperlink",
+          "value": "Continue",
+          "shortcut key": "Enter",
+          "left": "25px",
+          "top": "70px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCA03",
+          "field type": "hyperlink",
+          "bypass validation": "true",
+          "value": "Exit",
+          "shortcut key": "F3",
+          "response": {
+            "fieldName": "*IN03",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "103px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "linkCF12",
+          "field type": "hyperlink",
+          "value": "Cancel",
+          "shortcut key": "F12",
+          "response": {
+            "fieldName": "*IN12",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "1 / 0"
+          },
+          "left": "25px",
+          "top": "136px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        },
+        {
+          "id": "note",
+          "field type": "textbox",
+          "css class": "hybrid-input",
+          "value": {
+            "fieldName": "note",
+            "dataLength": "75",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "char",
+            "formatting": "Text",
+            "textTransform": "uppercase",
+            "designValue": "[note]"
+          },
+          "text transform": "uppercase",
+          "left": "5px",
+          "cursor column": "22",
+          "top": "1px",
+          "cursor row": "7",
+          "width": "604px",
+          "css class 2": "WHT",
+          "grid": "NOTESFL",
+          "column": "0"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "notebott",
+        "overlay range": "24-24"
+      },
+      "items": [
+        {
+          "id": "PODEMONT1D_NOTEBOTT_HeadingPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "0px",
+          "width": "1290px",
+          "height": "44px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-heading2",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "PODEMONT1D_NOTEBOTT_ActionsPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "52px",
+          "height": "720px",
+          "width": "165px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-actions",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "linkSubmit",
+          "field type": "hyperlink",
+          "value": "Continue",
+          "shortcut key": "Enter",
+          "left": "25px",
+          "top": "70px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        }
+      ]
+    },
+    {
+      "screen": {
+        "record format name": "record1",
+        "assume": "true",
+        "overlay range": "2-2"
+      },
+      "items": [
+        {
+          "id": "PODEMONT1D_RECORD1_HeadingPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "0px",
+          "width": "1290px",
+          "height": "44px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-heading2",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "constant3",
+          "field type": "output field",
+          "value": " ",
+          "css class": "hybrid-constant",
+          "left": "198px",
+          "cursor column": "1",
+          "top": "25px",
+          "cursor row": "2"
+        },
+        {
+          "id": "PODEMONT1D_RECORD1_ActionsPanel",
+          "field type": "output field",
+          "left": "5px",
+          "top": "52px",
+          "height": "720px",
+          "width": "165px",
+          "z index": "8",
+          "locked in place": "true",
+          "css class": "hybrid-actions",
+          "css class 2": "stationary"
+        },
+        {
+          "id": "linkSubmit",
+          "field type": "hyperlink",
+          "value": "Continue",
+          "shortcut key": "Enter",
+          "left": "25px",
+          "top": "70px",
+          "width": "145px",
+          "height": "23px",
+          "css class": "hybrid-link",
+          "auto arrange": "true"
+        }
+      ]
+    }
+  ],
+  "keywords": [
+    "INDARA"
+  ],
+  "long name aliases": true
+}

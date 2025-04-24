@@ -1,0 +1,179 @@
+{
+  "apiFileID": "642edba6-e110-406e-b0ba-8f3548d86217",
+  "apiType": "rest",
+  "routes": [
+    {
+      "apiRouteID": "956a546e-ce97-4a88-aaba-f182f4b13250",
+      "name": "Inventory Level Update",
+      "enableCors": true,
+      "summary": "Inventory Level Update",
+      "method": "post",
+      "path": "/InventoryLevelUpdate",
+      "inputs": [
+        {
+          "type": "string",
+          "from": "header",
+          "name": "x-shopify-topic",
+          "example": ""
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "x-shopify-hmac-sha256",
+          "example": ""
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "x-shopify-shop-domain",
+          "example": ""
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "x-shopify-api-version",
+          "example": ""
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "x-shopify-webhook-id",
+          "example": ""
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "x-shopify-triggered-at",
+          "example": ""
+        }
+      ],
+      "category": "Shopify",
+      "subcategory": "WebHook",
+      "httpStatuses": [
+        "200"
+      ],
+      "steps": [
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('inventory level updated');\r\nconsole.log(request.body);\r\nconsole.log(input[\"x-shopify-topic\"]);\r\nconsole.log(input[\"x-shopify-hmac-sha256\"]);\r\nconsole.log(input[\"x-shopify-shop-domain\"]);\r\nconsole.log(input[\"x-shopify-api-version\"]);\r\nconsole.log(input[\"x-shopify-webhook-id\"]);\r\nconsole.log(input[\"x-shopify-triggered-at\"]);\r\n//Body\r\n// {\r\n//   inventory_item_id: 48522334994739,\r\n//   location_id: 90033291571,\r\n//   available: 967,\r\n//   updated_at: '2023-09-01T15:21:46-04:00',\r\n//   admin_graphql_api_id: 'gid://shopify/InventoryLevel/126436376883?inventory_item_id=48522334994739'\r\n// }\r\n",
+            "comment": ""
+          }
+        }
+      ]
+    },
+    {
+      "apiRouteID": "cf47a4a3-574d-409f-8282-839425a90cdd",
+      "name": "Add Customer",
+      "enableCors": true,
+      "summary": "Add Customer",
+      "method": "post",
+      "path": "/AddCustomer",
+      "inputs": [
+        {
+          "type": "string",
+          "from": "header",
+          "name": "X-Shopify-Topic"
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "X-Shopify-Hmac-Sha256"
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "X-Shopify-Shop-Domain"
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "X-Shopify-API-Version"
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "X-Shopify-Webhook-Id"
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "X-Shopify-Triggered-At",
+          "example": ""
+        }
+      ],
+      "category": "Shopify",
+      "subcategory": "WebHook",
+      "steps": [
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('Add Customer');\r\nconsole.log(request.body);\r\nconsole.log(input[\"X-Shopify-Topic\"]);\r\nconsole.log(input[\"X-Shopify-Hmac-Sha256\"]);\r\nconsole.log(input[\"X-Shopify-Shop-Domain\"]);\r\nconsole.log(input[\"X-Shopify-API-Version\"]);\r\nconsole.log(input[\"X-Shopify-Webhook-Id\"]);\r\nconsole.log(input[\"X-Shopify-Triggered-At\"]);\r\n\r\n// {\r\n//   id: 7195839529267,\r\n//   email: 'sarah.johnson@example.com',\r\n//   accepts_marketing: true,\r\n//   created_at: '2023-09-01T15:29:09-04:00',\r\n//   updated_at: '2023-09-01T15:29:10-04:00',\r\n//   first_name: 'Sarah',\r\n//   last_name: 'Johnson',\r\n//   orders_count: 0,\r\n//   state: 'disabled',\r\n//   total_spent: '0.00',\r\n//   last_order_id: null,\r\n//   note: 'notes about Sarah',\r\n//   verified_email: true,\r\n//   multipass_identifier: null,\r\n//   tax_exempt: false,\r\n//   tags: 'VIP',\r\n//   last_order_name: null,\r\n//   currency: 'USD',\r\n//   phone: '+18597602222',\r\n//   addresses: [\r\n//     {\r\n//       id: 9364783366451,\r\n//       customer_id: 7195839529267,\r\n//       first_name: 'Sarah',\r\n//       last_name: 'Johnson',\r\n//       company: 'Tech Innovators Inc.',\r\n//       address1: '123 Elm St',\r\n//       address2: 'Apt 4B',\r\n//       city: 'Nacogdoches',\r\n//       province: 'Texas',\r\n//       country: 'United States',\r\n//       zip: '75965',\r\n//       phone: '+12312312345',\r\n//       name: 'Sarah Johnson',\r\n//       province_code: 'TX',\r\n//       country_code: 'US',\r\n//       country_name: 'United States',\r\n//       default: true\r\n//     }\r\n//   ],\r\n//   accepts_marketing_updated_at: '2023-09-01T15:29:09-04:00',\r\n//   marketing_opt_in_level: 'single_opt_in',\r\n//   tax_exemptions: [],\r\n//   email_marketing_consent: {\r\n//     state: 'subscribed',\r\n//     opt_in_level: 'single_opt_in',\r\n//     consent_updated_at: '2023-09-01T15:29:09-04:00'\r\n//   },\r\n//   sms_marketing_consent: {\r\n//     state: 'subscribed',\r\n//     opt_in_level: 'single_opt_in',\r\n//     consent_updated_at: '2023-09-01T15:29:10-04:00',\r\n//     consent_collected_from: 'SHOPIFY'\r\n//   },\r\n//   admin_graphql_api_id: 'gid://shopify/Customer/7195839529267',\r\n//   default_address: {\r\n//     id: 9364783366451,\r\n//     customer_id: 7195839529267,\r\n//     first_name: 'Sarah',\r\n//     last_name: 'Johnson',\r\n//     company: 'Tech Innovators Inc.',\r\n//     address1: '123 Elm St',\r\n//     address2: 'Apt 4B',\r\n//     city: 'Nacogdoches',\r\n//     province: 'Texas',\r\n//     country: 'United States',\r\n//     zip: '75965',\r\n//     phone: '+12312312345',\r\n//     name: 'Sarah Johnson',\r\n//     province_code: 'TX',\r\n//     country_code: 'US',\r\n//     country_name: 'United States',\r\n//     default: true\r\n//   }\r\n// }\r\n",
+            "comment": ""
+          }
+        }
+      ],
+      "httpStatuses": [
+        "200"
+      ]
+    },
+    {
+      "apiRouteID": "6518055b-3ebf-445f-87b0-29312af04fa5",
+      "name": "Update Customer",
+      "enableCors": true,
+      "summary": "Update Customer",
+      "method": "post",
+      "path": "/UpdateCustomer",
+      "inputs": [
+        {
+          "type": "string",
+          "from": "header",
+          "name": "X-Shopify-Topic"
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "X-Shopify-Hmac-Sha256"
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "X-Shopify-Shop-Domain"
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "X-Shopify-API-Version"
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "X-Shopify-Webhook-Id"
+        },
+        {
+          "type": "string",
+          "from": "header",
+          "name": "X-Shopify-Triggered-At",
+          "example": ""
+        }
+      ],
+      "category": "Shopify",
+      "subcategory": "WebHook",
+      "steps": [
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('Update Customer');\r\nconsole.log(request.body);\r\nconsole.log(input[\"X-Shopify-Topic\"]);\r\nconsole.log(input[\"X-Shopify-Hmac-Sha256\"]);\r\nconsole.log(input[\"X-Shopify-Shop-Domain\"]);\r\nconsole.log(input[\"X-Shopify-API-Version\"]);\r\nconsole.log(input[\"X-Shopify-Webhook-Id\"]);\r\nconsole.log(input[\"X-Shopify-Triggered-At\"]);",
+            "comment": ""
+          }
+        }
+      ],
+      "httpStatuses": [
+        "200"
+      ]
+    }
+  ]
+}

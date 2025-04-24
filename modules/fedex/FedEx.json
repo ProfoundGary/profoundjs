@@ -1,0 +1,4252 @@
+{
+  "text": "",
+  "logic": {
+    "get complete history button click": {
+      "steps": [
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "var results;\r\n"
+          }
+        },
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "trackAllData",
+            "module-input-parameters": {
+              "trackingNumber": "main[\"trackingNumber\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "results",
+                "captureType": "records"
+              }
+            }
+          }
+        },
+        {
+          "text": "Condition",
+          "answers": {
+            "plugin": "Conditions:condition",
+            "condition": "results && results.output && results.output.completeTrackResults[0] && results.output.completeTrackResults[0].trackResults[0] && results.output.completeTrackResults[0].trackResults[0].scanEvents"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "scans",
+            "value": "results.output.completeTrackResults[0].trackResults[0].scanEvents"
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "let scanList = '<table><tr><th></th><th></th></tr>';\r\nscans.forEach(detail => {\r\n  scanList += `<tr><td>${detail.eventType}</td><td>${detail.eventDescription}</td><td style=\"color:red;\">${detail.exceptionDescription}</td><td>${detail.scanLocation.city?detail.scanLocation.city:''}</td><td>${detail.scanLocation.stateOrProvinceCode?detail.scanLocation.stateOrProvinceCode:''}</td><td>${detail.scanLocation.postalCode}</td><td style=\"padding-left:50px;\">${detail.date.substring(0,10)}</td><td>${detail.date.substring(11,19)}</td></tr>`;\r\n});\r\nscanList += `</table>`;\r\nmain[\"scanDetailHtml\"] = scanList;"
+          }
+        },
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "scanDetail": "scanList"
+            }
+          },
+          "disabled": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "scanDetailHtml": "\"Scan data not available at this time.\""
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    "screen initialization": {
+      "steps": [
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "icountryCode": "'US'",
+              "vcountryCode": "'US'",
+              "ocountryCode": "'US'",
+              "dcountryCode": "'US'"
+            }
+          }
+        }
+      ]
+    },
+    "click here button click 2": {
+      "steps": [
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "code": "''",
+              "description": "''",
+              "activity": "''",
+              "scanDetail": "''",
+              "scanDetailHtml": "''",
+              "activityDate": "''",
+              "activityTime": "''",
+              "errorMessage": "''",
+              "showScanButton": "false",
+              "socity": "''"
+            }
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "var results;"
+          }
+        },
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "track",
+            "module-input-parameters": {
+              "trackingNumber": "main[\"trackingNumber\"]"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "results",
+                "captureType": "records"
+              }
+            }
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log(JSON.stringify(results));"
+          }
+        },
+        {
+          "text": "Comparison",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "results",
+            "type": "!=",
+            "value": "null",
+            "and-or": ""
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Comparison",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "results",
+            "type": "truthy",
+            "and-or": "and",
+            "variable2": "results.latestStatusDetail",
+            "type2": "truthy",
+            "and-or2": "and",
+            "variable3": "results.latestStatusDetail.code",
+            "type3": "truthy"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "code": "results.latestStatusDetail.code",
+              "description": "results.latestStatusDetail.description",
+              "city": "results.latestStatusDetail.city",
+              "activity": "results.lastActivity",
+              "activityDate": "results.lastActivityTimestamp.substring(0,10)",
+              "showScanButton": "true",
+              "activityTime": "results.lastActivityTimestamp.substring(11,19)"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Comparison",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "results.error",
+            "type": "truthy",
+            "and-or": ""
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "errorMessage": "results.error",
+              "showScanButton": "false"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "errorMessage": "\"Tracking data is not available at this time.\"",
+              "showScanButton": "false"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "errorMessage": "\"Tracking data is not available at this time.\"",
+              "showScanButton": "false"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    "click here button click 3": {
+      "steps": [
+        {
+          "text": "Comparison",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "main[\"icountryCode\"]",
+            "type": "truthy",
+            "and-or": ""
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "addressValidation",
+            "module-input-parameters": {
+              "address[\"streetLine1\"]": "main[\"istreet1\"]",
+              "address[\"streetLine2\"]": "main[\"istreet2\"]",
+              "address[\"city\"]": "main[\"icity\"]",
+              "address[\"state\"]": "main[\"istate\"]",
+              "address[\"postalCode\"]": "main[\"ipostalCode\"]",
+              "address[\"countryCode\"]": "main[\"icountryCode\"]"
+            },
+            "module-output-parameters": {
+              "resolvedAddress": {
+                "name": "results",
+                "captureType": "records"
+              }
+            }
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log(JSON.stringify(results));"
+          }
+        },
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "vstreet1": "results.street1",
+              "vstreet2": "results.street2",
+              "vcity": "results.city",
+              "vstate": "results.state",
+              "vpostalCode": "results.postalCode",
+              "vcountryCode": "results.country",
+              "vclassification": "results.classification && results.classification != 'UNKNOWN' ? results.classification : ''",
+              "verror": "results.alert ? results.alert : ''",
+              "verrormessage": "results.alertMessage ? results.alertMessage : ''"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "verrormessage": "'Country Code Required'"
+            }
+          }
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    "example button click": {
+      "steps": [
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "trackingNumber": "647157102263"
+            }
+          }
+        }
+      ]
+    },
+    "example button click 2": {
+      "steps": [
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "istreet1": "'396 Congress Park Dr'",
+              "icity": "'Dayton'",
+              "istate": "'OH'",
+              "ipostalCode": "'45459'",
+              "icountryCode": "'US'"
+            }
+          }
+        }
+      ]
+    },
+    "example button click 3": {
+      "steps": [
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "ostreet1": "'65 Waverly Pl'",
+              "ocity": "'San Francisco'",
+              "ostate": "'CA'",
+              "opostalCode": "'94108'",
+              "dstreet1": "'396 Congress Park Dr'",
+              "dcity": "'Dayton'",
+              "dstate": "'OH'",
+              "dpostalCode": "'45459'",
+              "dcountryCode": "'US'",
+              "weight": "5",
+              "length": "12",
+              "height": "10",
+              "width": "4",
+              "value": "1200",
+              "pickupType": "'DROPOFF_AT_FEDEX_LOCATION'",
+              "oname": "'Spicy King'",
+              "ophone": "1231231234",
+              "dname": "'Bob'",
+              "dphone": "5987654321",
+              "requestShipDate": "new Date()",
+              "packagingType1": "''"
+            }
+          }
+        }
+      ]
+    },
+    "call rate routine": {
+      "steps": [
+        {
+          "text": "Log Marker",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('>>>>--------hhhh------>>>>');\r\nconsole.log(main[\"packagingType\"]);\r\nconsole.log(main[\"packagingType1\"]);\r\nconsole.log(main[\"pickupType\"]);\r\nconsole.log('xxxx--------------------xxxx');"
+          }
+        },
+        {
+          "text": "Clear grid",
+          "answers": {
+            "plugin": "Grids:clear-grid",
+            "grid": "grid1"
+          }
+        },
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "results",
+            "value": "null"
+          }
+        },
+        {
+          "text": "Log Marker",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log('>>>>--------MMMMM------>>>>');\r\nconsole.log(main[\"packagingType\"]);\r\nconsole.log('xxxx--------------------xxxx');"
+          }
+        },
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "rateAndTimes",
+            "module-input-parameters": {
+              "originAddress[\"streetLine1\"]": "main[\"ostreet1\"]",
+              "originAddress[\"streetLine2\"]": "main[\"ostreet2\"]",
+              "originAddress[\"city\"]": "main[\"ocity\"]",
+              "originAddress[\"state\"]": "main[\"ostate\"]",
+              "originAddress[\"postalCode\"]": "main[\"opostalCode\"]",
+              "originAddress[\"countryCode\"]": "main[\"ocountryCode\"]",
+              "destinAddress[\"streetLine1\"]": "main[\"dstreet1\"]",
+              "destinAddress[\"streetLine2\"]": "main[\"dstreet2\"]",
+              "destinAddress[\"city\"]": "main[\"dcity\"]",
+              "destinAddress[\"state\"]": "main[\"dstate\"]",
+              "destinAddress[\"postalCode\"]": "main[\"dpostalCode\"]",
+              "destinAddress[\"countryCode\"]": "main[\"dcountryCode\"]",
+              "packageDetail[\"weightPounds\"]": "main[\"weight\"]",
+              "packageDetail[\"lengthInches\"]": "main[\"length\"]",
+              "packageDetail[\"widthInches\"]": "main[\"width\"]",
+              "packageDetail[\"heightInches\"]": "main[\"height\"]",
+              "packageDetail[\"declaredValueUSD\"]": "main[\"value\"]",
+              "packagingType": "main[\"packagingType1\"]",
+              "pickupType": "main[\"pickupType\"]",
+              "shipDate": "(main[\"requestShipDate\"]?? new Date()).toISOString().substring(0,10)"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "results",
+                "captureType": "records"
+              }
+            },
+            "comment": ""
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log(JSON.stringify(results));"
+          }
+        },
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "From a work variable",
+            "work_variable": "results"
+          }
+        },
+        {
+          "text": "Are there results with 1 or more details?",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "results",
+            "type": "!=",
+            "value": "null",
+            "and-or": "and",
+            "variable2": "results",
+            "type2": "truthy",
+            "and-or2": "and",
+            "variable3": "results.rateReplyDetails",
+            "type3": "truthy"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Process list",
+          "answers": {
+            "plugin": "Program Data:process-list",
+            "list": "results.rateReplyDetails",
+            "work_variable": "record"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "does detail have data?",
+          "answers": {
+            "plugin": "Conditions:comparison",
+            "variable": "record.ratedShipmentDetails",
+            "type": "truthy",
+            "and-or": ""
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Add grid record",
+          "answers": {
+            "plugin": "Grids:add-grid-record",
+            "grid": "grid1",
+            "record_source": "Specify each field value individually",
+            "field-values": {
+              "serviceName": "record.serviceName",
+              "packagingType": "record.packagingType",
+              "rateType": "record.ratedShipmentDetails.rateType",
+              "totalBaseCharge": "record.ratedShipmentDetails.totalBaseCharge",
+              "totalDiscounts": "record.ratedShipmentDetails.totalDiscounts",
+              "totalSurcharge": "record.ratedShipmentDetails.totalSurcharge",
+              "totalNetCharge": "record.ratedShipmentDetails.totalNetCharge",
+              "dayOfWeek": "record.commit.dateDetail.dayOfWeek",
+              "dayFormat": "record.commit.dateDetail.dayFormat.substring(0,10) + ' ' + record.commit.dateDetail.dayFormat.substring(11,16) ",
+              "serviceType": "record.serviceType"
+            },
+            "to_top": false
+          }
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "isStructureEnd": true
+        },
+        {
+          "text": "Otherwise",
+          "answers": {
+            "plugin": "Conditions:else"
+          },
+          "isStructureStart": true,
+          "collapsed": false
+        },
+        {
+          "text": "Add grid record",
+          "answers": {
+            "plugin": "Grids:add-grid-record",
+            "grid": "grid1",
+            "record_source": "Specify each field value individually",
+            "field-values": {
+              "serviceName": "\"No Results Available\""
+            },
+            "to_top": false
+          }
+        },
+        {
+          "isStructureEnd": true
+        }
+      ]
+    },
+    "call ship routine": {
+      "steps": [
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "trackingNumber": "null",
+              "errorMessage": "null",
+              "transactionId": "null",
+              "shipDatestamp": "null",
+              "deliveryDatestamp": "null",
+              "baseRateAmount": "null",
+              "alerts": "null"
+            }
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "var results"
+          },
+          "disabled": true
+        },
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "results",
+            "value": "null"
+          }
+        },
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "ship",
+            "module-input-parameters": {
+              "shipperName": "main[\"oname\"]",
+              "shipperPhone": "main[\"ophone\"]",
+              "originAddress[\"streetLine1\"]": "main[\"ostreet1\"]",
+              "originAddress[\"streetLine2\"]": "main[\"ostreet2\"]",
+              "originAddress[\"city\"]": "main[\"ocity\"]",
+              "originAddress[\"state\"]": "main[\"ostate\"]",
+              "originAddress[\"postalCode\"]": "main[\"opostalCode\"]",
+              "originAddress[\"countryCode\"]": "main[\"ocountryCode\"]",
+              "recipientName": "main[\"dname\"]",
+              "recipientPhone": "main[\"dphone\"]",
+              "destinAddress[\"streetLine1\"]": "main[\"dstreet1\"]",
+              "destinAddress[\"streetLine2\"]": "main[\"dstreet2\"]",
+              "destinAddress[\"city\"]": "main[\"dcity\"]",
+              "destinAddress[\"state\"]": "main[\"dstate\"]",
+              "destinAddress[\"postalCode\"]": "main[\"dpostalCode\"]",
+              "destinAddress[\"countryCode\"]": "main[\"dcountryCode\"]",
+              "packageDetail[\"weightPounds\"]": "main[\"weight\"]",
+              "packageDetail[\"lengthInches\"]": "main[\"length\"]",
+              "packageDetail[\"widthInches\"]": "main[\"width\"]",
+              "packageDetail[\"heightInches\"]": "main[\"height\"]",
+              "packageDetail[\"declaredValueUSD\"]": "main[\"value\"]",
+              "shipDate": "main[\"requestShipDate\"].toISOString().substring(0,10)",
+              "serviceType": "main[\"serviceType\"]",
+              "packagingType": "main[\"packagingType\"]",
+              "pickupType": "main[\"pickupType\"]",
+              "paymentType": "'SENDER'"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "results",
+                "captureType": "records"
+              }
+            }
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log(JSON.stringify(results));"
+          }
+        },
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "From a work variable",
+            "work_variable": "results"
+          }
+        }
+      ]
+    },
+    "call ship from grid": {
+      "steps": [
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "Specify each value individually",
+            "screen-values": {
+              "activeTab": "3",
+              "trackingNumber": "null",
+              "errorMessage": "null",
+              "transactionId": "null",
+              "shipDatestamp": "null",
+              "deliveryDatestamp": "null",
+              "baseRateAmount": "null",
+              "serviceType": "activeGridRecord[\"serviceType\"]",
+              "packagingType": "activeGridRecord[\"packagingType\"]",
+              "alerts": "null"
+            }
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "var results"
+          },
+          "disabled": true
+        },
+        {
+          "text": "Set work variable",
+          "answers": {
+            "plugin": "Program Data:set-work-variable",
+            "work_variable": "results",
+            "value": "null"
+          }
+        },
+        {
+          "text": "Call external routine",
+          "answers": {
+            "plugin": "Custom:call-external-routine",
+            "module-name": "fedex.module.json",
+            "routine-name": "ship",
+            "module-input-parameters": {
+              "shipperName": "main[\"oname\"]",
+              "shipperPhone": "main[\"ophone\"]",
+              "originAddress[\"streetLine1\"]": "main[\"ostreet1\"]",
+              "originAddress[\"streetLine2\"]": "main[\"ostreet2\"]",
+              "originAddress[\"city\"]": "main[\"ocity\"]",
+              "originAddress[\"state\"]": "main[\"ostate\"]",
+              "originAddress[\"postalCode\"]": "main[\"opostalCode\"]",
+              "originAddress[\"countryCode\"]": "main[\"ocountryCode\"]",
+              "recipientName": "main[\"dname\"]",
+              "recipientPhone": "main[\"dphone\"]",
+              "destinAddress[\"streetLine1\"]": "main[\"dstreet1\"]",
+              "destinAddress[\"streetLine2\"]": "main[\"dstreet2\"]",
+              "destinAddress[\"city\"]": "main[\"dcity\"]",
+              "destinAddress[\"state\"]": "main[\"dstate\"]",
+              "destinAddress[\"postalCode\"]": "main[\"dpostalCode\"]",
+              "destinAddress[\"countryCode\"]": "main[\"dcountryCode\"]",
+              "packageDetail[\"weightPounds\"]": "main[\"weight\"]",
+              "packageDetail[\"lengthInches\"]": "main[\"length\"]",
+              "packageDetail[\"widthInches\"]": "main[\"width\"]",
+              "packageDetail[\"heightInches\"]": "main[\"height\"]",
+              "packageDetail[\"declaredValueUSD\"]": "main[\"value\"]",
+              "shipDate": "main[\"requestShipDate\"].toISOString().substring(0,10)",
+              "serviceType": "activeGridRecord[\"serviceType\"]",
+              "packagingType": "activeGridRecord[\"packagingType\"]",
+              "pickupType": "main[\"pickupType\"]",
+              "paymentType": "'SENDER'"
+            },
+            "module-output-parameters": {
+              "data": {
+                "name": "results",
+                "captureType": "records"
+              }
+            }
+          }
+        },
+        {
+          "text": "Custom Node.js",
+          "answers": {
+            "plugin": "Custom:code",
+            "custom-code": "console.log(JSON.stringify(results));"
+          }
+        },
+        {
+          "text": "Set screen field(s)",
+          "answers": {
+            "plugin": "Program Data:set-screen-fields",
+            "screen": "main",
+            "source": "From a work variable",
+            "work_variable": "results"
+          }
+        }
+      ]
+    }
+  },
+  "formats": [
+    {
+      "screen": {
+        "record format name": "main",
+        "initial routine": {
+          "routine": "screen initialization",
+          "designValue": "screen initialization"
+        },
+        "user defined routine": {
+          "routine": "call rate routine",
+          "designValue": "call rate routine"
+        },
+        "user defined routine 2": {
+          "routine": "call ship from grid",
+          "designValue": "call ship from grid"
+        }
+      },
+      "items": [
+        {
+          "id": "Layout1",
+          "field type": "layout",
+          "css class": "blueprint-tab-panel-layout",
+          "left": "35px",
+          "top": "20px",
+          "template": "tab panel",
+          "height": "740px",
+          "width": "1050px",
+          "z index": "8",
+          "css class 2": "blueprint-defaults ",
+          "tab names": "Tracking,Address Validation,Rates and Times,Ship",
+          "locked in place": "true",
+          "active tab": {
+            "fieldName": "activeTab",
+            "dataLength": "5",
+            "decPos": "0",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": ""
+          }
+        },
+        {
+          "id": "trackingNumber",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "trackingNumber",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[trackingNumber]"
+          },
+          "left": "190px",
+          "top": "40px",
+          "width": "265px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "OutputField1",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Tracking number",
+          "left": "50px",
+          "top": "40px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "message",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "errorMessage",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[errorMessage]"
+          },
+          "left": "60px",
+          "top": "90px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "width": "815px",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "OutputField2",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Latest Status",
+          "left": "25px",
+          "top": "125px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "OutputField3",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Code",
+          "left": "110px",
+          "top": "155px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "OutputField4",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Description",
+          "left": "63px",
+          "top": "185px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "OutputField5",
+          "field type": "output field",
+          "css class": "label",
+          "value": "City",
+          "left": "119px",
+          "top": "215px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "OutputField6",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Last Activity",
+          "left": "57px",
+          "top": "245px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "code",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "code",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[code]"
+          },
+          "left": "170px",
+          "top": "155px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "width": "165px",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "description",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "description",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[description]"
+          },
+          "left": "170px",
+          "top": "185px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "width": "345px",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "city",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "city",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[city]"
+          },
+          "left": "170px",
+          "top": "215px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "width": "330px",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "activity",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "activity",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[activity]"
+          },
+          "left": "170px",
+          "top": "245px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "width": "175px",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "timestamp",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "activityDate",
+            "dataLength": "10",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[activityDate]"
+          },
+          "left": "170px",
+          "top": "125px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "width": "135px",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "scanHistoryButton",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Get scan history",
+          "left": "45px",
+          "top": "275px",
+          "width": "300px",
+          "icon position": "left",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "height": "25px",
+          "onclick": {
+            "routine": "get complete history button click",
+            "designValue": "get complete history button click"
+          },
+          "visibility": {
+            "fieldName": "showScanButton",
+            "customTrue": "",
+            "customFalse": "",
+            "dataType": "indicator",
+            "formatting": "Indicator",
+            "indFormat": "true / false"
+          },
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "scanDetail",
+          "field type": "html container",
+          "value": {
+            "fieldName": "scanDetail",
+            "dataLength": "2500",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[scanDetail]"
+          },
+          "left": "40px",
+          "top": "315px",
+          "html": {
+            "fieldName": "scanDetailHtml",
+            "dataLength": "2500",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[scanDetailHtml]"
+          },
+          "white space": "normal",
+          "width": "870px",
+          "height": "350px",
+          "overflow y": "auto",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "GraphicButton3",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Go",
+          "left": "470px",
+          "top": "40px",
+          "width": "100px",
+          "icon position": "right",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "height": "25px",
+          "onclick": {
+            "routine": "click here button click 2",
+            "designValue": "click here button click 2"
+          },
+          "icon": "material:play_arrow",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "timestamp_copy",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "activityTime",
+            "dataLength": "8",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[activityTime]"
+          },
+          "left": "320px",
+          "top": "125px",
+          "width": "185px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "OutputField7",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Street",
+          "left": "86px",
+          "top": "70px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField8",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Street 2",
+          "left": "74px",
+          "top": "100px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField9",
+          "field type": "output field",
+          "css class": "label",
+          "value": "City",
+          "left": "102px",
+          "top": "130px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField10",
+          "field type": "output field",
+          "css class": "label",
+          "value": "State",
+          "left": "93px",
+          "top": "160px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField11",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Postal Code",
+          "left": "45px",
+          "top": "190px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField12",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Country Code",
+          "left": "30px",
+          "top": "220px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "TextBox1",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "istreet1",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[istreet1]"
+          },
+          "left": "160px",
+          "top": "65px",
+          "width": "250px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "TextBox2",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "istreet2",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[istreet2]"
+          },
+          "left": "160px",
+          "top": "95px",
+          "width": "250px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "TextBox3",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "icity",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[icity]"
+          },
+          "left": "160px",
+          "top": "125px",
+          "width": "250px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "TextBox4",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "istate",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[istate]"
+          },
+          "left": "160px",
+          "top": "155px",
+          "width": "250px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "TextBox5",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ipostalCode",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[ipostalCode]"
+          },
+          "left": "160px",
+          "top": "185px",
+          "width": "250px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "TextBox6",
+          "field type": "combo box",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "icountryCode",
+            "dataLength": "10",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[icountryCode]"
+          },
+          "left": "160px",
+          "top": "215px",
+          "width": "250px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "database connection": "IBMi",
+          "choices database file": "fedexdemo/fedexcountries",
+          "choice options field": "name",
+          "choice values field": "code",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField14",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "vstreet1",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[vstreet1]"
+          },
+          "left": "465px",
+          "top": "70px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField15",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "vstreet2",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[vstreet2]"
+          },
+          "left": "465px",
+          "top": "100px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField16",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "vcity",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[vcity]"
+          },
+          "left": "465px",
+          "top": "130px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField17",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "vstate",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[vstate]"
+          },
+          "left": "465px",
+          "top": "160px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField18",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "vpostalCode",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[vpostalCode]"
+          },
+          "left": "465px",
+          "top": "190px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField19",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "vcountryCode",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[vcountryCode]"
+          },
+          "left": "465px",
+          "top": "220px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField20",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "vclassification",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[vclassification]"
+          },
+          "left": "470px",
+          "top": "35px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField21",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "verror",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[verror]"
+          },
+          "left": "465px",
+          "top": "250px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "width": "445px",
+          "color": "red",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "GraphicButton2",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Validate ",
+          "left": "160px",
+          "top": "245px",
+          "width": "100px",
+          "icon position": "right",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "height": "25px",
+          "onclick": {
+            "routine": "click here button click 3",
+            "designValue": "click here button click 3"
+          },
+          "icon": "material:play_arrow",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "GraphicButton1",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Example",
+          "top": "5px",
+          "width": "100px",
+          "icon position": "left",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "height": "25px",
+          "onclick": {
+            "routine": "example button click 2",
+            "designValue": "example button click 2"
+          },
+          "right": "10px",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "GraphicButton4",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Example",
+          "top": "10px",
+          "width": "100px",
+          "icon position": "left",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "height": "25px",
+          "onclick": {
+            "routine": "example button click",
+            "designValue": "example button click"
+          },
+          "right": "10px",
+          "layout": "Layout1",
+          "container": "1"
+        },
+        {
+          "id": "OutputField7_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Street",
+          "left": "45px",
+          "top": "95px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField8_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Street 2",
+          "left": "35px",
+          "top": "125px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField9_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "City",
+          "left": "65px",
+          "top": "155px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField10_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "State",
+          "left": "55px",
+          "top": "185px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField11_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Postal Code",
+          "left": "5px",
+          "top": "215px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField12_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Country",
+          "left": "35px",
+          "top": "245px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox1_copy",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ostreet1",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[ostreet1]"
+          },
+          "left": "100px",
+          "top": "90px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox2_copy",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ostreet2",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[ostreet2]"
+          },
+          "left": "100px",
+          "top": "120px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox3_copy",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ocity",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[ocity]"
+          },
+          "left": "100px",
+          "top": "150px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox4_copy",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ostate",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[ostate]"
+          },
+          "left": "100px",
+          "top": "180px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox5_copy",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "opostalCode",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[opostalCode]"
+          },
+          "left": "100px",
+          "top": "210px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox6_copy",
+          "field type": "combo box",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ocountryCode",
+            "dataLength": "10",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[ocountryCode]"
+          },
+          "database connection": "IBMi",
+          "choices database file": "fedexdemo/fedexcountries",
+          "choice options field": "name",
+          "choice values field": "code",
+          "left": "100px",
+          "top": "240px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField7_copy2",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Street",
+          "left": "420px",
+          "top": "95px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField8_copy2",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Street 2",
+          "left": "410px",
+          "top": "125px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField9_copy2",
+          "field type": "output field",
+          "css class": "label",
+          "value": "City",
+          "left": "440px",
+          "top": "155px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField10_copy2",
+          "field type": "output field",
+          "css class": "label",
+          "value": "State",
+          "left": "430px",
+          "top": "185px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField11_copy2",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Postal Code",
+          "left": "380px",
+          "top": "215px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField12_copy2",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Country Code",
+          "left": "365px",
+          "top": "245px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox1_copy2",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dstreet1",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dstreet1]"
+          },
+          "left": "475px",
+          "top": "90px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox2_copy2",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dstreet2",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dstreet2]"
+          },
+          "left": "475px",
+          "top": "120px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox3_copy2",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dcity",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dcity]"
+          },
+          "left": "475px",
+          "top": "150px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox4_copy2",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dstate",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dstate]"
+          },
+          "left": "475px",
+          "top": "180px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox5_copy2",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dpostalCode",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dpostalCode]"
+          },
+          "left": "475px",
+          "top": "210px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox6_copy2",
+          "field type": "combo box",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dcountryCode",
+            "dataLength": "10",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dcountryCode]"
+          },
+          "database connection": "IBMi",
+          "choices database file": "fedexdemo/fedexcountries",
+          "choice options field": "name",
+          "choice values field": "code",
+          "left": "475px",
+          "top": "240px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField13",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Origin",
+          "left": "105px",
+          "top": "5px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField22",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Destination",
+          "left": "480px",
+          "top": "5px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField23",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Package",
+          "left": "850px",
+          "top": "60px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField24",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Weight",
+          "left": "815px",
+          "top": "95px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField25",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Length",
+          "left": "815px",
+          "top": "125px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField26",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Height",
+          "left": "820px",
+          "top": "155px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField27",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Width",
+          "left": "825px",
+          "top": "185px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox7",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "weight",
+            "dataLength": "25",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "varchar",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[weight]"
+          },
+          "left": "890px",
+          "top": "90px",
+          "width": "150px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox8",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "length",
+            "dataLength": "25",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "varchar",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[length]"
+          },
+          "left": "890px",
+          "top": "120px",
+          "width": "150px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox9",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "height",
+            "dataLength": "25",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "varchar",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[height]"
+          },
+          "left": "890px",
+          "top": "150px",
+          "width": "150px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox10",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "width",
+            "dataLength": "25",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "varchar",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[width]"
+          },
+          "left": "890px",
+          "top": "180px",
+          "width": "150px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox11",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "value",
+            "dataLength": "10",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[value]"
+          },
+          "left": "890px",
+          "top": "210px",
+          "width": "150px",
+          "height": "25px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField28",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Declared Value",
+          "left": "760px",
+          "top": "215px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "GraphicButton5",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Check Rates",
+          "left": "5px",
+          "top": "315px",
+          "width": "385px",
+          "icon position": "left",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "height": "25px",
+          "onclick": {
+            "routine": "call rate routine",
+            "designValue": "call rate routine"
+          },
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "GraphicButton6",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Example",
+          "top": "5px",
+          "width": "100px",
+          "icon position": "left",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "height": "25px",
+          "right": "10px",
+          "onclick": {
+            "routine": "example button click 3",
+            "designValue": "example button click 3"
+          },
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField30",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Transaction Id",
+          "left": "410px",
+          "top": "355px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField31",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Quote Date",
+          "left": "850px",
+          "top": "355px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "Grid1",
+          "field type": "grid",
+          "css class": "blueprint-grid",
+          "left": "5px",
+          "top": "390px",
+          "number of rows": "8",
+          "number of columns": "8",
+          "column widths": "241,135,106,82,79,86,91,208",
+          "column headings": "Service,Packaging,Rate Type,Base Charge,Discount,Surcharge,Total Net Charges,Commit Date",
+          "header height": "54",
+          "row height": "35",
+          "height": "299px",
+          "width": "1029px",
+          "css class 2": "blueprint-defaults",
+          "visibility": "visible",
+          "border color": "transparent",
+          "record format name": "grid1",
+          "onrowdblclick": {
+            "routine": "call ship from grid",
+            "designValue": "call ship from grid"
+          },
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField32",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "transactionId",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[transactionId]"
+          },
+          "left": "525px",
+          "top": "355px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField33",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "quoteDate",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[quoteDate]"
+          },
+          "left": "945px",
+          "top": "355px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField7_copy3",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Street",
+          "left": "50px",
+          "top": "100px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField8_copy3",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Street 2",
+          "left": "40px",
+          "top": "130px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField9_copy3",
+          "field type": "output field",
+          "css class": "label",
+          "value": "City",
+          "left": "70px",
+          "top": "160px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField10_copy3",
+          "field type": "output field",
+          "css class": "label",
+          "value": "State",
+          "left": "60px",
+          "top": "190px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField11_copy3",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Postal Code",
+          "left": "10px",
+          "top": "220px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField12_copy3",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Country",
+          "left": "40px",
+          "top": "250px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox1_copy3",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ostreet1",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[ostreet1]"
+          },
+          "left": "105px",
+          "top": "95px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox2_copy3",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ostreet2",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[ostreet2]"
+          },
+          "left": "105px",
+          "top": "125px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox3_copy3",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ocity",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[ocity]"
+          },
+          "left": "105px",
+          "top": "155px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox4_copy3",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ostate",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[ostate]"
+          },
+          "left": "105px",
+          "top": "185px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox5_copy3",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "opostalCode",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[opostalCode]"
+          },
+          "left": "105px",
+          "top": "215px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox6_copy3",
+          "field type": "combo box",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ocountryCode",
+            "dataLength": "10",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[ocountryCode]"
+          },
+          "database connection": "IBMi",
+          "choices database file": "fedexdemo/fedexcountries",
+          "choice options field": "name",
+          "choice values field": "code",
+          "left": "105px",
+          "top": "245px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField7_copy4",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Street",
+          "left": "425px",
+          "top": "100px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField8_copy4",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Street 2",
+          "left": "415px",
+          "top": "130px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField9_copy4",
+          "field type": "output field",
+          "css class": "label",
+          "value": "City",
+          "left": "445px",
+          "top": "160px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField10_copy4",
+          "field type": "output field",
+          "css class": "label",
+          "value": "State",
+          "left": "435px",
+          "top": "190px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField11_copy4",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Postal Code",
+          "left": "385px",
+          "top": "220px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField12_copy4",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Country Code",
+          "left": "370px",
+          "top": "250px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox1_copy4",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dstreet1",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dstreet1]"
+          },
+          "left": "480px",
+          "top": "95px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox2_copy4",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dstreet2",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dstreet2]"
+          },
+          "left": "480px",
+          "top": "125px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox3_copy4",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dcity",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dcity]"
+          },
+          "left": "480px",
+          "top": "155px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox4_copy4",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dstate",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dstate]"
+          },
+          "left": "480px",
+          "top": "185px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox5_copy4",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dpostalCode",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dpostalCode]"
+          },
+          "left": "480px",
+          "top": "215px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox6_copy4",
+          "field type": "combo box",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dcountryCode",
+            "dataLength": "10",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dcountryCode]"
+          },
+          "database connection": "IBMi",
+          "choices database file": "fedexdemo/fedexcountries",
+          "choice options field": "name",
+          "choice values field": "code",
+          "left": "480px",
+          "top": "245px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField13_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Origin",
+          "left": "105px",
+          "top": "10px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField22_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Destination",
+          "left": "485px",
+          "top": "10px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField23_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Package",
+          "left": "800px",
+          "top": "55px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField24_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Weight",
+          "left": "782px",
+          "top": "100px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField25_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Length",
+          "left": "783px",
+          "top": "130px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField26_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Height",
+          "left": "786px",
+          "top": "160px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField27_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Width",
+          "left": "790px",
+          "top": "190px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox7_copy",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "weight",
+            "dataLength": "25",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "varchar",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[weight]"
+          },
+          "left": "850px",
+          "top": "95px",
+          "height": "25px",
+          "width": "150px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox8_copy",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "length",
+            "dataLength": "25",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "varchar",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[length]"
+          },
+          "left": "850px",
+          "top": "125px",
+          "height": "25px",
+          "width": "150px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox9_copy",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "height",
+            "dataLength": "25",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "varchar",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[height]"
+          },
+          "left": "850px",
+          "top": "155px",
+          "height": "25px",
+          "width": "150px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox10_copy",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "width",
+            "dataLength": "25",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "varchar",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[width]"
+          },
+          "left": "850px",
+          "top": "185px",
+          "height": "25px",
+          "width": "150px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox11_copy",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "value",
+            "dataLength": "10",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[value]"
+          },
+          "left": "850px",
+          "top": "245px",
+          "height": "25px",
+          "width": "150px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField28_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Declared",
+          "left": "750px",
+          "top": "220px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField29_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Value",
+          "left": "795px",
+          "top": "250px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "GraphicButton5_copy",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Create Shipment",
+          "icon position": "left",
+          "left": "35px",
+          "top": "370px",
+          "height": "25px",
+          "width": "385px",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "onclick": {
+            "routine": "call ship routine",
+            "designValue": "call ship routine"
+          },
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "GraphicButton6_copy",
+          "field type": "graphic button",
+          "css class": "blueprint-button",
+          "value": "Example",
+          "icon position": "left",
+          "left": "935px",
+          "top": "5px",
+          "height": "25px",
+          "width": "100px",
+          "css class 2": "blueprint-alt-defaults",
+          "css class 3": "no-icon",
+          "onclick": {
+            "routine": "example button click 3",
+            "designValue": "example button click 3"
+          },
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField30_copy",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Transaction Id",
+          "left": "35px",
+          "top": "420px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField32_copy",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "transactionId",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[transactionId]"
+          },
+          "left": "180px",
+          "top": "420px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField30_copy2",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Tracking Number",
+          "left": "35px",
+          "top": "450px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField32_copy2",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "trackingNumber",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[trackingNumber]"
+          },
+          "left": "180px",
+          "top": "450px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField30_copy3",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Ship Date",
+          "left": "580px",
+          "top": "420px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField32_copy3",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "shipDatestamp",
+            "dataLength": "10",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[shipDatestamp]"
+          },
+          "left": "695px",
+          "top": "420px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField30_copy4",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Delivery Date",
+          "left": "580px",
+          "top": "450px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField32_copy4",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "deliveryDatestamp",
+            "dataLength": "10",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[deliveryDatestamp]"
+          },
+          "left": "695px",
+          "top": "450px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField30_copy5",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Alerts",
+          "left": "35px",
+          "top": "515px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField32_copy5",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "alerts",
+            "dataLength": "200",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[alerts]"
+          },
+          "left": "180px",
+          "top": "515px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "width": "625px",
+          "height": "125px",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField30_copy6",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Rate",
+          "left": "35px",
+          "top": "480px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField32_copy6",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "baseRateAmount",
+            "dataLength": "10",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[baseRateAmount]"
+          },
+          "left": "180px",
+          "top": "480px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField12_copy5",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Service Type",
+          "left": "40px",
+          "top": "295px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox6_copy5",
+          "field type": "combo box",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "serviceType",
+            "dataLength": "50",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[serviceType]"
+          },
+          "database connection": "IBMi",
+          "choices database file": "fedexdemo/fedexservicetypes",
+          "choice options field": "NAME",
+          "choice values field": "code",
+          "left": "150px",
+          "top": "295px",
+          "height": "25px",
+          "width": "305px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField12_copy6",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Packaging Type",
+          "left": "490px",
+          "top": "295px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox6_copy6",
+          "field type": "combo box",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "packagingType",
+            "dataLength": "50",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[packagingType]"
+          },
+          "database connection": "IBMi",
+          "choices database file": "fedexdemo/fedexpackagingtypes",
+          "choice options field": "NAME",
+          "choice values field": "code",
+          "left": "620px",
+          "top": "295px",
+          "height": "25px",
+          "width": "320px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField12_copy7",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Pickup Type",
+          "left": "40px",
+          "top": "330px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox6_copy7",
+          "field type": "combo box",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "pickupType",
+            "dataLength": "50",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[pickupType]"
+          },
+          "database connection": "IBMi",
+          "choices database file": "fedexdemo/fedexpickuptypes",
+          "choice options field": "name",
+          "choice values field": "code",
+          "left": "150px",
+          "top": "330px",
+          "height": "25px",
+          "width": "305px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField7_copy5",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Name",
+          "left": "50px",
+          "top": "40px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox1_copy5",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "oname",
+            "dataLength": "50",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[oname]"
+          },
+          "left": "105px",
+          "top": "35px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField7_copy6",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Phone",
+          "left": "50px",
+          "top": "70px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox1_copy6",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ophone",
+            "dataLength": "10",
+            "dataType": "varchar",
+            "formatting": "Special",
+            "special": "Phone Number",
+            "designValue": "[ophone]"
+          },
+          "left": "105px",
+          "top": "65px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField7_copy7",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Name",
+          "left": "425px",
+          "top": "40px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox1_copy7",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dname",
+            "dataLength": "50",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dname]"
+          },
+          "left": "480px",
+          "top": "35px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField7_copy8",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Phone",
+          "left": "425px",
+          "top": "70px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "TextBox1_copy8",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dphone",
+            "dataLength": "10",
+            "dataType": "varchar",
+            "formatting": "Special",
+            "special": "Phone Number",
+            "designValue": "[dphone]"
+          },
+          "left": "480px",
+          "top": "65px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField12_copy8",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Ship Date",
+          "left": "535px",
+          "top": "330px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "Date1",
+          "field type": "date field",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "requestShipDate",
+            "dataLength": "10",
+            "dataType": "varchar",
+            "formatting": "Date",
+            "dateFormat": "Y-m-d",
+            "locale": "en_US",
+            "designValue": "[requestShipDate]"
+          },
+          "left": "620px",
+          "top": "330px",
+          "width": "100px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "4"
+        },
+        {
+          "id": "OutputField21_copy",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "verrormessage",
+            "dataLength": "100",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[verrormessage]"
+          },
+          "color": "red",
+          "left": "465px",
+          "top": "275px",
+          "width": "445px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "layout": "Layout1",
+          "container": "2"
+        },
+        {
+          "id": "OutputField12_copy9",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Packaging Type",
+          "left": "490px",
+          "top": "275px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox6_copy8",
+          "field type": "combo box",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "packagingType1",
+            "dataLength": "50",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[packagingType1]"
+          },
+          "database connection": "IBMi",
+          "choices database file": "fedexdemo/fedexpackagingtypes",
+          "choice options field": "NAME",
+          "choice values field": "code",
+          "left": "620px",
+          "top": "275px",
+          "height": "25px",
+          "width": "320px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField12_copy10",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Pickup Type",
+          "left": "35px",
+          "top": "275px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox6_copy9",
+          "field type": "combo box",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "pickupType",
+            "dataLength": "50",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[pickupType]"
+          },
+          "database connection": "IBMi",
+          "choices database file": "fedexdemo/fedexpickuptypes",
+          "choice options field": "name",
+          "choice values field": "code",
+          "left": "145px",
+          "top": "275px",
+          "height": "25px",
+          "width": "305px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField12_copy12",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Ship Date",
+          "left": "800px",
+          "top": "245px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "Date1_copy",
+          "field type": "date field",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "requestShipDate",
+            "dataLength": "10",
+            "dataType": "varchar",
+            "formatting": "Date",
+            "dateFormat": "Y-m-d",
+            "locale": "en_US",
+            "designValue": "[requestShipDate]"
+          },
+          "left": "890px",
+          "top": "240px",
+          "width": "100px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField7_copy9",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Name",
+          "left": "45px",
+          "top": "35px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox1_copy9",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "oname",
+            "dataLength": "50",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[oname]"
+          },
+          "left": "100px",
+          "top": "30px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField7_copy10",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Phone",
+          "left": "45px",
+          "top": "65px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox1_copy10",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "ophone",
+            "dataLength": "10",
+            "dataType": "varchar",
+            "formatting": "Special",
+            "special": "Phone Number",
+            "designValue": "[ophone]"
+          },
+          "left": "100px",
+          "top": "60px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField7_copy11",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Name",
+          "left": "420px",
+          "top": "35px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox1_copy11",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dname",
+            "dataLength": "50",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dname]"
+          },
+          "left": "475px",
+          "top": "30px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField7_copy12",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Phone",
+          "left": "420px",
+          "top": "65px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-label",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "TextBox1_copy12",
+          "field type": "textbox",
+          "css class": "blueprint-defaults",
+          "value": {
+            "fieldName": "dphone",
+            "dataLength": "10",
+            "dataType": "varchar",
+            "formatting": "Special",
+            "special": "Phone Number",
+            "designValue": "[dphone]"
+          },
+          "left": "475px",
+          "top": "60px",
+          "height": "25px",
+          "width": "250px",
+          "css class 2": "blueprint-textbox",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "Label1",
+          "field type": "output field",
+          "css class": "label",
+          "value": "Double Click a line to create shipment",
+          "left": "10px",
+          "top": "355px",
+          "width": "360px",
+          "font size": "16px",
+          "font style": "italic",
+          "color": "#003399",
+          "layout": "Layout1",
+          "container": "3"
+        },
+        {
+          "id": "OutputField34",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "serviceName",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[serviceName]"
+          },
+          "left": "10px",
+          "top": "calc(50% - 10px)",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "grid": "Grid1",
+          "column": "0"
+        },
+        {
+          "id": "OutputField35",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "packagingType",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[packagingType]"
+          },
+          "left": "0px",
+          "top": "calc(50% - 10px)",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "grid": "Grid1",
+          "column": "1"
+        },
+        {
+          "id": "OutputField36",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "rateType",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[rateType]"
+          },
+          "left": "15px",
+          "top": "calc(50% - 10px)",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "grid": "Grid1",
+          "column": "2"
+        },
+        {
+          "id": "OutputField37",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "totalBaseCharge",
+            "dataLength": "10",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[totalBaseCharge]"
+          },
+          "left": "10px",
+          "top": "calc(50% - 10px)",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "grid": "Grid1",
+          "column": "3"
+        },
+        {
+          "id": "OutputField38",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "totalDiscounts",
+            "dataLength": "10",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[totalDiscounts]"
+          },
+          "left": "5px",
+          "top": "calc(50% - 10px)",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "grid": "Grid1",
+          "column": "4"
+        },
+        {
+          "id": "OutputField39",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "totalSurcharge",
+            "dataLength": "10",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[totalSurcharge]"
+          },
+          "left": "5px",
+          "top": "calc(50% - 10px)",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "width": "80px",
+          "grid": "Grid1",
+          "column": "5"
+        },
+        {
+          "id": "OutputField40",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "totalNetCharge",
+            "dataLength": "10",
+            "decPos": "2",
+            "numSep": "false",
+            "zeroBalance": "false",
+            "numBlankFill": "false",
+            "zeroFill": "false",
+            "noExtraSpaces": "false",
+            "curSym": "",
+            "dataType": "zoned",
+            "formatting": "Number",
+            "negNum": "-999.00",
+            "units": "",
+            "designValue": "[totalNetCharge]"
+          },
+          "left": "10px",
+          "top": "calc(50% - 10px)",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "grid": "Grid1",
+          "column": "6"
+        },
+        {
+          "id": "OutputField41",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "dayOfWeek",
+            "dataLength": "4",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dayOfWeek]"
+          },
+          "left": "5px",
+          "top": "5px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "width": "60px",
+          "grid": "Grid1",
+          "column": "7"
+        },
+        {
+          "id": "OutputField42",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "dayFormat",
+            "dataLength": "25",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[dayFormat]"
+          },
+          "left": "55px",
+          "top": "5px",
+          "css class 2": "blueprint-defaults",
+          "css class 3": "blueprint-output-field",
+          "width": "110px",
+          "grid": "Grid1",
+          "column": "7"
+        },
+        {
+          "id": "OutputField29",
+          "field type": "output field",
+          "css class": "outputField",
+          "value": {
+            "fieldName": "serviceType",
+            "dataLength": "50",
+            "trimLeading": "false",
+            "trimTrailing": "true",
+            "blankFill": "false",
+            "rjZeroFill": "false",
+            "dataType": "varchar",
+            "formatting": "Text",
+            "textTransform": "none",
+            "designValue": "[serviceType]"
+          },
+          "left": "135px",
+          "top": "10px",
+          "visibility": "hidden",
+          "grid": "Grid1",
+          "column": "0"
+        }
+      ]
+    }
+  ],
+  "keywords": [],
+  "long name aliases": true
+}
