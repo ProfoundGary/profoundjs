@@ -3,6 +3,7 @@ const path = require('path');
 const promClient = require("prom-client");
 const swsSettings = require('./swssettings');
 const swsProcessor = require('./swsProcessor');
+const swsAuth = require('./swsAuth');
 const swsUtil = require('./swsUtil');
 const debug = require('debug')('sws:hapi');
 const url = require('url');
@@ -33,7 +34,7 @@ class SwsHapi {
                 debug("processResponse:ERROR: " + e);
             }
         });
-        await server.ext('onRequest', function (request, h) {
+        await server.ext('onRequest', async function (request, h) {
             let nodeReq = request.raw.req;
             let nodeRes = request.raw.res;
             nodeRes._swsReq = nodeReq;
@@ -43,6 +44,14 @@ class SwsHapi {
             if(reqUrl.startsWith(swsSettings.uriPath)){
                 // Don't track sws requests
                 nodeReq.sws.track = false;
+                /*
+                if(reqUrl.startsWith(swsSettings.pathStats)){
+                    let authResult  = await swsAuth.processAuth(request.raw.req,request.raw.res);
+                    if( authResult ){
+                        //return h.continue;
+                        return processor.getStats(request.raw.req.sws.query);
+                    }
+                }*/
                 return h.continue;
             }
             try {
@@ -56,7 +65,14 @@ class SwsHapi {
         server.route({
             method: 'GET',
             path: swsSettings.pathStats,
-            handler: function (request, h) {
+            handler: async function (request, h) {
+                let authResult  = await swsAuth.processAuth(request.raw.req,request.raw.res);
+                if( !authResult ){
+                    return h.abandon;
+                }
+                if(('sws-auth' in request.raw.req) && request.raw.req['sws-auth']){
+                    request.raw.res.setHeader('x-sws-authenticated','true');
+                }
                 return processor.getStats(request.raw.req.sws.query);
             },
             options: options.routeOptions
@@ -65,45 +81,24 @@ class SwsHapi {
         server.route({
             method: 'GET',
             path: swsSettings.pathMetrics,
-            handler: function (request, h) {
-                const response = h.response(promClient.register.metrics());
+            handler: async function (request, h) {
+                let authResult  = await swsAuth.processAuth(request.raw.req,request.raw.res);
+                if( !authResult ){
+                    return h.abandon;
+                }
+                const response = h.response(await promClient.register.metrics());
                 response.code(200);
                 response.header('Content-Type', 'text/plain');
                 return response;
             },
             options: options.routeOptions
         });
-        // Redirect to ui
+        // Logout
         server.route({
             method: 'GET',
-            path: swsSettings.uriPath,
+            path: swsSettings.pathLogout,
             handler: function (request, h) {
-                return h.redirect(swsSettings.pathUI);
-            },
-            options: options.routeOptions
-        });
-        // Return UI
-        server.route({
-            method: 'GET',
-            path: swsSettings.pathUI,
-            handler: function (request, h) {
-                return swsUtil.swsEmbeddedUIMarkup;
-            },
-            options: options.routeOptions
-        });
-        // Return Dist
-        server.route({
-            method: 'GET',
-            path: swsSettings.pathDist+'/{file*}',
-            handler: function (request, h) {
-                let fileName = request.params.file;
-                var options = {
-                    root: path.join(__dirname,'..','dist'),
-                    dotfiles: 'deny'
-                    // TODO Caching
-                };
-                request.raw.res.setHeader('Content-Type', send.mime.lookup(path.basename(fileName)));
-                send(request.raw.req, fileName, options).pipe(request.raw.res);
+                swsAuth.processLogout(request.raw.req,request.raw.res);
                 return h.abandon;
             },
             options: options.routeOptions
@@ -111,13 +106,13 @@ class SwsHapi {
         // Return UX
         server.route({
             method: 'GET',
-            path: swsSettings.pathUX+'/{file*}',
+            path: swsSettings.pathUX+'{file*}',
             handler: function (request, h) {
                 let fileName = request.params.file;
                 if(!fileName){
                     fileName = 'index.html';
                 }
-                var options = {
+                let options = {
                     root: path.join(__dirname,'..','ux'),
                     dotfiles: 'deny'
                     // TODO Caching

@@ -100,6 +100,12 @@ module.exports.supportedOptions = {
     // Password for Elasticsearch, if anonymous user is disbaled . Default is empty (disabled)
     elasticsearchPassword    : "elasticsearchPassword",
 
+    // Elasticsearch key for SSL connection
+    elasticsearchKey      : "elasticsearchSSLKey",
+
+    // Elasticsearch certificat for SSL connection
+    elasticsearchCert     : "elasticsearchSSLCert",
+
     // Set to true to track only requests defined in swagger spec. Default false.
     swaggerOnly              : "swaggerOnly"
 
@@ -185,7 +191,7 @@ module.exports.swsStringValue = function (val) {
 module.exports.swsStringRecursive = function (output, val) {
     if (typeof val === "object" && !Array.isArray(val)) {
         for (var key in val) {
-            output[key] = this.swsStringValue(val);
+            output[key] = this.swsStringValue(val[key]);
         }
     } else {
         output = this.swsStringValue(val);
@@ -230,23 +236,3 @@ module.exports.swsCPUUsagePct = function(starthrtime, startusage) {
     return cpuPercent;
 };
 
-module.exports.swsEmbeddedUIMarkup = '<!DOCTYPE html><html><head><title>Profound API Dashboard</title><link href="dist/css/sws.min.css" rel="stylesheet"><link rel="icon" type="image/png" href="dist/images/favicon.png"/> \
-                <script>\
-                    window.parent.showSwaggerStatsRoute = function(route, delayLoadTime) {\
-                        delayLoadTime = parseInt(delayLoadTime,10) || 0;\
-                        document.body.style.display = "none";\
-                        setTimeout(function(){\
-                            window.setActivePageIdHash("#&routeKey=" + route["routeKey"] + "&modFile=" + route["modfile"]);\
-                            document.body.style.display = "";\
-                        }, (delayLoadTime*1000));\
-                    }\
-                </script>\
-                </head>\
-                <body>\
-                <div id="SWSUI"></div>\
-                    <script src="dist/js/sws.min.js"></script>\
-                    <script>\
-                    $(document).ready(function(){$("#SWSUI").swaggerstatsui({});});\
-                    </script>\
-                </body>\
-                </html>';

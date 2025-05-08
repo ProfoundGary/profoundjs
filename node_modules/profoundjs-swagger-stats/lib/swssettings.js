@@ -77,7 +77,7 @@ class SwsSettings {
         // Enable Basic authentication: true or false. Default false.
         // Basic & custom authentication are supported
         this.authentication = false;
-        
+
         // Enable Your own authentication: a function that takes
         // customAuth(req)
         // - req - request
@@ -112,6 +112,12 @@ class SwsSettings {
 
         // Password for Elasticsearch, if anonymous user is disbaled . Default is empty (disabled)
         this.elasticsearchPassword = null;
+
+        // Elasticsearch key for SSL connection
+        this.elasticsearchKey = null;
+
+        // Elasticsearch certificat for SSL connection
+        this.elasticsearchCert = null;
 
         // Set to true to track only requests defined in swagger spec. Default false.
         this.swaggerOnly = false;
@@ -160,7 +166,7 @@ class SwsSettings {
 
         this.pathUI = this.uriPath+'/ui';
         this.pathDist = this.uriPath+'/dist';
-        this.pathUX = this.uriPath+'/ux';
+        this.pathUX = this.uriPath+'/';
         this.pathStats = this.uriPath+'/stats';
         this.pathMetrics = this.uriPath+'/metrics';
         this.pathLogout = this.uriPath+'/logout';

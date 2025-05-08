@@ -1,6 +1,70 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v0.99.7
+
+* [bug] Remove DEBUG env override [#245](https://github.com/slanatech/swagger-stats/issues/271)
+
+
+## v0.99.6
+
+Dependencies updated
+
+* [bug] Unit tests failing [#245](https://github.com/slanatech/swagger-stats/issues/245)
+
+
+## v0.99.5
+
+Dependency on deprecated `request` has been removed, `axios` is used instead
+
+* [improvement] Replace deprecated dependency on request [#148](https://github.com/slanatech/swagger-stats/issues/148)
+
+
+## v0.99.4
+
+* [bug] api_index_template.json is missing in the last patch [#238](https://github.com/slanatech/swagger-stats/issues/238) 
+
+
+## v0.99.3
+
+* Update dependencies to the most recent versions 
+
+
+## v0.99.2
+
+* [bug] API Responses page in built-in Telemetry UI is not responding with ~1000 endpoints  [#139](https://github.com/slanatech/swagger-stats/issues/139)
+
+
+## v0.99.1
+
+In this major release, swagger-stats fully switches to new UX. More UX settings added, such as multiple color themes for dashboards.  
+
+* [bug] Hapi - authentication is not working [#109](https://github.com/slanatech/swagger-stats/issues/109)
+* [bug] Missing requests in metrics [#105](https://github.com/slanatech/swagger-stats/issues/105)
+* [bug] Issue during installation of swagger stats [#100](https://github.com/slanatech/swagger-stats/issues/100)
+* [bug] Authentication does not protect the new UI [#93](https://github.com/slanatech/swagger-stats/issues/93)
+* [feature] Any way to change swagger-stats ui page title [#44](https://github.com/slanatech/swagger-stats/issues/44)
+  Starting from 0.99.1 page title shows what is passed in the "name" configuration option of swagger-stats
+  
+
+## v0.95.19
+
+* [bug] Elasticsearch - Crash when elasticsearch's credentials are given [#121](https://github.com/slanatech/swagger-stats/issues/121)
+* [bug] Define prom-client as Peer Dependency instead of Direct Dependency [#126](https://github.com/slanatech/swagger-stats/issues/126)
+* [feature] https elasticsearch support [#130](https://github.com/slanatech/swagger-stats/issues/130)
+
+
+## v0.95.18
+
+* [bug] body response show duplicate data [#118](https://github.com/slanatech/swagger-stats/issues/118)
+
+swagger-stats now support data type flattened available in ES 7.X for body of the requests. This way we can store any body payload, and query it efficiently in ES.
+https://www.elastic.co/guide/en/elasticsearch/reference/current/flattened.html#flattened
+
+* [bug] Reduce package size for NPM [#119](https://github.com/slanatech/swagger-stats/issues/119)
+* [feature] Add 30x statuses as satisfied apdex requests [#107](https://github.com/slanatech/swagger-stats/issues/107)
+
+
 ## v0.95.17
 
 * [feature] Add authentication to /swagger-stats/ux URL [#97](https://github.com/slanatech/swagger-stats/issues/97)

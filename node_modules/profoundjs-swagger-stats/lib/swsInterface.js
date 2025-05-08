@@ -9,59 +9,14 @@ const path = require('path');
 const url = require('url');
 const debug = require('debug')('sws:interface');
 const promClient = require("prom-client");
-const basicAuth = require("basic-auth");
-const Cookies = require('cookies');
-const uuidv1 = require('uuid/v1');
-
 const swsSettings = require('./swssettings');
 const swsUtil = require('./swsUtil');
 const swsProcessor = require('./swsProcessor');
 const swsEgress = require('./swsegress');
+const swsAuth = require('./swsAuth');
 const send = require('send');
 const qs = require('qs');
-
 const swsHapi = require('./swsHapi');
-
-// API data processor
-//var processor = null;
-
-var uiMarkup = swsUtil.swsEmbeddedUIMarkup;
-
-// Session IDs storage
-var sessionIDs = {};
-
-// Store / update session id
-function storeSessionID(sid){
-    // PJS - Create sid value if not passed
-    sid = sid || uuidv1();
-
-    var tssec = Date.now() + swsSettings.sessionMaxAge*1000;
-    sessionIDs[sid] = tssec;
-    //debug('Session ID updated: %s=%d', sid,tssec);
-
-    // PJS - Send back sid value
-    return sid;
-}
-
-// Remove Session ID
-function removeSessionID(sid){
-    delete sessionIDs[sid];
-}
-
-// If authentication is enabled, executed periodically and expires old session IDs
-function expireSessionIDs(){
-    var tssec = Date.now();
-    var expired = [];
-    for(var sid in sessionIDs){
-        if(sessionIDs[sid] < (tssec + 500)){
-            expired.push(sid);
-        }
-    }
-    for(var i=0;i<expired.length;i++){
-        delete sessionIDs[expired[i]];
-        debug('Session ID expired: %s', expired[i]);
-    }
-}
 
 // Request hanlder
 function handleRequest(req, res){
@@ -92,108 +47,12 @@ function handleResponseFinished(res){
     }
 }
 
-function processAuth(req,res,useWWWAuth) {
-
-    return new Promise( function (resolve, reject) {
-        if( !swsSettings.authentication ){
-            return resolve(true);
-        }
-        
-        if( swsSettings.customAuth ){
-            //return resolve(swsSettings.customAuth(req));
-            // PJS Custom
-            return resolve(swsSettings.customAuth(req, res, sessionIDs, storeSessionID));
-        }
-
-        var cookies = new Cookies( req, res );
-
-        // Check session cookie
-        var sessionIdCookie = cookies.get('sws-session-id');
-        if( (sessionIdCookie !== undefined) && (sessionIdCookie !== null) ){
-
-            if( sessionIdCookie in sessionIDs ){
-                // renew it
-                //sessionIDs[sessionIdCookie] = Date.now();
-                storeSessionID(sessionIdCookie);
-                cookies.set('sws-session-id',sessionIdCookie,{path:swsSettings.basePath+swsSettings.uriPath,maxAge:swsSettings.sessionMaxAge*1000});
-                // Ok
-                req['sws-auth'] = true;
-                return resolve(true);
-            }
-        }
-
-        var authInfo = basicAuth(req);
-
-        var authenticated = false;
-        var msg = 'Authentication required';
-
-        if( (authInfo !== undefined) && (authInfo!==null) && ('name' in authInfo) && ('pass' in authInfo)){
-            if(typeof swsSettings.onAuthenticate === 'function'){
-
-                Promise.resolve(swsSettings.onAuthenticate(req, authInfo.name, authInfo.pass)).then(function(onAuthResult) {
-                    if( onAuthResult ){
-
-                        authenticated = true;
-
-                        // Session is only for stats requests
-                        if(req.url.startsWith(swsSettings.pathStats)){
-                            // Generate session id
-                            var sessid = uuidv1();
-                            storeSessionID(sessid);
-                            // Set session cookie with expiration in 15 min
-                            cookies.set('sws-session-id',sessid,{path:swsSettings.basePath+swsSettings.uriPath,maxAge:swsSettings.sessionMaxAge*1000});
-                        }
-
-                        req['sws-auth'] = true;
-                        return resolve(true);
-
-                    }else{
-                        msg = 'Invalid credentials';
-                        res.statusCode = 403;
-                        res.end(msg);
-                        return resolve(false);
-                    }
-                });
-
-            }else{
-                res.statusCode = 403;
-                res.end(msg);
-                return resolve(false);
-            }
-        }else{
-            res.statusCode = 403;
-            res.end(msg);
-            return resolve(false);
-        }
-
-    });
-
-}
-
-function processLogout(req,res){
-
-    var cookies = new Cookies( req, res );
-
-    // Check session cookie
-    var sessionIdCookie = cookies.get('sws-session-id');
-    if( (sessionIdCookie !== undefined) && (sessionIdCookie !== null) ){
-        if( sessionIdCookie in sessionIDs ){
-            removeSessionID(sessionIdCookie);
-            cookies.set('sws-session-id'); // deletes cookie
-        }
-    }
-
-    res.statusCode = 200;
-    res.end('Logged out');
-}
-
-
 // Process /swagger-stats/stats request
 // Return statistics according to request parameters
 // Query parameters (fields, path, method) defines which stat fields to return
 function processGetStats(req,res){
 
-    processAuth(req,res).then(function (authResult){
+    swsAuth.processAuth(req,res).then((authResult) => {
         if(!authResult){
             return;
         }
@@ -211,42 +70,39 @@ function processGetStats(req,res){
 // Return all metrics for Prometheus
 function processGetMetrics(req,res){
 
-    processAuth(req,res).then(function (authResult){
+    swsAuth.processAuth(req,res).then((authResult) => {
         if(!authResult){
             return;
         }
         res.statusCode = 200;
         res.setHeader('Content-Type', 'text/plain');
-        res.end(promClient.register.metrics());
+        // [sv2] This should handle both non-promise (prom-client 11,12) and promise results (prom-client 13+)
+        Promise.resolve(promClient.register.metrics()).then( (x) => {
+            res.end(x);
+        });
     });
 }
 
 // Process /swagger-stats/ux request
 function processGetUX(req,res){
-    processAuth(req,res).then(function (authResult){
-        if(!authResult){
-            return;
+    // alwauys serve ux, it will perform auth as needed
+    let fileName = null;
+    if(req.url === swsSettings.pathUX){
+        fileName = 'index.html';
+    } else {
+        fileName = req.url.replace(swsSettings.pathUX, '');
+        let qidx = fileName.indexOf('?');
+        if ( qidx != -1 ) {
+            fileName = fileName.substring(0, qidx);
         }
-        let fileName = null;
-        if(req.url === swsSettings.pathUX){
-            fileName = 'index.html';
-        }else {
-            fileName = req.url.replace(swsSettings.pathUX+'/', '');
-            let qidx = fileName.indexOf('?');
-            if ( qidx != -1 ) {
-                fileName = fileName.substring(0, qidx);
-            }
-        }
-        let options = {
-            root: path.join(__dirname,'..','ux'),
-            dotfiles: 'deny'
-            // TODO Caching
-        };
-        res.setHeader('Content-Type', send.mime.lookup(path.basename(fileName)));
-        send(req, fileName, options).pipe(res);
-        return;
-        });
-    return;
+    }
+    let options = {
+        root: path.join(__dirname,'..','ux'),
+        dotfiles: 'deny'
+        // TODO Caching
+    };
+    res.setHeader('Content-Type', send.mime.lookup(path.basename(fileName)));
+    send(req, fileName, options).pipe(res);
 }
 
 // Express Middleware
@@ -258,9 +114,11 @@ function expressMiddleware(options) {
     // Init probes
     swsEgress.init();
 
+    /*
     if( swsSettings.authentication ){
         setInterval(expireSessionIDs,500);
     }
+    */
 
     swsProcessor.init();
 
@@ -272,30 +130,20 @@ function expressMiddleware(options) {
 
         // Respond to requests handled by swagger-stats
         // swagger-stats requests will not be counted in statistics
-        if(req.url.startsWith(swsSettings.pathStats)) {
+        if(req.url === swsSettings.uriPath ){
+            if(('serverName' in req) && (req.serverName === 'restify') ){
+                res.redirect(swsSettings.uriPath + '/', next);
+            } else {
+                res.redirect(swsSettings.uriPath + '/');
+            }
+            return;
+        }
+        else if(req.url.startsWith(swsSettings.pathStats)) {
             return processGetStats(req, res);
         }else if(req.url.startsWith(swsSettings.pathMetrics)){
             return processGetMetrics(req,res);
         }else if(req.url.startsWith(swsSettings.pathLogout)){
-            processLogout(req,res);
-            return;
-        }else if(req.url.startsWith(swsSettings.pathUI) ){
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/html');
-            res.end(uiMarkup);
-            return;
-        }else if(req.url.startsWith(swsSettings.pathDist)) {
-            var fileName = req.url.replace(swsSettings.pathDist+'/','');
-            var qidx = fileName.indexOf('?');
-            if(qidx!=-1) fileName = fileName.substring(0,qidx);
-
-            var options = {
-                root: path.join(__dirname,'..','dist'),
-                dotfiles: 'deny'
-                // TODO Caching
-            };
-            res.setHeader('Content-Type', send.mime.lookup(path.basename(fileName)));
-            send(req, fileName, options).pipe(res);
+            swsAuth.processLogout(req,res);
             return;
         } else if(req.url.startsWith(swsSettings.pathUX)) {
             return processGetUX(req, res);
@@ -389,5 +237,8 @@ module.exports = {
     // Add one (or more) OpenAPI PathSpecs
     addPathSpecs(pathSpecs) {
         swsProcessor.addPathSpecs(pathSpecs);
-    }
+    },
+
+    // Expose the SwsAuth object for the custom authentication function
+    swsAuth: swsAuth
 };

@@ -67,7 +67,7 @@ const init = async () => {
 
     let swsOptions = {
         name: 'swagger-stats-hapitest',
-        version: '0.95.17',
+        version: '0.99.7',
         hostname: "hostname",
         ip: "127.0.0.1",
         uriPath: '/swagger-stats',
@@ -76,7 +76,22 @@ const init = async () => {
         durationBuckets: [10,100,1000],
         metricsPrefix: 'hapitest_',
         elasticsearch: 'http://127.0.0.1:9200',
-        elasticsearchIndexPrefix: 'swaggerstats-'
+        elasticsearchIndexPrefix: 'swaggerstats-',
+        authentication: true,
+        sessionMaxAge: process.env.SWS_AUTHTEST_MAXAGE || 900,
+        onAuthenticate: function(req,username,password){
+            // simple check for username and password
+            if(username==='swagger-stats') {
+                return ((username === 'swagger-stats') && (password === 'swagger-stats'));
+            } else if(username==='swagger-promise'){
+                return new Promise(function(resolve) {
+                    setTimeout(function(){
+                        resolve((username === 'swagger-promise') && (password === 'swagger-promise'));
+                    }, 1000);
+                });
+            }
+            return false;
+        }
     };
 
     // Enable Elasticsearch if specified

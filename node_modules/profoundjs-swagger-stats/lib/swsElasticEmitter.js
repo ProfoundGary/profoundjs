@@ -4,17 +4,29 @@
 
 'use strict';
 
-var os = require('os');
-var util = require('util');
-var http = require('http');
-var url = require('url');
-var request = require('request');
+const os = require('os');
+const util = require('util');
+const http = require('http');
+const url = require('url');
+const https = require('https');
+//const axios = require('axios');
+let axios = null;
+let axiosPromise = new Promise(async (resolve) => {
+    axios = (await import('axios')).default;
+    resolve(axios);
+});
+/*
+(async () => {
+    axios = (await import('axios')).default;
+})();
+*/
 
-var debug = require('debug')('sws:elastic');
-var swsUtil = require('./swsUtil');
-var moment = require('moment');
+const debug = require('debug')('sws:elastic');
+const swsUtil = require('./swsUtil');
+const moment = require('moment');
 
-var indexTemplate = require('../schema/elasticsearch/api_index_template.json');
+const indexTemplate = require('../schema/elasticsearch/api_index_template.json');
+const indexTemplate7X = require('../schema/elasticsearch/api_index_template_7x.json');
 
 
 const ES_MAX_BUFF = 50;
@@ -24,6 +36,9 @@ function swsElasticEmitter() {
 
     // Options
     this.options = null;
+
+    this.es7 = false;
+    this.es8 = true;
 
     this.indexBuffer = '';
     this.bufferCount = 0;
@@ -37,6 +52,9 @@ function swsElasticEmitter() {
 
     this.elasticUsername = null;
     this.elasticPassword = null;
+
+    this.elasticsearchCert = null;
+    this.elasticsearchKey = null
 
     this.indexPrefix = "api-";
 
@@ -78,11 +96,26 @@ swsElasticEmitter.prototype.initialize = function (swsOptions) {
         this.elasticPassword = swsOptions[swsUtil.supportedOptions.elasticsearchPassword];
     }
 
+    if(swsUtil.supportedOptions.elasticsearchCert in swsOptions) {
+        this.elasticsearchCert = swsOptions[swsUtil.supportedOptions.elasticsearchCert]
+    }
+
+    if( swsUtil.supportedOptions.elasticsearchKey in swsOptions) {
+        this.elasticsearchKey = swsOptions[swsUtil.supportedOptions.elasticsearchKey]
+    }
+
+    if(this.elasticsearchKey && this.elasticsearchCert){
+        axios.defaults.httpsAgent = new https.Agent({
+            rejectUnauthorized: false, // (NOTE: this will disable client verification)
+            cert: this.elasticsearchCert,
+            key: this.elasticsearchKey,
+        });
+    }
+
     // Check / Initialize schema
-    this.initTemplate();
-
-    this.enabled = true;
-
+    Promise.resolve(axiosPromise).then( () => {
+        this.initTemplate();
+    });
 };
 
 // initialize index template
@@ -90,50 +123,70 @@ swsElasticEmitter.prototype.initTemplate = function(rrr) {
 
     var that = this;
 
-    var requiredTemplateVersion = indexTemplate.version;
+    var requiredTemplateVersion = indexTemplate7X.version;
 
     // Check if there is a template
     var templateURL = this.elasticURL+'/_template/template_api';
-    var getOptions = {url:templateURL, json:true};
-    var putOptions = {url:templateURL, json:indexTemplate};
+    var getOptionsVersion = {method:'get',url:this.elasticURL};
+    var getOptions = {method:'get',url:templateURL};
+    let putOptions = {method:'put',url:templateURL, data:indexTemplate7X};
 
     if (this.elasticUsername && this.elasticPassword) {
         var auth = {
             username: this.elasticUsername,
             password: this.elasticPassword,
         }
+        getOptionsVersion.auth = auth;
         getOptions.auth = auth;
         putOptions.auth = auth;
     }
 
-    request.get(getOptions, function (error, response, body) {
-        if(error) {
-            debug("Error querying template:", JSON.stringify(error) );
-        }else {
+    axios(getOptionsVersion).then( (response) => {
+        const body = response.data || {};
+        if(body && ('version' in body) && ('number' in body.version)){
+            that.es7 = body.version.number.startsWith('7');
+            that.es8 = body.version.number.startsWith('8');
+        }
 
-            var initializeNeeded = false;
+        if( !that.es7  && !that.es8){
+            putOptions.json = indexTemplate;
+        }
 
-            if(response.statusCode === 404){
-                initializeNeeded = true;
-            }else if(response.statusCode === 200){
-                if( 'template_api' in body ) {
-                    if (!('version' in body.template_api) || (body.template_api.version < requiredTemplateVersion)) {
-                        initializeNeeded = true;
-                    }
+        let initializeNeeded = false;
+
+        axios(getOptions).then( (response) => {
+            const body = response.data || {};
+            if( 'template_api' in body ) {
+                if (!('version' in body.template_api) || (body.template_api.version < requiredTemplateVersion)) {
+                    initializeNeeded = true;
                 }
             }
-
-            if(initializeNeeded){
-                request.put(putOptions, function (error, response, body) {
-                    if(error) {
-                        debug("Failed to update template:", JSON.stringify(error));
-                    }
-                });
+        }).catch((error)=>{
+            if(error.response && error.response.status === 404) {
+                initializeNeeded = true;
+            } else {
+                debug(`Error querying template: ${error.message}`);
+                that.enabled = false;
             }
+        }).finally(()=> {
+            if(initializeNeeded){
+                axios(putOptions).then((response) =>{
+                    debug("Elasticsearch template updated");
+                    that.enabled = true;
+                }).catch((error)=>{
+                    debug(`Failed to update template: ${error.message}`);
+                    that.enabled = false;
+                });
+            }else{
+                that.enabled = true;
+            }
+        });
 
-        }
+
+    }).catch((error)=>{
+        debug(`Error getting version: ${error.message}`);
+        that.enabled = false;
     });
-
 };
 
 // Update timeline and stats per tick
@@ -180,7 +233,11 @@ swsElasticEmitter.prototype.processRecord = function(rrr){
 
     // Create metadata
     var indexName = this.indexPrefix+moment(rrr['@timestamp']).utc().format('YYYY.MM.DD');
-    var meta = {index:{_index:indexName,_type:'api',_id:rrr.id}};
+
+    let meta = {index:{_index:indexName,_id:rrr.id}};
+    if(!this.es7 && !this.es8){
+        meta = {index:{_index:indexName,_type:'api',_id:rrr.id}};
+    }
 
     // Add to buffer
     this.indexBuffer += JSON.stringify(meta) + '\n';
@@ -201,12 +258,13 @@ swsElasticEmitter.prototype.flush = function(){
 
     this.lastFlush = Date.now();
 
-    var options = {
+    let options = {
+        method: 'post',
         url: this.elasticURLBulk,
         headers: {
             'Content-Type': 'application/x-ndjson'
         },
-        body: this.indexBuffer
+        data: this.indexBuffer,
     };
 
     if (this.elasticUsername && this.elasticPassword) {
@@ -216,13 +274,13 @@ swsElasticEmitter.prototype.flush = function(){
         }
     }
 
-    request.post(options, function (error, response, body) {
-        if (error) {
-            debug("Indexing Error:", JSON.stringify(error) );
+    axios(options).then((response)=> {
+        if (response && ('status' in response) && (response.status !== 200)) {
+            debug('Indexing Error: %d %s',response.status, response.message);
         }
-        if (response && ('statusCode' in response) && (response.statusCode !== 200)) {
-            debug('Indexing Error: %d %s',response.statusCode, response.message);
-        }
+    }).catch((error)=>{
+        debug(`Indexing Error: ${error.message}`);
+        that.enabled = false;
     });
 
     this.indexBuffer = '';

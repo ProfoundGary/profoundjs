@@ -15,7 +15,7 @@ server.use(restify.plugins.queryParser());
 // Use swagger-stats middleware
 server.pre(swStats.getMiddleware({
     name: 'restifytest',
-    version: '0.95.17',
+    version: '0.99.7',
     hostname: "hostname",
     ip: "127.0.0.1",
     timelineBucketDuration:1000,
@@ -30,6 +30,21 @@ server.pre(swStats.getMiddleware({
     elasticsearchIndexPrefix: 'swaggerstats-',
     onResponseFinish: function(req,res,rrr){
         debug('onResponseFinish: %s', JSON.stringify(rrr));
+    },
+    authentication: true,
+    sessionMaxAge: process.env.SWS_AUTHTEST_MAXAGE || 900,
+    onAuthenticate: function(req,username,password){
+        // simple check for username and password
+        if(username==='swagger-stats') {
+            return ((username === 'swagger-stats') && (password === 'swagger-stats'));
+        } else if(username==='swagger-promise'){
+            return new Promise(function(resolve) {
+                setTimeout(function(){
+                    resolve((username === 'swagger-promise') && (password === 'swagger-promise'));
+                }, 1000);
+            });
+        }
+        return false;
     }
 }));
 

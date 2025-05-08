@@ -18,17 +18,12 @@ var server = null;
 // Express and middlewares
 var express = require('express');
 var expressBodyParser = require('body-parser');
-var expressFavicon = require('serve-favicon');
-var expressStatic = require('serve-static');
 
 var swaggerParser = require('swagger-parser');
 
 var swStats = require('../../lib');    // require('swagger-stats');
 
 var app = module.exports = express();
-app.use(expressFavicon(path.join(__dirname, '../../ui/favicon.png')));
-app.use('/ui',expressStatic(path.join(__dirname, '../../ui')));
-app.use('/node_modules',expressStatic(path.join(__dirname, '../../node_modules')));
 app.use(expressBodyParser.json());
 app.use(expressBodyParser.urlencoded({ extended: true }));
 
@@ -43,13 +38,15 @@ app.set('port', process.env.PORT || 3040);
 app.disable('etag');
 
 app.get('/', function(req,res) {
-    res.redirect('/swagger-stats/ui');
+    res.redirect('/swagger-stats/');
 });
 
 // Return Prometheus metrics from prom-client
 app.get('/metrics', function(req,res) {
     res.status(200).set('Content-Type', 'text/plain');
-    res.end(promClient.register.metrics());
+    Promise.resolve(promClient.register.metrics()).then( (x) => {
+        res.end(x);
+    });
 });
 
 
@@ -57,7 +54,8 @@ app.get('/metrics', function(req,res) {
 var swaggerSpec = null;
 var parser = new swaggerParser();
 
-var specLocation = 'petstore3.yaml';
+//var specLocation = 'petstore3.yaml';
+var specLocation = 'petstore.yaml';
 
 if( process.env.SWS_SPECTEST_URL ){
     specLocation = process.env.SWS_SPECTEST_URL;
@@ -78,7 +76,7 @@ parser.validate(specLocation,function(err, api) {
 
         var swsOptions = {
             name: 'swagger-stats-spectest',
-            version: '0.95.17',
+            version: '0.99.7',
             hostname: "hostname",
             ip: "127.0.0.1",
             timelineBucketDuration: tlBucket,

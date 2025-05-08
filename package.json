@@ -19,7 +19,7 @@
     "idb-connector": "^1.2.16",
     "mssql": "^6.3.1",
     "mysql": "^2.18.1",
-    "profoundjs": "^7.0.0"
+    "profoundjs": "^7.19.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
